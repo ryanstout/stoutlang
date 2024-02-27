@@ -1,0 +1,23 @@
+{
+    "name": "stoutlang-syntax",
+    "displayName": "StoutLang Syntax Highlighting",
+    "description": "Syntax highlighting for StoutLang",
+    "version": "0.0.1",
+    "publisher": "Ryan",
+    "engines": {
+      "vscode": "^1.0.0"
+    },
+    "categories": ["Programming Languages"],
+    "contributes": {
+      "languages": [{
+        "id": "stoutlang",
+        "aliases": ["StoutLang", "stoutlang"],
+        "extensions": [".sl"]
+      }],
+      "grammars": [{
+        "language": "stoutlang",
+        "scopeName": "source.stoutlang",
+        "path": "./syntaxes/stoutlang.tmLanguage.json"
+      }]
+    }
+  }

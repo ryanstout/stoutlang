@@ -1,0 +1,64 @@
+{
+  "scopeName": "source.stoutlang",
+  "fileTypes": ["stout"],
+  "name": "StoutLang",
+  "patterns": [
+    {
+      "name": "comment.line.number-sign.stoutlang",
+      "match": "#.*\n"
+    },
+    {
+      "begin": "=begin",
+      "end": "=end",
+      "name": "comment.block.stoutlang"
+    },
+    {
+      "name": "keyword.control.stoutlang",
+      "match": "\\b(def|if|elsif|else|while|for|end)\\b"
+    },
+    {
+      "name": "keyword.variable.stoutlang",
+      "match": "\\b@[a-zA-Z_][a-zA-Z0-9_]*\\b"
+    },
+    {
+      "name": "constant.numeric.stoutlang",
+      "match": "\\b[0-9]+(\\.[0-9]+)?\\b"
+    },
+    {
+      "name": "string.quoted.double.stoutlang",
+      "begin": "\"",
+      "end": "\"",
+      "patterns": [
+        {
+          "name": "constant.character.escape.stoutlang",
+          "match": "\\\\[\"\\\\]"
+        }
+      ]
+    },
+    {
+      "name": "string.quoted.single.stoutlang",
+      "begin": "'",
+      "end": "'",
+      "patterns": [
+        {
+          "name": "constant.character.escape.stoutlang",
+          "match": "\\\\[']"
+        }
+      ]
+    },
+    {
+      "name": "constant.language.symbol.stoutlang",
+      "match": ":\\w+"
+    }
+  ],
+  "repository": {
+    "variable": {
+      "patterns": [
+        {
+          "name": "variable.other.stoutlang",
+          "match": "\\b[a-zA-Z_][a-zA-Z0-9_]*\\b"
+        }
+      ]
+    }
+  }
+}

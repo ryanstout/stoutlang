@@ -1,0 +1,90 @@
+grammar StoutLang
+
+  rule main_code
+    (body / space / line_break)* <MainCode>
+  end
+
+  rule body
+    (method_chain / primary) <Body>
+  end
+
+  rule primary
+    (assignment / expression / constant / identifier / float / integer / string / comment) <Body>
+  end
+
+  rule expression
+    space? '(' body ')' space? <Expression>
+  end
+
+  rule comment
+    '#' ([^\n]*) ( "\n" / eof ) <Comment>
+  end
+
+  rule method_chain
+    primary ('.' method_call)+ {
+      def to_ast
+        # The first primary is the receiver
+        receiver = elements[0].to_ast
+        # The rest are method calls
+        method_calls = elements[1].elements.map(&:to_ast)
+        # Return the method chain
+        Ast::MethodChain.new(receiver, method_calls)
+      end
+    }
+  end
+
+  rule method_call
+    # body_no_method '.' method_name space? '(' body ')' <MethodCall>
+    method_name space? "()" <MethodCall>
+  end
+
+  rule method_name
+    [a-z] [a-zA-Z0-9_]* <MethodName>
+  end
+
+  rule argument
+    # The argument should support named arguments and default values
+    (space? identifier space? '=')? space? body ','? space? <Argument>
+  end
+
+  rule assignment
+    identifier space? '=' space? body <Assignment>
+  end
+
+  rule integer
+    ('+' / '-')? [0-9]+ <IntegerLiteral>
+  end
+
+  rule float
+    ('+' / '-')? [0-9]+ (('.' [0-9]+) / ('e' [0-9]+)) <FloatLiteral>
+  end
+
+  rule string
+    '"' ([^"\\] / "\\" . )* '"' <StringLiteral>
+  end
+
+  rule nil
+    'nil' <NilLiteral>
+  end
+
+  rule identifier
+    [a-zA-Z\*] [a-zA-Z0-9_]* <Identifier>
+  end
+
+  rule constant
+    [A-Z] [a-zA-Z0-9_]* <Constant>
+  end
+
+  rule space
+    [\s]+
+  end
+
+  rule line_break
+    [\n\r;]+
+  end
+
+  rule eof
+    !.
+  end
+  
+end

@@ -1,0 +1,3 @@
+def cool
+  "ok"
+end

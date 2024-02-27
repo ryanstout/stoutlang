@@ -1,0 +1,46 @@
+
+  // rule expression
+  //   space? assignment space?
+  // end
+
+  // rule assignment
+  //   variable space? '=' space? arithmetic_expression { def eval; n = elements[0].eval; v = elements[4].eval; Context[n] = v; v end }
+  // end
+
+  // rule arithmetic_expression
+  //   (term space? ('+' / '-') space? arithmetic_expression { def eval; elements[0].eval.send(elements[2].text_value.strip, elements[4].eval) end }) / term
+  // end
+
+  // rule term
+  //   integer / variable / '(' space? arithmetic_expression space? ')' { def eval; elements[2].eval end }
+  // end
+
+  // rule integer
+  //   [0-9]+ { def eval; text_value.to_i end }
+  // end
+
+  // rule variable
+  //   [a-z]+ { def eval; Context[text_value] end }
+  // end
+
+  // rule if_statement
+  //   'if' space condition space 'then' space expression ('else' space expression)? 'end' {
+  //     def eval
+  //       if elements[2].eval
+  //         elements[5].eval
+  //       elsif elements[6]
+  //         elements[6].elements[2].eval
+  //       end
+  //     end
+  //   }
+  // end
+
+  // rule condition
+  //   arithmetic_expression space? ('==' / '!=' / '<=' / '>=' / '<' / '>') space? arithmetic_expression {
+  //     def eval; elements[0].eval.send(elements[2].text_value.strip, elements[4].eval) end
+  //   }
+  // end
+
+  // rule space
+  //   (' ' / "\t" / "\n" / "\r")+
+  // end
