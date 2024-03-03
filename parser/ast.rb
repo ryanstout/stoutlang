@@ -8,20 +8,19 @@ class Ast
     @parser = StoutLangParser.new
   end
 
-  def parse(code)
-    ast = @parser.parse(code)
+  def parse(code, options={})
+    ast = @parser.parse(code, options)
 
     if ast.nil?
       puts @parser.failure_reason
-      # binding.irb
       raise @parser.failure_reason
     end
 
-    return ast
-
-    self.clean_tree(ast)
-
     return ast.to_ast
+
+    # self.clean_tree(ast)
+
+    # return ast.to_ast
   end
 
   def clean_tree(root_node)

@@ -1,78 +1,155 @@
+
 grammar StoutLang
 
-  rule main_code
-    (body / space / line_break)* <MainCode>
+  rule program
+    (expression)* {
+      def to_ast
+        Ast::Block.new(elements.map(&:to_ast))
+      end
+    }
   end
 
-  rule body
-    (method_chain / primary) <Body>
-  end
-
-  rule primary
-    (assignment / expression / constant / identifier / float / integer / string / comment) <Body>
+  rule expression_or_infix
+    exp:(infix_chain / expression) {
+      def to_ast
+        exp.to_ast
+      end
+    }
   end
 
   rule expression
-    space? '(' body ')' space? <Expression>
+    exp:(method_chain / primary) {
+      def to_ast
+        exp.to_ast
+      end
+    }
   end
 
-  rule comment
-    '#' ([^\n]*) ( "\n" / eof ) <Comment>
+  rule primary
+    ident:(identifier / integer / parens) {
+      def to_ast
+        ident.to_ast
+      end
+    }
   end
 
+  rule infix_chain
+    expression (infix_op expression)* {
+      def to_ast
+        # Consume left to right
+        # Start with the leftmost primary
+        left = primary.to_ast
+        elements[1].elements.each do |op_and_right|
+          op, right = op_and_right.elements.map(&:to_ast)
+          left = Ast::FunctionCall.new(op, [left, right])
+        end
+
+        return left
+      end
+    }
+  end
+
+  rule infix_op
+    space? operator:('+' / '-' / '*' / '/') space? {
+      def to_ast
+        operator.text_value
+      end
+    }
+  end
+
+  # Methods are syntactic sugar for functions
+  # obj.method_name(arg1) is the same as method_name(obj, arg1)
   rule method_chain
     primary ('.' method_call)+ {
       def to_ast
-        # The first primary is the receiver
-        receiver = elements[0].to_ast
-        # The rest are method calls
-        method_calls = elements[1].elements.map(&:to_ast)
-        # Return the method chain
-        Ast::MethodChain.new(receiver, method_calls)
+        # Consume left to right
+        # Start with the receiver
+        method_call_receiver = primary.to_ast
+        elements[1].elements.map do |call_elements|
+          function_name, method_args = call_elements.method_call.to_ast
+          args = [method_call_receiver] + method_args
+          method_call_receiver = Ast::FunctionCall.new(function_name, args)
+        end
+
+        return method_call_receiver
       end
     }
   end
 
   rule method_call
-    # body_no_method '.' method_name space? '(' body ')' <MethodCall>
-    method_name space? "()" <MethodCall>
+    method_name args:method_args? {
+      # Doesn't return the AST node, just the parts we need to build in
+      # method chain
+      def to_ast
+        function_name = method_name.to_ast
+        # If there are no parens, args will be a SyntaxNode that doesn't respond
+        # to :to_ast
+        args_ast = args && args.respond_to?(:to_ast) ? args.to_ast : []
+
+        return function_name, args_ast
+      end
+    }
   end
 
-  rule method_name
-    [a-z] [a-zA-Z0-9_]* <MethodName>
-  end
+  rule method_args
+    '(' args_main:(first_arg:expression rest_args:(',' space? exp:expression)*)? ')' {
+      def to_ast
 
-  rule argument
-    # The argument should support named arguments and default values
-    (space? identifier space? '=')? space? body ','? space? <Argument>
-  end
+        if args_main && args_main.respond_to?(:first_arg)
+          first_arg = args_main.first_arg.to_ast
+          rest_args = args_main.rest_args.elements.map {|e| e.exp.to_ast }
 
-  rule assignment
-    identifier space? '=' space? body <Assignment>
+          return [first_arg] + rest_args
+        else
+          return []
+        end
+      end
+    }
   end
 
   rule integer
-    ('+' / '-')? [0-9]+ <IntegerLiteral>
+    ('+' / '-')? [0-9]+ {
+      def to_ast
+        text_value.to_i
+      end
+    }
   end
 
-  rule float
-    ('+' / '-')? [0-9]+ (('.' [0-9]+) / ('e' [0-9]+)) <FloatLiteral>
-  end
-
-  rule string
-    '"' ([^"\\] / "\\" . )* '"' <StringLiteral>
-  end
-
-  rule nil
-    'nil' <NilLiteral>
-  end
-
+  # Variable names
   rule identifier
-    [a-zA-Z\*] [a-zA-Z0-9_]* <Identifier>
+    [a-zA-Z] [a-zA-Z0-9_]* {
+      def to_ast
+        Ast::Identifier.new(text_value)
+      end
+    }
+  end
+
+  rule method_name
+    [a-zA-Z] [a-zA-Z0-9_]* {
+      def to_ast
+        text_value
+      end
+    }
+  end
+
+  rule parens
+    '(' exp:expression ')' {
+      def to_ast
+        exp.to_ast
+      end
+    }
   end
 
   rule constant
-    [A-Z] [a-zA-Z0-9_]* <Constant>
+    [A-Z] [a-zA-Z0-9_]*
+  end
+
+  rule integer
+    [0-9]+ {
+      def to_ast
+        IntegerLiteral.new(text_value)
+      end
+    }
   end
 
   rule space
