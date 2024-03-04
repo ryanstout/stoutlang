@@ -18,12 +18,33 @@ grammar StoutLang
   end
 
   rule expression
-    exp:(method_chain / primary) {
+    exp:(infix_chain / method_chain / primary) {
       def to_ast
         exp.to_ast
       end
     }
   end
+
+
+  # Methods are syntactic sugar for functions
+  # obj.method_name(arg1) is the same as method_name(obj, arg1)
+  rule method_chain
+    primary ('.' method_call)+ {
+      def to_ast
+        # Consume left to right
+        # Start with the receiver
+        method_call_receiver = primary.to_ast
+        elements[1].elements.map do |call_elements|
+          function_name, method_args = call_elements.method_call.to_ast
+          args = [method_call_receiver] + method_args
+          method_call_receiver = Ast::FunctionCall.new(function_name, args)
+        end
+
+        return method_call_receiver
+      end
+    }
+  end
+
 
   rule primary
     ident:(identifier / integer / parens) {
@@ -53,25 +74,6 @@ grammar StoutLang
     space? operator:('+' / '-' / '*' / '/') space? {
       def to_ast
         operator.text_value
-      end
-    }
-  end
-
-  # Methods are syntactic sugar for functions
-  # obj.method_name(arg1) is the same as method_name(obj, arg1)
-  rule method_chain
-    primary ('.' method_call)+ {
-      def to_ast
-        # Consume left to right
-        # Start with the receiver
-        method_call_receiver = primary.to_ast
-        elements[1].elements.map do |call_elements|
-          function_name, method_args = call_elements.method_call.to_ast
-          args = [method_call_receiver] + method_args
-          method_call_receiver = Ast::FunctionCall.new(function_name, args)
-        end
-
-        return method_call_receiver
       end
     }
   end
