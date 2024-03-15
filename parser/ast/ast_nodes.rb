@@ -7,7 +7,7 @@ module StoutLang
 
       def ==(other)
         return false unless other.is_a?(self.class)
-      
+
         (instance_variables - [:@parse_node]).all? do |var|
           instance_variable_get(var) == other.instance_variable_get(var)
         end
@@ -18,10 +18,10 @@ module StoutLang
         false
       end
 
-      # 
+      #
       def dump_ast_internals(obj, total_chars, indent=0, max_width=120, indent_first_line=true, abort_on_overflow=false)
         is_array = obj.is_a?(Array)
-        
+
         map_over = is_array ? obj : obj.instance_variables.reject {|iv| iv == :@parse_node}
         char_overflow = false
 
@@ -50,7 +50,7 @@ module StoutLang
         return var_inspects, char_overflow
       end
 
-      # A pretty printer for the AST, wraps when it should and doesn't when it 
+      # A pretty printer for the AST, wraps when it should and doesn't when it
       # shouldn't.
       def dump_ast(obj, indent=0, max_width=120, indent_first_line=true)
         out = ""
@@ -143,9 +143,10 @@ module StoutLang
     end
 
     class Assignment < AstNode
-      def initialize(identifier, expression, parse_node=nil)
+      def initialize(identifier, expression, type_defn, parse_node=nil)
         @identifier = identifier
         @expression = expression
+        @type_defn = type_defn
         @parse_node = parse_node
       end
 
@@ -183,6 +184,12 @@ module StoutLang
     class Block < AstNode
       def initialize(expressions, parse_node=nil)
         @expressions = expressions
+      end
+    end
+
+    class TypeDefn < AstNode
+      def initialize(type_val, parse_node=nil)
+        @type_val = type_val
       end
     end
   end

@@ -2,23 +2,29 @@
 grammar StoutLang
 
   rule program
-    (expression)* {
+    (assignment)* {
       def to_ast
         Ast::Block.new(elements.map(&:to_ast))
       end
     }
   end
 
-  rule expression_or_infix
-    exp:(infix_chain / expression) {
-      def to_ast
-        exp.to_ast
-      end
-    }
-  end
-
   rule expression
-    exp:(infix_chain / method_chain / primary) {
+    exp:(assignment) {
+      def to_ast
+        exp.to_ast
+      end
+    }
+  end
+
+  rule assignment
+    ident:identifier space? assign_type:type_defn? space? '=' space? exp:expression {
+      def to_ast
+        assign_type_defn = assign_type.respond_to?(:to_ast) ? assign_type.to_ast : nil
+
+        Ast::Assignment.new(ident.to_ast, exp.to_ast, assign_type_defn)
+      end
+    } / exp:infix_chain {
       def to_ast
         exp.to_ast
       end
@@ -26,40 +32,21 @@ grammar StoutLang
   end
 
 
-  # Methods are syntactic sugar for functions
-  # obj.method_name(arg1) is the same as method_name(obj, arg1)
-  rule method_chain
-    primary ('.' method_call)+ {
+  rule type_defn
+    ':' space? type:type {
       def to_ast
-        # Consume left to right
-        # Start with the receiver
-        method_call_receiver = primary.to_ast
-        elements[1].elements.map do |call_elements|
-          function_name, method_args = call_elements.method_call.to_ast
-          args = [method_call_receiver] + method_args
-          method_call_receiver = Ast::FunctionCall.new(function_name, args)
-        end
-
-        return method_call_receiver
+        Ast::TypeDefn.new(type.to_ast)
       end
     }
   end
 
-
-  rule primary
-    ident:(identifier / integer / parens) {
-      def to_ast
-        ident.to_ast
-      end
-    }
-  end
 
   rule infix_chain
-    expression (infix_op expression)* {
+    method_chain (infix_op expression)* {
       def to_ast
         # Consume left to right
         # Start with the leftmost primary
-        left = primary.to_ast
+        left = method_chain.to_ast
         elements[1].elements.each do |op_and_right|
           op, right = op_and_right.elements.map(&:to_ast)
           left = Ast::FunctionCall.new(op, [left, right])
@@ -70,7 +57,47 @@ grammar StoutLang
     }
   end
 
+
+
+  # Methods are syntactic sugar for functions
+  # obj.method_name(arg1) is the same as method_name(obj, arg1)
+  rule method_chain
+    primary ('.' method_call)* {
+      def to_ast
+        # Consume left to right
+        # Start with the receiver
+        method_call_receiver = primary.to_ast
+        elements[1].elements.map do |call_elements|
+          function_name, method_args = call_elements.method_call.to_ast
+          args = [method_call_receiver] + method_args
+          
+          method_call_receiver = Ast::FunctionCall.new(function_name, args)
+        end
+
+        return method_call_receiver
+      end
+    }
+  end
+
+  rule block
+    '{' space? program space? '}' {
+      def to_ast
+        program.to_ast
+      end
+    }
+  end
+
+
+  rule primary
+    ident:(identifier / float / integer / parens) {
+      def to_ast
+        ident.to_ast
+      end
+    }
+  end
+
   rule infix_op
+    # We want to process lower precedence operators first
     space? operator:('+' / '-' / '*' / '/') space? {
       def to_ast
         operator.text_value
@@ -79,7 +106,7 @@ grammar StoutLang
   end
 
   rule method_call
-    method_name args:method_args? {
+    method_name args:method_args? space? block:block? {
       # Doesn't return the AST node, just the parts we need to build in
       # method chain
       def to_ast
@@ -87,6 +114,9 @@ grammar StoutLang
         # If there are no parens, args will be a SyntaxNode that doesn't respond
         # to :to_ast
         args_ast = args && args.respond_to?(:to_ast) ? args.to_ast : []
+
+        # If a block was passed, add it to the args
+        args_ast << block.to_ast if block && block.respond_to?(:to_ast)
 
         return function_name, args_ast
       end
@@ -109,17 +139,33 @@ grammar StoutLang
     }
   end
 
-  rule integer
-    ('+' / '-')? [0-9]+ {
+  rule float
+    float:(('+' / '-')? [0-9]+ ('.' [0-9]+) (exponent)?) {
       def to_ast
-        text_value.to_i
+        FloatLiteral.new(float.text_value.to_f)
       end
     }
   end
 
+  rule exponent
+    [eE] '-'? [0-9]+
+  end
+
+  rule integer
+    ('+' / '-')? [0-9]+ {
+      def to_ast
+        IntegerLiteral.new(text_value.to_i)
+      end
+    }
+  end
+
+  rule digit
+    [0-9]
+  end
+
   # Variable names
   rule identifier
-    [a-zA-Z] [a-zA-Z0-9_]* {
+    [a-z] [a-zA-Z0-9_]* {
       def to_ast
         Ast::Identifier.new(text_value)
       end
@@ -142,17 +188,14 @@ grammar StoutLang
     }
   end
 
-  rule constant
-    [A-Z] [a-zA-Z0-9_]*
-  end
-
-  rule integer
-    [0-9]+ {
+  rule type
+    [A-Z] [a-zA-Z0-9_]* {
       def to_ast
-        IntegerLiteral.new(text_value)
+        text_value
       end
     }
   end
+
 
   rule space
     [\s]+
