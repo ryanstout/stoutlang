@@ -1,5 +1,5 @@
-
 grammar StoutLang
+  include Types
 
   rule program
     (assignment)* {
@@ -18,24 +18,15 @@ grammar StoutLang
   end
 
   rule assignment
-    ident:identifier space? assign_type:type_defn? space? '=' space? exp:expression {
+    ident:identifier space? assign_type:type_sig? space? '=' space? exp:expression {
       def to_ast
-        assign_type_defn = assign_type.respond_to?(:to_ast) ? assign_type.to_ast : nil
+        assign_type_sig = assign_type.respond_to?(:to_ast) ? assign_type.to_ast : nil
 
-        Ast::Assignment.new(ident.to_ast, exp.to_ast, assign_type_defn)
+        Ast::Assignment.new(ident.to_ast, exp.to_ast, assign_type_sig)
       end
     } / exp:infix_chain {
       def to_ast
         exp.to_ast
-      end
-    }
-  end
-
-
-  rule type_defn
-    ':' space? type:type {
-      def to_ast
-        Ast::TypeDefn.new(type.to_ast)
       end
     }
   end
@@ -188,13 +179,7 @@ grammar StoutLang
     }
   end
 
-  rule type
-    [A-Z] [a-zA-Z0-9_]* {
-      def to_ast
-        text_value
-      end
-    }
-  end
+
 
 
   rule space

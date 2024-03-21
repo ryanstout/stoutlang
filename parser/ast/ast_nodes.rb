@@ -143,10 +143,10 @@ module StoutLang
     end
 
     class Assignment < AstNode
-      def initialize(identifier, expression, type_defn, parse_node=nil)
+      def initialize(identifier, expression, type_sig, parse_node=nil)
         @identifier = identifier
         @expression = expression
-        @type_defn = type_defn
+        @type_sig = type_sig
         @parse_node = parse_node
       end
 
@@ -187,7 +187,13 @@ module StoutLang
       end
     end
 
-    class TypeDefn < AstNode
+    class TypeVariable < AstNode
+      def initialize(name, parse_node=nil)
+        @name = name
+      end
+    end
+
+    class TypeSig < AstNode
       def initialize(type_val, parse_node=nil)
         @type_val = type_val
       end

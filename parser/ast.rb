@@ -1,6 +1,7 @@
 require 'treetop'
 require 'parser/parser'
 
+Treetop.load('parser/grammar/types')
 Treetop.load('parser/parser')
 
 class Ast

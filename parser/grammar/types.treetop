@@ -1,0 +1,33 @@
+grammar Types
+
+  rule type
+    [A-Z] [a-zA-Z0-9_]* {
+      def to_ast
+        text_value
+      end
+    }
+  end
+
+  rule type_sig
+    ':' space? type:type {
+      def to_ast
+        Ast::TypeSig.new(type.to_ast)
+      end
+    }
+  end
+
+  # Type variables start with a ' to differentiate them from normal variables.
+  # This differentiation lets you only parameterize the at the class level,
+  # then reuse the variables anywhere in the class
+  rule type_variable
+    '\'' [a-z] [a-zA-Z0-9_]* {
+      def to_ast
+        Ast::TypeVariable.new(text_value[1..-1])
+      end
+    }
+  end
+
+
+
+
+end
