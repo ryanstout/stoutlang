@@ -2,11 +2,14 @@ grammar StoutLang
   include Types
   include Methods
   include Functions
+  include Strings
+  include Ifs
+  include Lists
 
   rule program
-    space? program:(assignment)* space? {
+    space? program:(assign:assignment space?)* {
       def to_ast
-        Ast::Block.new(program.elements.map(&:to_ast))
+        Ast::Block.new(program.elements.map {|e| e.assign.to_ast })
       end
     }
   end
@@ -69,15 +72,15 @@ grammar StoutLang
   rule function_call_with_args
     # Function calls without args parse as an identifier and we have to convert
     # them at compile time.
-    
+
     method_name space? args:method_args space? block:block? {
       # Doesn't return the AST node, just the parts we need to build in
       # method chain
       def to_ast
         function_name = method_name.to_ast
-        # If there are no parens, args will be a SyntaxNode that doesn't respond
-        # to :to_ast
-        args_ast = args && args.respond_to?(:to_ast) ? args.to_ast : []
+
+        # parens are required in function_call_with_args
+        args_ast = args.respond_to?(:to_ast) ? args.to_ast : []
 
         # If a block was passed, add it to the args
         args_ast << block.to_ast if block && block.respond_to?(:to_ast)
@@ -87,7 +90,30 @@ grammar StoutLang
     }
   end
 
+  rule boolean_literal
+    lit:(true_literal / false_literal) {
+      def to_ast
+        lit.to_ast
+      end
+    }
+  end
 
+  rule true_literal
+    'true' {
+      def to_ast
+        TrueLiteral.new
+      end
+    }
+  end
+
+  rule false_literal
+    'false' {
+      def to_ast
+        FalseLiteral.new
+      end
+    }
+  end
+  
 
   rule block
     '{' program '}' {
@@ -99,7 +125,7 @@ grammar StoutLang
 
 
   rule primary
-    ident:(function_call_with_args / identifier / float / integer / parens) {
+    ident:(if_expression / list / boolean_literal / function_call_with_args / identifier / float / integer / string / parens) {
       def to_ast
         ident.to_ast
       end
@@ -137,6 +163,11 @@ grammar StoutLang
 
   rule digit
     [0-9]
+  end
+
+
+  rule escaped_char
+    '\\' ["] / '\\' [n] / '\\' [t] / '\\' [\\]
   end
 
   # Variable names

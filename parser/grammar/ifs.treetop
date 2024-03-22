@@ -1,0 +1,29 @@
+grammar Ifs
+ rule if_expression
+    'if' space condition:expression space? if_block:block elifs:elif_clause* else_block:else_clause? {
+      def to_ast
+        elif_clauses = elifs && elifs.respond_to?(:to_ast) && elifs.map(&:to_ast) || []
+        else_clause = else_block.respond_to?(:to_ast) && else_block&.to_ast || nil
+
+        If.new(condition.to_ast, if_block.to_ast, elif_clauses, else_clause)
+      end
+    }
+  end
+
+  rule elif_clause
+    space? 'elif' space? condition:expression space? elif_block:block {
+      def to_ast
+        ElifClause.new(condition.to_ast, elif_block.to_ast)
+      end
+    }
+  end
+
+  rule else_clause
+    space? 'else' space? block:block {
+      def to_ast
+        ElseClause.new(block.to_ast)
+      end
+    }
+  end
+
+end

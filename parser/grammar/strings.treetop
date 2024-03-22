@@ -1,0 +1,81 @@
+grammar Strings
+
+
+  rule double_quoted_string
+    '"' str:(string_content / escape_sequence / interpolation)* '"' {
+      def to_ast
+        parts = str.elements.map(&:to_ast)
+
+        # Merge adjacent string parts
+        merged_parts = parts.chunk { |part| part.is_a?(String) }.map do |is_string, parts|
+          if is_string
+            parts.join
+          else
+            parts
+          end
+        end
+        StringLiteral.new(merged_parts)
+      end
+    }
+  end
+
+  rule string_content
+    [^"$\\]+ {
+      def to_ast
+        text_value
+      end
+    }
+  end
+
+  rule escape_sequence
+    '\\' esc:(
+        'n' / 't' / 'r' / '"' / '\\' / 'b' / 'f' / unicode_escape
+    ) {
+      def to_ast
+        case esc.text_value
+        when 'n' then "\n"
+        when 't' then "\t"
+        when 'r' then "\r"
+        when '"' then "\""
+        when '\\' then "\\"
+        when 'b' then "\b"
+        when 'f' then "\f"
+        else
+          esc.to_ast # For unicode_escape, this calls its to_ast method
+        end
+      end
+    }
+  end
+
+  rule unicode_escape
+    'u' hex_digit hex_digit hex_digit hex_digit {
+      def to_ast
+        [text_value[1..4].to_i(16)].pack("U*")
+      end
+    }
+  end
+
+  rule hex_digit
+    [0-9a-fA-F] {
+      def to_ast
+        text_value
+      end
+    }
+  end
+
+  rule interpolation
+    '${' program:program '}' {
+      def to_ast
+        StringInterpolation.new(program.to_ast)
+      end
+    }
+  end
+
+  rule string
+    str:double_quoted_string {
+      def to_ast
+        str.to_ast
+      end
+    }
+  end
+end

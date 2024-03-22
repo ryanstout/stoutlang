@@ -1,0 +1,27 @@
+grammar Lists
+  rule list
+    '[' items:elements? ']' {
+      def to_ast
+        if items
+          return List.new(items.to_ast)
+        else
+          return List.new([])
+        end
+      end
+    }
+  end
+
+  rule elements
+    exp1:expression exps2:(space? ',' space? exp2_exp:expression)* space? {
+      def to_ast
+        if exps2
+          exp2s = exps2.elements.map { |e| e.exp2_exp.to_ast }
+        else
+          exp2s = []
+        end
+
+        [exp1.to_ast] + exp2s
+      end
+    }
+  end
+end

@@ -4,6 +4,9 @@ require 'parser/parser'
 Treetop.load('parser/grammar/methods')
 Treetop.load('parser/grammar/functions')
 Treetop.load('parser/grammar/types')
+Treetop.load('parser/grammar/strings')
+Treetop.load('parser/grammar/ifs')
+Treetop.load('parser/grammar/lists')
 Treetop.load('parser/parser')
 
 class Ast

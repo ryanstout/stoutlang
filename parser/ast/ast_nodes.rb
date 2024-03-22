@@ -66,7 +66,7 @@ module StoutLang
           var_inspects, char_overflow = dump_ast_internals(obj, total_chars, 0, char_cut_off, indent_first_line=false, abort_on_overflow=true)
 
           unless is_array
-            out << "#{class_name}"
+            out << "#{class_name}.new"
           end
 
           start_char = is_array ? "[" : "("
@@ -105,6 +105,28 @@ module StoutLang
       end
     end
 
+    class If < AstNode
+      def initialize(condition, if_block, elifs_blocks, else_block)
+        @condition = condition
+        @if_block = if_block
+        @elifs_blocks = elifs_blocks
+        @else_block = else_block
+      end
+    end
+
+    class ElifClause < AstNode
+      def initialize(condition, block)
+        @condition = condition
+        @block = block
+      end
+    end
+
+    class ElseClause < AstNode
+      def initialize(block)
+        @block = block
+      end
+    end
+
     class IntegerLiteral < AstNode
       def initialize(value, parse_node=nil)
         @value = value
@@ -124,14 +146,31 @@ module StoutLang
         @value = value
         @parse_node = parse_node
       end
+    end
 
+    class StringInterpolation < AstNode
+      def initialize(expressions, parse_node=nil)
+        @expressions = expressions
+        @parse_node = parse_node
+      end
     end
 
     class NilLiteral < AstNode
       def initialize(parse_node=nil)
         @parse_node = nil
       end
+    end
 
+    class TrueLiteral < AstNode
+      def initialize(parse_node=nil)
+        @parse_node = parse_node
+      end
+    end
+
+    class FalseLiteral < AstNode
+      def initialize(parse_node=nil)
+        @parse_node = parse_node
+      end
     end
 
     class Expression < AstNode
@@ -204,6 +243,12 @@ module StoutLang
         @name = name
         @args = args
         @block = block
+      end
+    end
+
+    class List < AstNode
+      def initialize(elements, parse_node=nil)
+        @elements = elements
       end
     end
   end
