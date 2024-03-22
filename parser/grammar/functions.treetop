@@ -1,0 +1,12 @@
+grammar Functions
+
+  rule function_call
+    method_call:method_call {
+      def to_ast
+        function_name, method_args = method_call.to_ast
+          Ast::FunctionCall.new(function_name, method_args)
+      end
+    }
+  end
+
+end

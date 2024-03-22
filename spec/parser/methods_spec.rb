@@ -56,4 +56,22 @@ describe StoutLangParser do
       )
     end
   end
+
+  it 'should define methods' do
+    code = <<-END
+    def some_method(arg1, arg2) {
+      print()
+    }
+    END
+    ast = Ast.new.parse(code.strip)
+
+    expect(ast).to eq(Block.new(
+      expressions=[
+        Def.new(
+          name="some_method",
+          args=[Identifier.new(name="arg1"), Identifier.new(name="arg2")]
+        )
+      ]
+    )  )
+  end
 end

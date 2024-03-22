@@ -1,11 +1,12 @@
 grammar StoutLang
   include Types
   include Methods
+  include Functions
 
   rule program
-    (assignment)* {
+    space? program:(assignment)* space? {
       def to_ast
-        Ast::Block.new(elements.map(&:to_ast))
+        Ast::Block.new(program.elements.map(&:to_ast))
       end
     }
   end
@@ -25,13 +26,24 @@ grammar StoutLang
 
         Ast::Assignment.new(ident.to_ast, exp.to_ast, assign_type_sig)
       end
-    } / exp:infix_chain {
+    } / exp:define_method {
       def to_ast
         exp.to_ast
       end
     }
   end
 
+  rule define_method
+    'def ' method_name:method_name space? args:(method_args:method_args)? space? block:block {
+      def to_ast
+        Ast::Def.new(method_name.to_ast, args&.method_args&.to_ast, block.to_ast)
+      end
+    } / exp:infix_chain {
+      def to_ast
+        exp.to_ast
+      end
+    }
+  end
 
   rule infix_chain
     method_chain (infix_op expression)* {
@@ -46,12 +58,16 @@ grammar StoutLang
 
         return left
       end
+    } / func:function_call {
+      def to_ast
+        func.to_ast
+      end
     }
   end
 
 
   rule block
-    '{' space? program space? '}' {
+    '{' program '}' {
       def to_ast
         program.to_ast
       end
@@ -119,6 +135,10 @@ grammar StoutLang
 
 
   rule space
+    [\s\n\r]+
+  end
+
+  rule non_break_space
     [\s]+
   end
 

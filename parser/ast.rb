@@ -2,6 +2,7 @@ require 'treetop'
 require 'parser/parser'
 
 Treetop.load('parser/grammar/methods')
+Treetop.load('parser/grammar/functions')
 Treetop.load('parser/grammar/types')
 Treetop.load('parser/parser')
 
