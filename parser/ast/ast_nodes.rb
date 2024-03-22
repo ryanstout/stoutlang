@@ -200,7 +200,7 @@ module StoutLang
     end
 
     class Def < AstNode
-      def initialize(name, args, block, parse_node=nil)
+      def initialize(name, args, block=nil, parse_node=nil)
         @name = name
         @args = args
         @block = block

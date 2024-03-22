@@ -29,16 +29,20 @@ describe StoutLangParser do
     end
 
     it 'should parse method arguments' do
-      ast = Ast.new.parse('awesome.ok', root: 'expression')
+      ast = Ast.new.parse('awesome.ok')
 
-      match_ast = FunctionCall.new(
-        name="ok",
-        args=[
-          Identifier.new(name="awesome")
-        ]
+      match_ast = Block.new(
+        expressions=[
+          FunctionCall.new(name="ok", args=[
+            Identifier.new(name="awesome")
+          ]
+        )]
       )
 
       expect(ast).to eq(match_ast)
+    end
+
+    it 'should parse complex method calls' do
 
       ast = Ast.new.parse('awesome.dude(ok.dokey()).yeppers', root: 'expression')
 
@@ -57,6 +61,13 @@ describe StoutLangParser do
     end
   end
 
+  it 'should handle empty method args' do
+    ast = Ast.new.parse('()', root: 'method_args')
+
+    expect(ast).to eq([])
+
+  end
+
   it 'should define methods' do
     code = <<-END
     def some_method(arg1, arg2) {
@@ -69,7 +80,8 @@ describe StoutLangParser do
       expressions=[
         Def.new(
           name="some_method",
-          args=[Identifier.new(name="arg1"), Identifier.new(name="arg2")]
+          args=[Identifier.new(name="arg1"), Identifier.new(name="arg2")],
+          block=Block.new(expressions=[FunctionCall.new(name="print", args=[])])
         )
       ]
     )  )

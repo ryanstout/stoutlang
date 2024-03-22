@@ -38,9 +38,9 @@ grammar StoutLang
       def to_ast
         Ast::Def.new(method_name.to_ast, args&.method_args&.to_ast, block.to_ast)
       end
-    } / exp:infix_chain {
+    } / infix:infix_chain {
       def to_ast
-        exp.to_ast
+        infix.to_ast
       end
     }
   end
@@ -58,12 +58,35 @@ grammar StoutLang
 
         return left
       end
-    } / func:function_call {
+    } / func:function_call_with_args {
       def to_ast
         func.to_ast
       end
     }
   end
+
+
+  rule function_call_with_args
+    # Function calls without args parse as an identifier and we have to convert
+    # them at compile time.
+    
+    method_name space? args:method_args space? block:block? {
+      # Doesn't return the AST node, just the parts we need to build in
+      # method chain
+      def to_ast
+        function_name = method_name.to_ast
+        # If there are no parens, args will be a SyntaxNode that doesn't respond
+        # to :to_ast
+        args_ast = args && args.respond_to?(:to_ast) ? args.to_ast : []
+
+        # If a block was passed, add it to the args
+        args_ast << block.to_ast if block && block.respond_to?(:to_ast)
+
+        Ast::FunctionCall.new( function_name, args_ast)
+      end
+    }
+  end
+
 
 
   rule block
@@ -76,7 +99,7 @@ grammar StoutLang
 
 
   rule primary
-    ident:(identifier / float / integer / parens) {
+    ident:(function_call_with_args / identifier / float / integer / parens) {
       def to_ast
         ident.to_ast
       end
@@ -138,7 +161,7 @@ grammar StoutLang
     [\s\n\r]+
   end
 
-  rule non_break_space
+  rule nbsp
     [\s]+
   end
 
