@@ -9,6 +9,7 @@ Treetop.load('parser/grammar/ifs')
 Treetop.load('parser/grammar/lists')
 Treetop.load('parser/parser')
 
+
 class Ast
   def initialize
     @parser = StoutLangParser.new

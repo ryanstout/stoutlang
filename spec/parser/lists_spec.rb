@@ -35,5 +35,26 @@ describe StoutLangParser do
        )
       )
     end
+
+    it 'should support assigning lists with type inference' do
+      ast = Ast.new.parse('a = [1, 2, 3]')
+      expect(ast).to eq(
+        Block.new(
+          expressions=[
+            Assignment.new(
+              identifier=Identifier.new(name="a"),
+              expression=List.new(
+                elements=[
+                  IntegerLiteral.new(value=1),
+                  IntegerLiteral.new(value=2),
+                  IntegerLiteral.new(value=3)
+                ]
+              ),
+              type_sig=nil
+            )
+          ]
+        )
+      )
+    end
   end
 end

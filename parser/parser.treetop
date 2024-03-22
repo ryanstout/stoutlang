@@ -125,12 +125,22 @@ grammar StoutLang
 
 
   rule primary
-    ident:(if_expression / list / boolean_literal / function_call_with_args / identifier / float / integer / string / parens) {
+    ident:(comment / if_expression / list / boolean_literal / function_call_with_args / identifier / float / integer / string / parens) {
       def to_ast
         ident.to_ast
       end
     }
   end
+
+
+  rule comment
+    '#' message:[^\n]* '\n'? {
+      def to_ast
+        Ast::Comment.new(message.text_value)
+      end
+    }
+  end
+
 
   rule infix_op
     # We want to process lower precedence operators first
