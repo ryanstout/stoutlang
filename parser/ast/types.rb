@@ -1,5 +1,11 @@
 module StoutLang
   module Ast
+    class Type < AstNode
+      def initialize(name, parse_node=nil)
+        @name = name
+      end
+    end
+
     class TypeVariable < AstNode
       def initialize(name, parse_node=nil)
         @name = name

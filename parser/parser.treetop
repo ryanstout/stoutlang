@@ -15,11 +15,7 @@ grammar StoutLang
   end
 
   rule expression
-    exp:(assignment) {
-      def to_ast
-        exp.to_ast
-      end
-    }
+    assignment
   end
 
   rule assignment
@@ -29,11 +25,7 @@ grammar StoutLang
 
         Ast::Assignment.new(ident.to_ast, exp.to_ast, assign_type_sig)
       end
-    } / exp:define_method {
-      def to_ast
-        exp.to_ast
-      end
-    }
+    } / define_method
   end
 
   rule define_method
@@ -41,11 +33,7 @@ grammar StoutLang
       def to_ast
         Ast::Def.new(method_name.to_ast, args&.method_args&.to_ast, block.to_ast)
       end
-    } / infix:infix_chain {
-      def to_ast
-        infix.to_ast
-      end
-    }
+    } / infix_chain
   end
 
   rule infix_chain
@@ -61,11 +49,7 @@ grammar StoutLang
 
         return left
       end
-    } / func:function_call_with_args {
-      def to_ast
-        func.to_ast
-      end
-    }
+    } / function_call_with_args
   end
 
 
@@ -125,11 +109,7 @@ grammar StoutLang
 
 
   rule primary
-    ident:(comment / if_expression / list / boolean_literal / function_call_with_args / identifier / float / integer / string / parens) {
-      def to_ast
-        ident.to_ast
-      end
-    }
+    comment / if_expression / list / boolean_literal / function_call_with_args / identifier / float / integer / string / parens
   end
 
 
@@ -144,7 +124,7 @@ grammar StoutLang
 
   rule infix_op
     # We want to process lower precedence operators first
-    space? operator:('+' / '-' / '*' / '/') space? {
+    space? operator:('+' / '-' / '*' / '/' / '||' / '&&' / '|' / '&') space? {
       def to_ast
         operator.text_value
       end

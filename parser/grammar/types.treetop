@@ -3,7 +3,32 @@ grammar Types
   rule type
     [A-Z] [a-zA-Z0-9_]* {
       def to_ast
-        text_value
+        Type.new(text_value)
+      end
+    }
+  end
+
+  rule type_expression
+    type_infix_chain
+  end
+
+  rule type_primary
+    type_variable / type
+  end
+
+  rule type_infix_chain
+    type_primary:type_primary (type_infix_op type_expression)* {
+      def to_ast
+        # Consume left to right
+        # Start with the leftmost primary
+        left = type_primary.to_ast
+
+        elements[1].elements.each do |op_and_right|
+          op, right = op_and_right.elements.map(&:to_ast)
+          left = Ast::FunctionCall.new(op, [left, right])
+        end
+
+        return left
       end
     }
   end
@@ -27,5 +52,13 @@ grammar Types
     }
   end
 
+  rule type_infix_op
+    # We want to process lower precedence operators first
+    space? operator:('||' / '&&' / '|' / '&') space? {
+      def to_ast
+        operator.text_value
+      end
+    }
+  end
 
 end

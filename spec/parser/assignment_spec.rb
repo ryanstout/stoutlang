@@ -24,7 +24,7 @@ describe StoutLangParser do
           Assignment.new(
             identifier=Identifier.new(name="a"),
             expression=IntegerLiteral.new(value=10),
-            type_sig=TypeSig.new(type_val="Int")
+            type_sig=TypeSig.new(type_val=Type.new("Int"))
           )
         ]
       )
