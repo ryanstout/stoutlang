@@ -46,5 +46,22 @@ describe StoutLangParser do
         )
       )
     end
+
+    it 'should allow comments after the condition' do
+      ast = Ast.new.parse("if true # a comment\n{ 10 }")
+
+      expect(ast).to eq(
+        Block.new(
+          expressions=[
+            If.new(
+              condition=TrueLiteral.new(),
+              if_block=Block.new(expressions=[IntegerLiteral.new(value=10)]),
+              elifs_blocks=[],
+              else_block=nil
+            )
+          ]
+        )
+      )
+    end
   end
 end

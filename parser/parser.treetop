@@ -199,7 +199,7 @@ grammar StoutLang
 
 
   rule space
-    [\s\n\r]+
+    ([\s\n\r] / comment)+
   end
 
   rule nbsp

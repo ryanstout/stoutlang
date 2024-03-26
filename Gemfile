@@ -8,3 +8,7 @@ gem "treetop", "~> 1.6"
 
 
 gem "rspec", "~> 3.13"
+
+group :development do
+  gem "ruby-lsp-rspec", require: false
+end

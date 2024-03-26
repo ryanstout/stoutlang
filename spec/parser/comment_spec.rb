@@ -5,7 +5,13 @@ describe StoutLangParser do
     it 'should parse comments' do
       ast = Ast.new.parse('# this is a comment')
 
-      expect(ast).to eq(Block.new(expressions=[Comment.new(comment=" this is a comment")]))
+      expect(ast).to eq(Block.new(expressions=[]))
+    end
+
+    it 'should parse a comment, then an expression' do
+      ast = Ast.new.parse("# this is a comment\n10")
+
+      expect(ast).to eq(Block.new(expressions=[IntegerLiteral.new(value=10)]))
     end
   end
 end
