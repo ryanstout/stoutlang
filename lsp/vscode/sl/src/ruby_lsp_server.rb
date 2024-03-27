@@ -2,6 +2,9 @@
   require 'io/console'
 
   class RubyLSPServer
+    def initialize
+      @documents = {}
+    end
 
     def start
       warn "Started LSP"
@@ -46,30 +49,70 @@
       when 'textDocument/hover'
         handle_hover(request)
       else
-        { id: request['id'], error: { code: -32601, message: "Method not found" } }
+        # { id: request['id'], error: { code: -32601, message: "Method not found" } }
+        warn("Method not found: #{request['method']}")
+        nil
       end
     end
 
     def handle_did_open(request)
       warn "Document opened: #{request.inspect}"
-      # Handle the document opening here
+      uri = request['params']['textDocument']['uri']
+      content = request['params']['textDocument']['text']
+      @documents[uri] = content
       nil
     end
 
     def handle_did_change(request)
       warn "Document changed: #{request.inspect}"
-      # Handle the document change here
+      uri = request['params']['textDocument']['uri']
+      changes = request['params']['contentChanges']
+      document_content = @documents[uri]
+
+      changes.each do |change|
+        if change['range']
+          # Apply partial change
+          start_line, start_character = change['range']['start'].values_at('line', 'character')
+          end_line, end_character = change['range']['end'].values_at('line', 'character')
+
+          # Convert the document content into an array of lines
+          content_lines = document_content.split("\n")
+
+          # Apply change
+          if start_line == end_line
+            content_lines[start_line][start_character...end_character] = change['text']
+          else
+            start_line_text = content_lines[start_line][0...start_character]
+            end_line_text = content_lines[end_line][end_character..-1] || ""
+            middle_text = change['text']
+
+            content_lines[start_line..end_line] = [start_line_text + middle_text + end_line_text]
+          end
+
+          # Reassemble the document
+          document_content = content_lines.join("\n")
+        else
+          # Apply full document change
+          document_content = change['text']
+        end
+      end
+
+      @documents[uri] = document_content
       nil
     end
 
     def handle_did_close(request)
       warn "Document closed: #{request.inspect}"
-      # Handle the document closing here
+      uri = request['params']['textDocument']['uri']
+      @documents.delete(uri)
       nil
     end
 
     def handle_hover(request)
       # Example hover response for a specific keyword
+      uri = request.dig('params', 'textDocument', 'uri')
+      document_content = @documents[uri]
+
       if request.dig('params', 'textDocument', 'uri').end_with?('.sl')
         {
           id: request['id'],
