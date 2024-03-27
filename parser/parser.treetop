@@ -5,6 +5,7 @@ grammar StoutLang
   include Strings
   include Ifs
   include Lists
+  include Structs
 
   rule program
     space? program:(assign:assignment space?)* {

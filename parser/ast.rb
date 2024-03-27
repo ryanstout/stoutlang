@@ -7,6 +7,7 @@ Treetop.load('parser/grammar/types')
 Treetop.load('parser/grammar/strings')
 Treetop.load('parser/grammar/ifs')
 Treetop.load('parser/grammar/lists')
+Treetop.load('parser/grammar/structs')
 Treetop.load('parser/parser')
 
 

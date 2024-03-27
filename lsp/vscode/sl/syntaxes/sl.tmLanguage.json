@@ -1,0 +1,137 @@
+{
+	"scopeName": "source.stoutlang",
+	"patterns": [
+	  {
+		"include": "#comments"
+	  },
+	  {
+		"include": "#if_expression"
+	  },
+	  {
+		"include": "#method_chain"
+	  },
+	  {
+		"include": "#strings"
+	  },
+	  {
+		"include": "#structs"
+	  }
+	],
+	"repository": {
+	  "comments": {
+		"patterns": [
+		  {
+			"name": "comment.line.stoutlang",
+			"match": "//.*$"
+		  }
+		]
+	  },
+	  "if_expression": {
+		"patterns": [
+		  {
+			"match": "\\b(if|elif|else)\\b",
+			"name": "keyword.control.stoutlang"
+		  },
+		  {
+			"include": "#expressions"
+		  },
+		  {
+			"include": "#blocks"
+		  }
+		]
+	  },
+	  "method_chain": {
+		"patterns": [
+		  {
+			"match": "\\b[a-zA-Z][a-zA-Z0-9_]*\\b",
+			"name": "variable.function.stoutlang"
+		  },
+		  {
+			"match": "\\.",
+			"name": "punctuation.accessor.stoutlang"
+		  },
+		  {
+			"include": "#method_args"
+		  }
+		]
+	  },
+	  "strings": {
+		"patterns": [
+		  {
+			"begin": "\"",
+			"end": "\"",
+			"name": "string.quoted.double.stoutlang",
+			"patterns": [
+			  {
+				"match": "\\\\.",
+				"name": "constant.character.escape.stoutlang"
+			  },
+			  {
+				"include": "#interpolation"
+			  }
+			]
+		  }
+		]
+	  },
+	  "structs": {
+		"patterns": [
+		  {
+			"match": "\\bstruct\\b",
+			"name": "keyword.other.stoutlang"
+		  },
+		  {
+			"include": "#type"
+		  }
+		]
+	  },
+	  "expressions": {
+		"patterns": [
+		  {
+			"include": "#strings"
+		  },
+		  {
+			"include": "#numbers"
+		  },
+		  {
+			"include": "#boolean"
+		  }
+		]
+	  },
+	  "blocks": {
+		"patterns": [
+		  {
+			"begin": "\\{",
+			"end": "\\}",
+			"name": "meta.block.stoutlang"
+		  }
+		]
+	  },
+	  "method_args": {
+		"patterns": [
+		  {
+			"begin": "\\(",
+			"end": "\\)",
+			"name": "meta.method.args.stoutlang"
+		  }
+		]
+	  },
+	  "interpolation": {
+		"patterns": [
+		  {
+			"begin": "\\$\\{",
+			"end": "\\}",
+			"name": "string.interpolated.stoutlang"
+		  }
+		]
+	  },
+	  "type": {
+		"patterns": [
+		  {
+			"match": "\\b[A-Z][a-zA-Z0-9_]*\\b",
+			"name": "storage.type.stoutlang"
+		  }
+		]
+	  }
+	}
+  }
+  

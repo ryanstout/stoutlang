@@ -1,0 +1,18 @@
+grammar Structs
+  rule struct
+    'struct ' type space? block {
+      def to_ast
+        Struct.new(type.to_ast, block.to_ast)
+      end
+    }
+  end
+
+  rule property
+    '@' identifier types:(':' type_exprssion)? {
+      def to_ast
+      types = types ? types.to_ast : nil
+        Property.new(identifier.to_ast, types)
+      end
+    }
+  end
+end

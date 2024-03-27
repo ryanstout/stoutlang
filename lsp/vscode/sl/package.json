@@ -1,0 +1,33 @@
+{
+  "name": "sl",
+  "displayName": "StoutLang",
+  "description": "StoutLang description",
+  "version": "0.0.1",
+  "repository": {},
+  "activationEvents": [
+    "onLanguage:stoutlang"
+  ],
+  "main": "./extension.js",
+  "engines": {
+    "vscode": "^1.87.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [{
+      "id": "stoutlang",
+      "aliases": ["StoutLang", "stoutlang"],
+      "extensions": [".sl"],
+      "configuration": "./language-configuration.json"
+    }],
+    "grammars": [{
+      "language": "stoutlang",
+      "scopeName": "source.stoutlang",
+      "path": "./syntaxes/sl.tmLanguage.json"
+    }]
+  },
+  "dependencies": {
+    "vscode-languageclient": "^7.0.0"
+  }
+}
