@@ -1,5 +1,6 @@
 require 'treetop'
 require 'parser/parser'
+require 'itree'
 
 Treetop.load('parser/grammar/methods')
 Treetop.load('parser/grammar/functions')
@@ -14,6 +15,8 @@ Treetop.load('parser/parser')
 class Ast
   def initialize
     @parser = StoutLangParser.new
+
+    @range_tree = Intervals::Tree.new
   end
 
   def parse(code, options={})
@@ -24,11 +27,26 @@ class Ast
       raise @parser.failure_reason
     end
 
-    return ast.to_ast
+    root_ast = ast.to_ast
 
-    # self.clean_tree(ast)
+    # After we parse the root_ast, we build a range tree so we can quickly look up each node under a certain cursor
+    # position
+    self.build_range_tree(root_ast)
 
-    # return ast.to_ast
+    return root_ast
+
+  end
+
+  def build_range_tree(node)
+    return unless node.is_a?(AstNode)
+    if node.parse_node.nil?
+      raise "Node has no parse node: #{node.inspect}"
+    end
+    @range_tree.insert(node.parse_node.interval.first, node.parse_node.interval.last, node)
+
+    node.children.each do |child|
+      self.build_range_tree(child)
+    end
   end
 
   def clean_tree(root_node)

@@ -3,7 +3,7 @@ grammar Types
   rule type
     [A-Z] [a-zA-Z0-9_]* {
       def to_ast
-        Type.new(text_value)
+        Type.new(text_value, self)
       end
     }
   end
@@ -25,7 +25,7 @@ grammar Types
 
         elements[1].elements.each do |op_and_right|
           op, right = op_and_right.elements.map(&:to_ast)
-          left = Ast::FunctionCall.new(op, [left, right])
+          left = Ast::FunctionCall.new(op, [left, right], op_and_right.type_infix_op)
         end
 
         return left
@@ -34,9 +34,9 @@ grammar Types
   end
 
   rule type_sig
-    ':' space? type:type {
+    ':' space? type:type_expression {
       def to_ast
-        Ast::TypeSig.new(type.to_ast)
+        Ast::TypeSig.new(type.to_ast, self)
       end
     }
   end
@@ -47,7 +47,7 @@ grammar Types
   rule type_variable
     '\'' [a-z] [a-zA-Z0-9_]* {
       def to_ast
-        Ast::TypeVariable.new(text_value[1..-1])
+        Ast::TypeVariable.new(text_value[1..-1], self)
       end
     }
   end

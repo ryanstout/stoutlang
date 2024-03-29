@@ -2,16 +2,17 @@ grammar Structs
   rule struct
     'struct ' type space? block {
       def to_ast
-        Struct.new(type.to_ast, block.to_ast)
+        StoutLang::Ast::Struct.new(type.to_ast, block.to_ast, self)
       end
     }
   end
 
+
   rule property
-    '@' identifier types:(':' type_exprssion)? {
+    '@' identifier space? type_sig:type_sig? {
       def to_ast
-      types = types ? types.to_ast : nil
-        Property.new(identifier.to_ast, types)
+        type_sig_ast = type_sig.respond_to?(:to_ast) ? type_sig.to_ast : nil
+        Property.new(identifier.to_ast, type_sig_ast, self)
       end
     }
   end

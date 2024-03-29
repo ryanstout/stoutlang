@@ -5,12 +5,27 @@ module StoutLang
     class AstNode
       attr_reader :parse_node
 
+      # When we compare nodes, we care if they are the same content, not if they are in the same location
       def ==(other)
         return false unless other.is_a?(self.class)
 
         (instance_variables - [:@parse_node]).all? do |var|
           instance_variable_get(var) == other.instance_variable_get(var)
         end
+      end
+
+      def children
+        instance_variables.map do |var|
+          ivar = instance_variable_get(var)
+
+          if ivar.is_a?(AstNode)
+            ivar
+          elsif ivar.is_a?(Array)
+            ivar.select { |e| e.is_a?(AstNode) }
+          else
+            []
+          end
+        end.flatten
       end
 
 

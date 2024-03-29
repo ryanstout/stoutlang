@@ -3,9 +3,9 @@ grammar Lists
     '[' items:elements? ']' {
       def to_ast
         if items
-          return List.new(items.to_ast)
+          return List.new(items.to_ast, self)
         else
-          return List.new([])
+          return List.new([], self)
         end
       end
     }

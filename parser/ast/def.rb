@@ -5,6 +5,7 @@ module StoutLang
         @name = name
         @args = args
         @block = block
+        @parse_node = parse_node
       end
     end
   end

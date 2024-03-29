@@ -21,7 +21,7 @@ grammar Methods
           function_name, method_args = call_elements.method_call.to_ast
           args = [method_call_receiver] + method_args
           
-          method_call_receiver = Ast::FunctionCall.new(function_name, args)
+          method_call_receiver = Ast::FunctionCall.new(function_name, args, call_elements.method_call)
         end
 
         return method_call_receiver

@@ -35,4 +35,11 @@ describe StoutLangParser do
       )
     end
   end
+
+  it 'should parse blocks with only expressions' do
+    ast = Ast.new.parse("{ 5 }", root: 'block')
+    expect(ast).to eq(
+      Block.new(expressions=[IntegerLiteral.new(value=5)])
+    )
+  end
 end
