@@ -13,7 +13,7 @@ puts "The scopeName is `source.stoutlang`. The file extension is `.sl`."
 puts ""
 
 puts "```"
-(Dir['parser/grammar/*.treetop'] + ["parser/parser.treetop"]).each do |file|
+(Dir['lib/parser/grammar/*.treetop'] + ["lib/parser/parser.treetop"]).each do |file|
   code = File.read(file)
   # remove all { def to_ast .. end } to simplify it.
   code.gsub!(/\{[\n\s]*def to_ast[\n\s]*.*?[\n\s]*end[\n\s]*\}/m, '')

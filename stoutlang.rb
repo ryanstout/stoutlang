@@ -1,6 +1,7 @@
 # Make sure this files directory is on the $LOAD_PATH
-unless $LOAD_PATH.include?(File.expand_path(File.dirname(__FILE__)))
-  $LOAD_PATH << File.expand_path(File.dirname(__FILE__))
+lib_path = File.expand_path(File.dirname(__FILE__)) + "/lib"
+unless $LOAD_PATH.include?(lib_path)
+  $LOAD_PATH << lib_path
 end
 
 require 'parser/parser'

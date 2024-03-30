@@ -7,6 +7,7 @@ require 'parser/parser'
 require 'itree'
 
 # Treetop doesn't follow load path right sometimes
+Treetop.load(File.expand_path(File.dirname(__FILE__)) + '/grammar/infix')
 Treetop.load(File.expand_path(File.dirname(__FILE__)) + '/grammar/defs')
 Treetop.load(File.expand_path(File.dirname(__FILE__)) + '/grammar/methods')
 Treetop.load(File.expand_path(File.dirname(__FILE__)) + '/grammar/functions')
@@ -24,6 +25,7 @@ include StoutLang::Ast
 module StoutLang
   # include ParseNodes
   class Parser
+    attr_reader :ast
     def initialize
       @parser = StoutLangParser.new
 
@@ -43,6 +45,9 @@ module StoutLang
       # After we parse the root_ast, we build a range tree so we can quickly look up each node under a certain cursor
       # position
       self.build_range_tree(root_ast)
+
+      # Save the AST for later access
+      @ast = root_ast
 
       return root_ast
 

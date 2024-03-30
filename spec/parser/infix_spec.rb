@@ -16,6 +16,74 @@ describe StoutLangParser do
       expect(ast).to eq(match_ast)
     end
 
+    it 'should call with ruby style precedence' do
+      ast = Parser.new.parse('20 * 10 / 5', root: "infix_chain")
+
+      expect(ast).to eq(
+        FunctionCall.new(
+          name="/",
+          args=[
+            FunctionCall.new(
+              name="*",
+              args=[IntegerLiteral.new(value=20), IntegerLiteral.new(value=10)]
+            ),
+            IntegerLiteral.new(value=5)
+          ]
+        )
+      )
+    end
+
+    it 'should do add and mul with the right precidence' do
+      ast = Parser.new.parse('20 * 5 / 4 + 2')
+
+      expect(ast).to eq(
+        Block.new(
+          expressions=[
+            FunctionCall.new(
+              name="+",
+              args=[
+                FunctionCall.new(
+                  name="/",
+                  args=[
+                    FunctionCall.new(
+                      name="*",
+                      args=[IntegerLiteral.new(value=20), IntegerLiteral.new(value=5)]
+                    ),
+                    IntegerLiteral.new(value=4)
+                  ]
+                ),
+                IntegerLiteral.new(value=2)
+              ]
+            )
+          ]
+        )
+      )
+
+    end
+
+    it 'should do add and sub with the right precidence' do
+      ast = Parser.new.parse('5 + 2 - 4')
+
+      expect(ast).to eq(
+        Block.new(
+          expressions=[
+            FunctionCall.new(
+              name="-",
+              args=[
+                FunctionCall.new(
+                  name="+",
+                  args=[IntegerLiteral.new(value=5), IntegerLiteral.new(value=2)]
+                ),
+                IntegerLiteral.new(value=4)
+              ]
+            )
+          ]
+        )
+      )
+
+    end
+
+
     it 'should support a chain of infix operations' do
       ast = Parser.new.parse('5 + (10 + 20) * 30')
       match_ast = Block.new(

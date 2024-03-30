@@ -1,0 +1,112 @@
+require 'parser/grammar/infix'
+
+grammar Infix
+  # Start with lowest precidence first
+  rule infix_chain
+    infix_assignment_chain
+  end
+
+  rule infix_assignment_chain
+    method_chain:infix_range_chain (op:assignment_ops expression:infix_range_chain)* <InfixChainAst>
+  end
+
+  rule infix_range_chain
+    method_chain:infix_logical_or_chain (op:range_ops expression:infix_logical_or_chain)* <InfixChainAst>
+  end
+
+  rule infix_logical_or_chain
+    method_chain:infix_logical_and_chain (op:logical_or_ops expression:infix_logical_and_chain)* <InfixChainAst>
+  end
+
+  rule infix_logical_and_chain
+    method_chain:infix_comparison_chain (op:logical_and_ops expression:infix_comparison_chain)* <InfixChainAst>
+  end
+
+  rule infix_comparison_chain
+    method_chain:infix_bitwise_or_xor_chain (op:comparison_ops expression:infix_bitwise_or_xor_chain)* <InfixChainAst>
+  end
+
+  rule infix_bitwise_or_xor_chain
+    method_chain:infix_bitwise_and_chain (op:bitwise_or_xor_ops expression:infix_bitwise_and_chain)* <InfixChainAst>
+  end
+
+  rule infix_bitwise_and_chain
+    method_chain:infix_bitwise_shift_chain (op:bitwise_and_ops expression:infix_bitwise_shift_chain)* <InfixChainAst>
+  end
+
+  rule infix_bitwise_shift_chain
+    method_chain:infix_additive_chain (op:bitwise_shift_ops expression:infix_additive_chain)* <InfixChainAst>
+  end
+
+  rule infix_additive_chain
+    method_chain:infix_multiplicative_chain (op:additive_ops expression:infix_multiplicative_chain)* <InfixChainAst>
+  end
+
+  rule infix_multiplicative_chain
+    method_chain:infix_exponentiation_chain (op:multiplicative_ops expression:infix_exponentiation_chain)* <InfixChainAst>
+  end
+
+  rule infix_exponentiation_chain
+    method_chain:method_chain (op:exponentiation_ops expression:method_chain)* <InfixChainAst>
+  end
+
+  #rule infix_op
+  #  # We want to process lower precedence operators first
+  #  space? operator:(infix_add_sub / infix_mul_div / '||' / '&&' / '|' / '&') space? {
+  #    def to_ast
+  #      operator.text_value
+  #    end
+  #  }
+  #end
+  rule exponentiation_ops
+    space? operator:('^') space? <InfixOps>
+  end
+
+  rule multiplicative_ops
+    space? operator:('*' / '/' / '%') space? <InfixOps>
+  end
+
+  rule additive_ops
+    space? operator:('+' / '-') space? <InfixOps>
+  end
+
+  rule bitwise_shift_ops
+    space? operator:('<<' / '>>') space? <InfixOps>
+  end
+
+  rule bitwise_and_ops
+    space? operator:('&') space? <InfixOps>
+  end
+
+  rule bitwise_or_xor_ops
+    space? operator:('|' / '^') space? <InfixOps>
+  end
+
+  rule comparison_ops
+    space? operator:('==' / '!=' / '<' / '<=' / '>' / '>=') space? <InfixOps>
+  end
+
+  rule logical_and_ops
+    space? operator:('&&') space? <InfixOps>
+  end
+
+  rule logical_or_ops
+    space? operator:('||') space? <InfixOps>
+  end
+
+  rule range_ops
+    space? operator:('..' / '...') space? <InfixOps>
+  end
+
+  # TODO: 
+  #rule ternary_ops
+  #  space? operator:('?') space? <InfixOps>
+  #end
+
+  rule assignment_ops
+    space? operator:('=' / '+=' / '-=' / '*=' / '/=' / '%=' / '<<=' / '>>=' / '&=' / '|=' / '^=' / '&&=' / '||=') space? <InfixOps>
+  end
+
+
+
+end

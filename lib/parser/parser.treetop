@@ -1,4 +1,6 @@
+
 grammar StoutLang
+  include Infix
   include Types
   include Methods
   include Functions
@@ -30,22 +32,7 @@ grammar StoutLang
     } / define_method
   end
 
-  rule infix_chain
-    method_chain (infix_op expression)* {
-      def to_ast
-        # Consume left to right
-        # Start with the leftmost primary
-        left = method_chain.to_ast
-        elements[1].elements.each do |op_and_right|
-          op, right = op_and_right.elements.map(&:to_ast)
-          left = Ast::FunctionCall.new(op, [left, right], op_and_right.infix_op)
-        end
-
-        return left
-      end
-    } / function_call_with_args
-  end
-
+  # infix chains
 
   rule function_call_with_args
     # Function calls without args parse as an identifier and we have to convert
@@ -111,16 +98,6 @@ grammar StoutLang
     '#' message:[^\n]* '\n'? {
       def to_ast
         Ast::Comment.new(message.text_value, message)
-      end
-    }
-  end
-
-
-  rule infix_op
-    # We want to process lower precedence operators first
-    space? operator:('+' / '-' / '*' / '/' / '||' / '&&' / '|' / '&') space? {
-      def to_ast
-        operator.text_value
       end
     }
   end
