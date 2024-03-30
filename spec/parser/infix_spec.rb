@@ -3,7 +3,7 @@ require 'spec_helper'
 describe StoutLangParser do
   describe 'infix operators' do
     it 'should support infix method calls' do
-      ast = Ast.new.parse('5 + 10')
+      ast = Parser.new.parse('5 + 10')
       match_ast = Block.new(
           expressions=[
             FunctionCall.new(
@@ -17,7 +17,7 @@ describe StoutLangParser do
     end
 
     it 'should support a chain of infix operations' do
-      ast = Ast.new.parse('5 + (10 + 20) * 30')
+      ast = Parser.new.parse('5 + (10 + 20) * 30')
       match_ast = Block.new(
           expressions=[
             FunctionCall.new(
@@ -43,7 +43,7 @@ describe StoutLangParser do
     end
 
     it 'should support infix method calls, with parens, and method chains' do
-      ast = Ast.new.parse('5 + (10 + 20).dokey().cool')
+      ast = Parser.new.parse('5 + (10 + 20).dokey().cool')
       match_ast = Block.new(
           expressions=[
             FunctionCall.new(
@@ -73,7 +73,7 @@ describe StoutLangParser do
     end
 
     it 'should follow operator prescedence' do
-      ast = Ast.new.parse('5 + 10 * 20')
+      ast = Parser.new.parse('5 + 10 * 20')
       match_ast = Block.new(
           expressions=[
             FunctionCall.new(
@@ -93,7 +93,7 @@ describe StoutLangParser do
     end
 
     it 'should follow operator prescedence with parens' do
-      ast = Ast.new.parse('(5 + 10) * 20')
+      ast = Parser.new.parse('(5 + 10) * 20')
       match_ast = Block.new(
           expressions=[
             FunctionCall.new(

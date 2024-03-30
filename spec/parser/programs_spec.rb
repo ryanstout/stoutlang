@@ -4,14 +4,14 @@ describe StoutLangParser do
 
   describe "programs" do
     it 'should parse multiple lines' do
-      ast = Ast.new.parse("5\n10")
+      ast = Parser.new.parse("5\n10")
       expect(ast).to eq(
         Block.new(expressions=[IntegerLiteral.new(value=5), IntegerLiteral.new(value=10)])
       )
     end
 
     it 'should parse multiple lines2' do
-      ast = Ast.new.parse("a = 5\nb = 10\nc = a + b")
+      ast = Parser.new.parse("a = 5\nb = 10\nc = a + b")
       expect(ast).to eq(
         Block.new(
          expressions=[
@@ -37,7 +37,7 @@ describe StoutLangParser do
   end
 
   it 'should parse blocks with only expressions' do
-    ast = Ast.new.parse("{ 5 }", root: 'block')
+    ast = Parser.new.parse("{ 5 }", root: 'block')
     expect(ast).to eq(
       Block.new(expressions=[IntegerLiteral.new(value=5)])
     )

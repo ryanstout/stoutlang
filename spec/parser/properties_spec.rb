@@ -3,7 +3,7 @@ require 'spec_helper'
 describe StoutLangParser do
   describe "properties" do
     it 'should parse properties' do
-      ast = Ast.new.parse("@name: Str", root: 'property')
+      ast = Parser.new.parse("@name: Str", root: 'property')
 
       expect(ast).to eq(Property.new(
           name=Identifier.new(name="name"),
@@ -12,7 +12,7 @@ describe StoutLangParser do
     end
 
     it 'should let you define properties inside of a struct' do
-      ast = Ast.new.parse("struct Person {\n@name: Str\n@age: Int\n}", root: 'struct')
+      ast = Parser.new.parse("struct Person {\n@name: Str\n@age: Int\n}", root: 'struct')
 
       expect(ast).to eq(StoutLang::Ast::Struct.new(
         name=Type.new(name="Person"),

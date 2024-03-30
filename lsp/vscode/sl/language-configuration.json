@@ -1,40 +1,33 @@
 {
-    "comments": {
-      "lineComment": "#"
-    },
-    "brackets": [
-      ["{", "}"],
-      ["[", "]"],
-      ["(", ")"]
-    ],
-    "autoClosingPairs": [
-      { "open": "{", "close": "}" },
-      { "open": "[", "close": "]" },
-      { "open": "(", "close": ")" },
-      { "open": "\"", "close": "\"", "notIn": ["string", "comment"] }
-    ],
-    "surroundingPairs": [
-      { "open": "{", "close": "}" },
-      { "open": "[", "close": "]" },
-      { "open": "(", "close": ")" },
-      { "open": "\"", "close": "\"" }
-    ],
-    "folding": {
-      "markers": {
-        "start": "^\\s*(if|struct|method)\\b",
-        "end": "^\\s*end\\b"
-      }
-    },
-    "keywords": [
-      "if", "elif", "else", "struct"
-    ],
-    "operators": [
-      ".", ",", "&&", "||", "&", "|"
-    ],
-    "symbols": "[=\\[\\]\\(\\)\\{\\}\\,\\.\\:\\&\\|\\+\\-\\*\\/\\!\\<\\>\\;\\@]",
-    "escapes": "\\\\(?:[\"'\\\\bfnrt]|u[0-9a-fA-F]{4})",
-    "tokenTypes": {
-      "string.quoted.double": "\"([^\"\\\\]|\\\\.)*\""
+  "comments": {
+    "lineComment": "#"
+  },
+  "brackets": [
+    ["{", "}"],
+    ["[", "]"],
+    ["(", ")"]
+  ],
+  "autoClosingPairs": [
+    ["{", "}"],
+    ["[", "]"],
+    ["(", ")"],
+    ["\"", "\""]
+  ],
+  "surroundingPairs": [
+    ["{", "}"],
+    ["[", "]"],
+    ["(", ")"],
+    ["\"", "\""]
+  ],
+  "folding": {
+    "markers": {
+      "start": "^\\s*#\\s*region\\b",
+      "end": "^\\s*#\\s*endregion\\b"
     }
+  },
+  "wordPattern": "(-?\\d*\\.\\d\\w*)|([^\\`\\~\\!\\@\\#\\%\\^\\&\\*\\(\\)\\-\\=\\+\\[\\{\\]\\}\\\\\\|\\;\\:\\'\\\"\\,\\.\\<\\>\\/\\?\\s]+)",
+  "indentationRules": {
+    "increaseIndentPattern": "^\\s*(if|elif|else|def|struct)\\b.*$",
+    "decreaseIndentPattern": "^\\s*(\\}|\\])\\s*$"
   }
-  
+}

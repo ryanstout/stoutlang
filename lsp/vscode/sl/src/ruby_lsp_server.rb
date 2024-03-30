@@ -1,6 +1,10 @@
   require 'json'
   require 'io/console'
 
+  # TODO: change require off of absolute
+
+  require '/Users/ryanstout/Sites/stoutlang/stoutlang'
+
   class RubyLSPServer
     def initialize
       @documents = {}
@@ -112,6 +116,18 @@
       # Example hover response for a specific keyword
       uri = request.dig('params', 'textDocument', 'uri')
       document_content = @documents[uri]
+      position = request.dig('params', 'position')
+      line = position['line']
+      character = position['character']
+
+      lines = document_content.split("\n")
+      total_characters_position = lines[0...line].sum { |line| line.length + 1 } # +1 for newline characters
+      total_characters_position = total_characters_position + character
+
+      warn("Parse #{document_content}")
+      parser = StoutLang.parse(document_content)
+      nodes = parser.nodes_at_cursor(total_characters_position)
+
 
       if request.dig('params', 'textDocument', 'uri').end_with?('.sl')
         {
@@ -119,7 +135,7 @@
           result: {
             contents: {
               kind: 'markdown',
-              value: 'Hover message for the Ruby file!'
+              value: "```ruby\n#{nodes.last.data.inspect}\n```"
             }
           }
         }

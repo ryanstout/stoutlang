@@ -4,7 +4,7 @@ describe StoutLangParser do
   describe "methods" do
     it 'should parse method arguments' do
 
-      ast = Ast.new.parse('(awesome.dude(), cool)', root: 'method_args')
+      ast = Parser.new.parse('(awesome.dude(), cool)', root: 'method_args')
 
       match_ast = [FunctionCall.new(name="dude", args=[Identifier.new(name="awesome")]), Identifier.new(name="cool")]
       expect(ast).to eq(match_ast)
@@ -12,7 +12,7 @@ describe StoutLangParser do
     end
 
     it 'should handle methods with block arguments' do
-      ast = Ast.new.parse('awesome.dude() { cool }')
+      ast = Parser.new.parse('awesome.dude() { cool }')
 
       match_ast = Block.new(
           expressions=[
@@ -29,7 +29,7 @@ describe StoutLangParser do
     end
 
     it 'should parse method arguments' do
-      ast = Ast.new.parse('awesome.ok')
+      ast = Parser.new.parse('awesome.ok')
 
       match_ast = Block.new(
         expressions=[
@@ -44,7 +44,7 @@ describe StoutLangParser do
 
     it 'should parse complex method calls' do
 
-      ast = Ast.new.parse('awesome.dude(ok.dokey()).yeppers', root: 'expression')
+      ast = Parser.new.parse('awesome.dude(ok.dokey()).yeppers', root: 'expression')
 
       match_ast = FunctionCall.new(
         name="yeppers",
@@ -62,7 +62,7 @@ describe StoutLangParser do
   end
 
   it 'should handle empty method args' do
-    ast = Ast.new.parse('()', root: 'method_args')
+    ast = Parser.new.parse('()', root: 'method_args')
 
     expect(ast).to eq([])
 
@@ -74,7 +74,7 @@ describe StoutLangParser do
       print()
     }
     END
-    ast = Ast.new.parse(code.strip)
+    ast = Parser.new.parse(code.strip)
 
     expect(ast).to eq(Block.new(
       expressions=[

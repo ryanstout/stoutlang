@@ -32,7 +32,12 @@ grammar StoutLang
   rule define_method
     'def ' method_name:method_name space? args:(method_args:method_args)? space? block:block {
       def to_ast
-        Ast::Def.new(method_name.to_ast, args&.method_args&.to_ast, block.to_ast, self)
+        if args.respond_to?(:method_args) && args.method_args.respond_to?(:to_ast)
+          method_args_ast = args.method_args.to_ast
+        else
+          method_args_ast = []
+        end
+        Ast::Def.new(method_name.to_ast, method_args_ast, block.to_ast, self)
       end
     } / infix_chain
   end
@@ -110,7 +115,7 @@ grammar StoutLang
 
 
   rule primary
-    comment / if_expression / list / boolean_literal / function_call_with_args / property / identifier / float / integer / string / parens
+    comment / struct / if_expression / list / boolean_literal / function_call_with_args / property / identifier / float / integer / string / parens
   end
 
 

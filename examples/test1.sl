@@ -1,6 +1,10 @@
 a = "Cool beans"
 
-def cool
-  "ok"
-end
+struct Blue {
+  def cool {
+    "ok"
+  }
+}
 
+c = Blue.new
+c.cool()

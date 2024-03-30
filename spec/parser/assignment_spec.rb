@@ -4,7 +4,7 @@ describe StoutLangParser do
 
   describe "assignment" do
     it 'should parse assignments' do
-      ast = Ast.new.parse('a = 10')
+      ast = Parser.new.parse('a = 10')
       match_ast = Block.new(
         expressions=[
           Assignment.new(
@@ -18,7 +18,7 @@ describe StoutLangParser do
     end
 
     it 'should parse assignments with a type definition' do
-      ast = Ast.new.parse('a: Int = 10')
+      ast = Parser.new.parse('a: Int = 10')
       match_ast = Block.new(
         expressions=[
           Assignment.new(
