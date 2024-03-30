@@ -1,0 +1,45 @@
+grammar Defs
+  rule define_method
+    'def ' method_name:method_name space? def_args:def_args? space? block:block {
+      def to_ast
+        def_args_ast = def_args.respond_to?(:to_ast) ? def_args.to_ast : []
+        Ast::Def.new(method_name.to_ast, def_args_ast, block.to_ast, self)
+      end
+    } / macro_define
+  end
+
+  rule macro_define
+    'macro ' method_name:method_name space? def_args:def_args? space? block:block {
+      def to_ast
+        def_args_ast = def_args.respond_to?(:to_ast) ? def_args.to_ast : []
+        Ast::Macro.new(method_name.to_ast, def_args_ast, block.to_ast, self)
+      end
+    } / infix_chain
+  end
+
+  rule def_arg
+    identifier space? type_sig:type_sig? {
+      def to_ast
+        type_sig = type_sig.respond_to?(:to_ast) ? type_sig.to_ast : nil
+        Ast::DefArg.new(identifier.to_ast, type_sig, self)
+      end
+    }
+  end
+
+
+  rule def_args
+    '(' space? args_main:(first_arg:def_arg rest_args:(',' space? exp:def_arg)*)? space? ')' {
+      def to_ast
+
+        if args_main && args_main.respond_to?(:first_arg)
+          first_arg = args_main.first_arg.to_ast
+          rest_args = args_main.rest_args.elements.map {|e| e.exp.to_ast }
+
+          return [first_arg] + rest_args
+        else
+          return []
+        end
+      end
+    }
+  end
+end

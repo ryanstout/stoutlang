@@ -7,6 +7,7 @@ require 'parser/parser'
 require 'itree'
 
 # Treetop doesn't follow load path right sometimes
+Treetop.load(File.expand_path(File.dirname(__FILE__)) + '/grammar/defs')
 Treetop.load(File.expand_path(File.dirname(__FILE__)) + '/grammar/methods')
 Treetop.load(File.expand_path(File.dirname(__FILE__)) + '/grammar/functions')
 Treetop.load(File.expand_path(File.dirname(__FILE__)) + '/grammar/types')

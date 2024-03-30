@@ -1,12 +1,12 @@
 module StoutLang
   module Ast
     class Def < AstNode
-      def initialize(name, args, block=nil, parse_node=nil)
-        @name = name
-        @args = args
-        @block = block
-        @parse_node = parse_node
-      end
+      setup :name, :args, :block
+
+    end
+
+    class DefArg < AstNode
+      setup :name, :type_sig
     end
   end
 end

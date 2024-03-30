@@ -31,7 +31,7 @@ grammar Methods
 
 
   rule method_call
-    method_name space? args:method_args? space? block:block? {
+    method_name space? args:method_call_args? space? block:block? {
       # Doesn't return the AST node, just the parts we need to build in
       # method chain
       def to_ast
@@ -48,7 +48,7 @@ grammar Methods
     }
   end
 
-  rule method_args
+  rule method_call_args
     '(' space? args_main:(first_arg:expression rest_args:(',' space? exp:expression)*)? space? ')' {
       def to_ast
 

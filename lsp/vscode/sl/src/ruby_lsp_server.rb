@@ -120,6 +120,7 @@
       line = position['line']
       character = position['character']
 
+      # TODO: speed this up or make ranges based on lines and characters
       lines = document_content.split("\n")
       total_characters_position = lines[0...line].sum { |line| line.length + 1 } # +1 for newline characters
       total_characters_position = total_characters_position + character

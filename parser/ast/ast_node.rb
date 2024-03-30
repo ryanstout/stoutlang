@@ -4,18 +4,19 @@ module StoutLang
   module Ast
     class AstNode
       attr_reader :parse_node
+      attr_accessor :parent
 
       # When we compare nodes, we care if they are the same content, not if they are in the same location
       def ==(other)
         return false unless other.is_a?(self.class)
 
-        (instance_variables - [:@parse_node]).all? do |var|
+        (instance_variables - [:@parse_node, :@parent]).all? do |var|
           instance_variable_get(var) == other.instance_variable_get(var)
         end
       end
 
       def children
-        instance_variables.map do |var|
+        instance_variables.reject { |k| [:@parse_node, :@parent].include?(k) }.map do |var|
           ivar = instance_variable_get(var)
 
           if ivar.is_a?(AstNode)
@@ -28,6 +29,39 @@ module StoutLang
         end.flatten
       end
 
+      def assign_parent!(ast_node, parent)
+        if ast_node.is_a?(AstNode)
+          ast_node.parent = parent
+        elsif ast_node.is_a?(Array)
+          # Recursively assign
+          ast_node.each { |e| assign_parent!(e, parent) }
+        end
+      end
+
+      # Takes in a list of properties and creates an initializer for the AstNode. It also creates a property for
+      # parse_node. It assigns parent to any AstNode or list of AstNode arguments.
+      def self.setup(*properties)
+        attr_reader(*properties)
+
+        define_method(:initialize) do |*args|
+          index = 0
+          properties.each do |prop|
+            ast_node = args[index]
+
+            # Assign the parent on any passed in ast nodes
+            assign_parent!(ast_node, self)
+
+            instance_variable_set("@#{prop}", ast_node)
+            index += 1
+          end
+
+          [:parse_node].each do |prop|
+            instance_variable_set("@#{prop}", args[index])
+          end
+        end
+
+      end
+
 
       def inspect_always_wrap?
         false
@@ -37,7 +71,7 @@ module StoutLang
       def dump_ast_internals(obj, total_chars, indent=0, max_width=120, indent_first_line=true, abort_on_overflow=false)
         is_array = obj.is_a?(Array)
 
-        map_over = is_array ? obj : obj.instance_variables.reject {|iv| iv == :@parse_node}
+        map_over = is_array ? obj : obj.instance_variables.reject {|iv| [:@parse_node, :@parent].include?(iv) }
         char_overflow = false
 
         var_inspects = []

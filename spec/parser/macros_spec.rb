@@ -20,17 +20,16 @@ describe StoutLangParser do
   end
 
   it 'should define macros with arguments' do
-    ast = Parser.new.parse("macro awesome(a, b) {\n  5\n}")
+    ast = Parser.new.parse("macro awesome(a, b) {\n  5\n}", root: 'macro_define')
 
     expect(ast).to eq(
-      Block.new(
-        expressions=[
-          Macro.new(
-            name="awesome",
-            args=[Identifier.new(name="a"), Identifier.new(name="b")],
-            block=Block.new(expressions=[IntegerLiteral.new(value=5)])
-          )
-        ]
+      Macro.new(
+        name="awesome",
+        args=[
+          DefArg.new(name=Identifier.new(name="a"), type_sig=nil),
+          DefArg.new(name=Identifier.new(name="b"), type_sig=nil)
+        ],
+        block=Block.new(expressions=[IntegerLiteral.new(value=5)])
       )
     )
   end

@@ -6,6 +6,7 @@ grammar StoutLang
   include Ifs
   include Lists
   include Structs
+  include Defs
 
   rule program
     space? program:(assign:assignment space?)* {
@@ -29,32 +30,6 @@ grammar StoutLang
     } / define_method
   end
 
-  rule define_method
-    'def ' method_name:method_name space? args:(method_args:method_args)? space? block:block {
-      def to_ast
-        if args.respond_to?(:method_args) && args.method_args.respond_to?(:to_ast)
-          method_args_ast = args.method_args.to_ast
-        else
-          method_args_ast = []
-        end
-        Ast::Def.new(method_name.to_ast, method_args_ast, block.to_ast, self)
-      end
-    } / macro_define
-  end
-
-  rule macro_define
-    'macro ' method_name:method_name space? args:(method_args:method_args)? space? block:block {
-      def to_ast
-        if args.respond_to?(:method_args) && args.method_args.respond_to?(:to_ast)
-          method_args_ast = args.method_args.to_ast
-        else
-          method_args_ast = []
-        end
-        Ast::Macro.new(method_name.to_ast, method_args_ast, block.to_ast, self)
-      end
-    } / infix_chain
-  end
-
   rule infix_chain
     method_chain (infix_op expression)* {
       def to_ast
@@ -76,7 +51,7 @@ grammar StoutLang
     # Function calls without args parse as an identifier and we have to convert
     # them at compile time.
 
-    method_name space? args:method_args space? block:block? {
+    method_name space? args:method_call_args space? block:block? {
       # Doesn't return the AST node, just the parts we need to build in
       # method chain
       def to_ast

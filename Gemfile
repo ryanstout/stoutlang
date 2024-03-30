@@ -14,3 +14,5 @@ group :development do
 end
 
 gem "itree", "~> 0.1.2"
+
+gem "pry", "~> 0.14.2"

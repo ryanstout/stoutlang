@@ -2,6 +2,7 @@
 $LOAD_PATH.unshift File.expand_path('../..', __FILE__)
 
 require 'parser/parser'
+require 'pry' # binding.irb has some issues
 
 include StoutLang # add Parser to the namespace
 include StoutLang::Ast # add Ast classes
