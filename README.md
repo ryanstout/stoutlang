@@ -65,6 +65,9 @@ a : int | str
 - How about a > function for print, unary operator, so no parens (maybe that's log.info not a print), then you could do !> for error or something? etc...
 - If we distinguish world read side effects (file read, db read, etc..) vs world writes/mutations (file write, db update, etc..) we can make functions transactionional up until the writes.
 - You'll want a way to access the parent handlers (and probably a way to access the whole chain so you can skip some if you want)
+- Maybe custom infix operations  def (*++*)  { ... }
+- package manager: https://medium.com/@sdboyer/so-you-want-to-write-a-package-manager-4ae9c17d9527
+- version source files. (.sl1 = stoutlang v1, .sl2 ..etc..) - then you could guarentee interop between versions going forward (at the call layer)
 
 ### Transactional/ACID Functions
 - A way to make functions that don't have certain side effects transactional
