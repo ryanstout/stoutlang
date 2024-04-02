@@ -6,6 +6,14 @@ module StoutLang
       def inspect_internal(indent=0)
         "#{@identifier.name} = #{@expression.inspect(indent)}"
       end
+
+      def prepare
+        expression.prepare
+      end
+
+      def run
+        expression.run
+      end
     end
   end
 end

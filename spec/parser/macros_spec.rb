@@ -3,7 +3,7 @@ require 'spec_helper'
 describe StoutLangParser do
   describe "macros" do
     it 'should define macros' do
-      ast = Parser.new.parse("macro awesome {\n  5\n}")
+      ast = Parser.new.parse("macro awesome {\n  5\n}", wrap_root: false)
 
       expect(ast).to eq(
         Block.new(
@@ -20,7 +20,7 @@ describe StoutLangParser do
   end
 
   it 'should define macros with arguments' do
-    ast = Parser.new.parse("macro awesome(a, b) {\n  5\n}", root: 'macro_define')
+    ast = Parser.new.parse("macro awesome(a, b) {\n  5\n}", root: 'macro_define', wrap_root: false)
 
     expect(ast).to eq(
       Macro.new(

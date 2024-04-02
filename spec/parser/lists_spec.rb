@@ -3,7 +3,7 @@ require 'spec_helper'
 describe StoutLangParser do
   describe "lists" do
     it 'should parse lists' do
-      ast = Parser.new.parse('[1, 2, 3]', root: 'list')
+      ast = Parser.new.parse('[1, 2, 3]', root: 'list', wrap_root: false)
       expect(ast).to eq(
         List.new(
           elements=[
@@ -16,7 +16,7 @@ describe StoutLangParser do
     end
 
     it 'should parse nested lists' do
-      ast = Parser.new.parse('[[1, 2], [3, 4]]')
+      ast = Parser.new.parse('[[1, 2], [3, 4]]', wrap_root: false)
 
       expect(ast).to eq(
         Block.new(
@@ -37,7 +37,7 @@ describe StoutLangParser do
     end
 
     it 'should support assigning lists with type inference' do
-      ast = Parser.new.parse('a = [1, 2, 3]')
+      ast = Parser.new.parse('a = [1, 2, 3]', wrap_root: false)
       expect(ast).to eq(
         Block.new(
           expressions=[

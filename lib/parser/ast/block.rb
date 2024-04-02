@@ -3,6 +3,10 @@ module StoutLang
     class Block < AstNode
       setup :expressions
 
+      def prepare
+        expressions.each(&:prepare)
+      end
+
       def run
         expressions.map(&:run).last
       end

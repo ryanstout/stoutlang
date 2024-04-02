@@ -3,7 +3,11 @@ require 'parser/grammar/infix'
 grammar Infix
   # Start with lowest precidence first
   rule infix_chain
-    infix_assignment_chain
+    chain:infix_assignment_chain {
+      def to_ast
+        chain.to_ast
+      end
+    }
   end
 
   rule infix_assignment_chain

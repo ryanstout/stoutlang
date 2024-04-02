@@ -3,7 +3,7 @@ require 'spec_helper'
 describe StoutLangParser do
   describe 'infix operators' do
     it 'should support infix method calls' do
-      ast = Parser.new.parse('5 + 10')
+      ast = Parser.new.parse('5 + 10', wrap_root: false)
       match_ast = Block.new(
           expressions=[
             FunctionCall.new(
@@ -17,7 +17,7 @@ describe StoutLangParser do
     end
 
     it 'should call with ruby style precedence' do
-      ast = Parser.new.parse('20 * 10 / 5', root: "infix_chain")
+      ast = Parser.new.parse('20 * 10 / 5', root: "infix_chain", wrap_root: false)
 
       expect(ast).to eq(
         FunctionCall.new(
@@ -34,7 +34,7 @@ describe StoutLangParser do
     end
 
     it 'should do add and mul with the right precidence' do
-      ast = Parser.new.parse('20 * 5 / 4 + 2')
+      ast = Parser.new.parse('20 * 5 / 4 + 2', wrap_root: false)
 
       expect(ast).to eq(
         Block.new(
@@ -62,7 +62,7 @@ describe StoutLangParser do
     end
 
     it 'should do add and sub with the right precidence' do
-      ast = Parser.new.parse('5 + 2 - 4')
+      ast = Parser.new.parse('5 + 2 - 4', wrap_root: false)
 
       expect(ast).to eq(
         Block.new(
@@ -85,7 +85,7 @@ describe StoutLangParser do
 
 
     it 'should support a chain of infix operations' do
-      ast = Parser.new.parse('5 + (10 + 20) * 30')
+      ast = Parser.new.parse('5 + (10 + 20) * 30', wrap_root: false)
       match_ast = Block.new(
           expressions=[
             FunctionCall.new(
@@ -111,7 +111,7 @@ describe StoutLangParser do
     end
 
     it 'should support infix method calls, with parens, and method chains' do
-      ast = Parser.new.parse('5 + (10 + 20).dokey().cool')
+      ast = Parser.new.parse('5 + (10 + 20).dokey().cool', wrap_root: false)
       match_ast = Block.new(
           expressions=[
             FunctionCall.new(
@@ -141,7 +141,7 @@ describe StoutLangParser do
     end
 
     it 'should follow operator prescedence' do
-      ast = Parser.new.parse('5 + 10 * 20')
+      ast = Parser.new.parse('5 + 10 * 20', wrap_root: false)
       match_ast = Block.new(
           expressions=[
             FunctionCall.new(
@@ -161,7 +161,7 @@ describe StoutLangParser do
     end
 
     it 'should follow operator prescedence with parens' do
-      ast = Parser.new.parse('(5 + 10) * 20')
+      ast = Parser.new.parse('(5 + 10) * 20', wrap_root: false)
       match_ast = Block.new(
           expressions=[
             FunctionCall.new(

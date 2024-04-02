@@ -19,6 +19,7 @@ Treetop.load(File.expand_path(File.dirname(__FILE__)) + '/grammar/structs')
 Treetop.load(File.expand_path(File.dirname(__FILE__)) + '/parser')
 
 
+
 # Ast nodes need to be in the namespace for treetop
 include StoutLang::Ast
 
@@ -41,6 +42,14 @@ module StoutLang
       end
 
       root_ast = ast.to_ast
+
+      # Wrap the root_ast in a Root Struct
+      unless options[:wrap_root] == false
+        root_struct = StoutLang::Ast::Struct.new('Root', root_ast, root_ast.parse_node)
+        root_ast.parent = root_struct
+        root_struct.parent = nil
+        root_ast = root_struct
+      end
 
       # After we parse the root_ast, we build a range tree so we can quickly look up each node under a certain cursor
       # position

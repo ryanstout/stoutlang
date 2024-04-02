@@ -3,7 +3,7 @@ require 'spec_helper'
 describe StoutLangParser do
   describe "parens" do
     it 'should handle parens' do
-      ast = Parser.new.parse('(ok.dokey()).cool')
+      ast = Parser.new.parse('(ok.dokey()).cool', wrap_root: false)
 
       match_ast = Block.new(
         expressions=[
@@ -16,7 +16,7 @@ describe StoutLangParser do
 
       expect(ast).to eq(match_ast)
 
-      ast = Parser.new.parse('((((ok).dokey()))).cool((yes).now(ok2))')
+      ast = Parser.new.parse('((((ok).dokey()))).cool((yes).now(ok2))', wrap_root: false)
       match_ast = Block.new(
         expressions=[
           FunctionCall.new(
@@ -35,7 +35,7 @@ describe StoutLangParser do
     end
 
     it 'should hanlde unnecessary parens' do
-      ast = Parser.new.parse('((ok)).call_something')
+      ast = Parser.new.parse('((ok)).call_something', wrap_root: false)
       match_ast = Block.new(
           expressions=[FunctionCall.new(name="call_something", args=[Identifier.new(name="ok")])]
         )

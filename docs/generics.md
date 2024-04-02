@@ -1,8 +1,8 @@
 # Generics
 
 ```
-class Array<'item> {
-    def init(•items: 'item) {
+class Array {
+    def init(*items: ['item]) {
         @items = items
     }
 
@@ -11,7 +11,7 @@ class Array<'item> {
     }
 
     def sort_by(block) {
-        new_array: Array<'item> = []
+        new_array: ['item] = []
         @items.each ...
     }
 }

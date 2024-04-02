@@ -13,6 +13,15 @@ AI will also make porting code to new languages (ones that provide better guaren
 ## Multiplatform
 
 
+## Performance and Readable Code
+
+In the past, languages sat along a line between [extremely readable/easy to understand] and [extremely performant]. The reason for this linear correlation often is down to the information available to the compiler. Languages that provided the compiler more information at compile time can perform optimizations not possible in languages with less information. Something as simple as the compiler having access to the lifetimes of an object can deliver orders of magnitued faster code.
+
+Even languages like Rust don't have full information on when a value may be changed by another thread, requiring adding of synchrnoization primitives that significantly slow down code. Functional languages like Haskell can gather this information from things like the IO monad, but monadic code is difficult to write and understand.
+
+We believe effect types provide the best of both worlds, extremely fast code (especially for parallel workflows), and code that is extremely simple to read and understand. Effect types and syntactic sugar that makes record updates.
+
+Writing purely functional code gives the compilers a full understanding of how data flows. New algorithms now let us build an optimizer that delivers the same performance as much more complex to write hand optimized code: (see https://www.microsoft.com/en-us/research/uploads/prod/2023/05/fip-tr-v2.pdf)
 
 ## Security
 

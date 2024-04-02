@@ -66,8 +66,21 @@ a : int | str
 - If we distinguish world read side effects (file read, db read, etc..) vs world writes/mutations (file write, db update, etc..) we can make functions transactionional up until the writes.
 - You'll want a way to access the parent handlers (and probably a way to access the whole chain so you can skip some if you want)
 - Maybe custom infix operations  def (*++*)  { ... }
+
 - package manager: https://medium.com/@sdboyer/so-you-want-to-write-a-package-manager-4ae9c17d9527
+    - packages need a way to be parameterized (build target, compiler options, optimization level, etc..)
+    - sub-dependencies could use the main version if possible, and if not run on a seperate version (code size advantages and compatability if you can depend on the same version)
+    - languages that build to the front-end need to think about compile size
+    - there is probably a static analysis way to determine if versions are compatiable. (Do they implement interface bondraries correctly, +1 for real interfaces over structural typing)
+    - need ability to parameterize package selection also (on this platform package X, on this platform package Y.. in dev install package X, etc..)
+
 - version source files. (.sl1 = stoutlang v1, .sl2 ..etc..) - then you could guarentee interop between versions going forward (at the call layer)
+- need a ruby include equivilent to bring identifiers into scope:
+    - use Queue.Immutable.{ make }
+    - use List.*
+
+- Should be able to walk backwards from function signatures in order to create automatic, profiling code
+- Erlang and Koka do thread specific heaps, which allows for GC to happen per heap, providing less pause the world. The trade off is more cost when sharing across threads, but this could be optimized by a work scheduler to minimize cross thread communication.
 
 ### Transactional/ACID Functions
 - A way to make functions that don't have certain side effects transactional
@@ -90,7 +103,7 @@ HttpGetRequest < HttpRequest < TcpSocketRequest < ....
 
 # Effect Types
 - retry and continue in exceptions or handlers should be first class
-
+- how do we get the return type of emit? (A union of all handler return types probably?.. We probably want to be able to constrain the return type at the emit or in the effect type) -- thought about EffectType.emit { ... }
 
 ## Effect Type Syntax
 maybe effect types need some way to see they are effects?
@@ -130,3 +143,9 @@ If all types are Capitalized, maybe type variables are lower case?
 programming language design is a multi dimensional optimization problem. Good languages optimize all things some: English readability, expressiveness, performance, safety (type and memory), cognitive load.
 
 - fake meat example for Marketing. Lots of good ideas in functional programming, but doesn't fit well enough with the way humans are wired.
+
+- Bigger building blocks means AI can write more
+    - Cognitive load applies to humans and AI (for now)
+- Benchmark examples to show fast rust is complicated
+- Functional has too many trade offs. A world without trade offs
+- Good to show data points about how lines of rust shipped (or maybe effective lines)

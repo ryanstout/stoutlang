@@ -2,10 +2,10 @@ module StoutLang
   module Ast
     class IntegerLiteral < AstNode
       setup :value
-    end
 
-    def run
-      value
+      def run
+        value
+      end
     end
   end
 end

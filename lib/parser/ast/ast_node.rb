@@ -1,4 +1,5 @@
 # The base class for an AST node
+require 'parser/ast/utils/scope'
 
 module StoutLang
   module Ast
@@ -13,6 +14,21 @@ module StoutLang
         (instance_variables - [:@parse_node, :@parent]).all? do |var|
           instance_variable_get(var) == other.instance_variable_get(var)
         end
+      end
+
+      def prepare
+        # Override this method to do any preparation before running the node
+      end
+
+      def parent_scope
+        # Walks up the parent chain until it finds a scope
+        cur = parent
+        while cur
+          return cur if cur.is_a?(Scope)
+          cur = cur.parent
+        end
+
+        nil
       end
 
       def children
