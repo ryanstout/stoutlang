@@ -2,7 +2,7 @@
 
 ## Variables
 
-All values in StoutLang are immutable. Immutability provides some great guarentees that can help write better programs. Traditionally the trade-off to having everything be immutable is more verbose code. StoutLang provides syntactic sugar to make it easier to write and manage immutable code.
+All values in StoutLang are immutable. Immutability provides some great guarantees that can help write better programs. Traditionally the trade-off to having everything be immutable is more verbose code. StoutLang provides syntactic sugar to make it easier to write and manage immutable code.
 
 While the values of data can not change, StoutLang still has the concept of variables.
 

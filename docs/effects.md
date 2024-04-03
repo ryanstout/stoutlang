@@ -2,7 +2,7 @@
 
 Effects serve three purposes.
 
-Effect are a simple concept that leads to cleaner code, better handling when things go wrong, and gives the compiler the information needed to automatically generate exteremely performant code without any extra work on the developers part. 
+Effect are a simple concept that leads to cleaner code, better handling when things go wrong, and gives the compiler the information needed to automatically generate extremely performant code without any extra work on the developers part. 
 
 1. They signal to the compiler where things like state, IO, and non-determinism live so the compiler can do automatic optimizations that up until now were not possible.
 2. They allow sections of code to easily change behavior in a simple and type safe way.
@@ -45,7 +45,7 @@ Lets write a custom save_doctor function that then calls save_person.
 ```
 def save_doctor(person: Person) {
     # The <= is sugar for creating a copy of the record and updating a property in the process, then assigning
-    # it back to the orignal variable name.
+    # it back to the original variable name.
     # 
     # Below is the same as: `person = Person({name: person.name, ...person})`
     person.name <= "Dr ${person.name}"
@@ -137,7 +137,7 @@ def save_purchase(r: PurchaseInfo) {
 }
 ```
 
-Unlike the previous effect example, the emit performed in `save_purchase` does not provide a default handler. If we try to call `save_purchase` without a hanlder, we will get the following:
+Unlike the previous effect example, the emit performed in `save_purchase` does not provide a default handler. If we try to call `save_purchase` without a handler, we will get the following:
 
 ```
 Handler not provided: `save_purchase` requires a `GetPurchaseSaveUrlAction` handler
@@ -155,7 +155,7 @@ handle {
 
 When save purchase emits the effect (GetPurchaseSaveUrlAction), it jumps to the outermost handler. From inside of the .action block, we could call the default handler if one existed, but in this case we're just going to return a url string. The returned url string gets returned from the emit function and `save_purchase` continues.
 
-If we want, we can wrap our whole program in this handler, thus providing the save url across all of our codebase. Because concurrency in Stoutlang is done with coroutines and there is no asynchronus callbacks, handlers are guarenteed to be provided to all code launched from within the handler.
+If we want, we can wrap our whole program in this handler, thus providing the save url across all of our codebase. Because concurrency in Stoutlang is done with coroutines and there is no asynchronous callbacks, handlers are guaranteed to be provided to all code launched from within the handler.
 
 Instead of having an action for each piece of global configuration, you will typically have one handler that provides a configuration struct. Things like environment variables can also be provided in this way, the default handler will look up in the program's ENV, but giving you a way to easily override the lookup for testing, sandboxing, or changing config inside of a handler.
 
@@ -165,13 +165,13 @@ Instead of having an action for each piece of global configuration, you will typ
 
 ### Why is this Awesome?
 
-The above doesn't seem too revolutionary, but it provides us with a lot of really useful properties for writing simple, typesafe, and exteremely optimizable code.
+The above doesn't seem too revolutionary, but it provides us with a lot of really useful properties for writing simple, typesafe, and extremely optimizable code.
 
 1. In the functional world, there's a big trade off. There's a lot of `bad things™` that make software development harder (in the long run) This is a long list: mutations, global state, side effects, non-determinism, null, exceptions, etc... Unfortunately, to get rid of these `bad things™`, we need to make our programs more complicated and harder to understand.
 
 Effect types give us the best of both worlds. For example with global state, effect types deliver what feels like global state, but without the downsides. With side effects and IO, effect types make let us use side effects in a way that looks like normal procedural code, but provides information to the compiler so the unpredictability of side effects can be removed. (For example, the StoutLang compiler can automatically run code in parallel while still enforcing a total ordering)
 
-1. We didn't have to pass any state through to `save_person` to change the behavoir. This allows us to code for the "normal workflow", then the emitted effects let us customize the behaviour across a wide range of scenarios.
+1. We didn't have to pass any state through to `save_person` to change the behavior. This allows us to code for the "normal workflow", then the emitted effects let us customize the behavior across a wide range of scenarios.
 
 2. We maintain composability. By pulling the effects out of functions, we can have both high level building blocks as well as 
 
