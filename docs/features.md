@@ -112,3 +112,7 @@ There are a lot of great ideas buried in the depth of often mentioned, but seldo
 Haskell makes the easy things hard so the hard things are easy.
 
 With StoutLang, we believe effect types can finally make the hard things easy and keep the easy things easy as well.
+
+---
+
+[Next](why_webassembly.md)
