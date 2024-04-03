@@ -26,3 +26,5 @@ Traditionally containers achieve isolation of processes (sandboxing) via kernel 
 ### Edge Servers
 
 Hosting services on the edge provides lower latency, but isn't typically cost effective if the service has to be spun up all of the time. Edge services have relied on using the JavaScript VM to handle requests. Any language/platform with slower startup time isn't a viable option for the edge. WebAssembly has near instant start up and native run time performance. Edge services also require very low memory use, something WebAssembly delivers.
+
+[why_webassembly.md](Next)
