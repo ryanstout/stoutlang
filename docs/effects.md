@@ -167,9 +167,15 @@ Instead of having an action for each piece of global configuration, you will typ
 
 The above doesn't seem too revolutionary, but it provides us with a lot of really useful properties for writing simple, typesafe, and exteremely optimizable code.
 
+1. In the functional world, there's a big trade off. There's a lot of `bad things™` that make software development harder (in the long run) This is a long list: mutations, global state, side effects, non-determinism, null, exceptions, etc... Unfortunately, to get rid of these `bad things™`, we need to make our programs more complicated and harder to understand.
+
+Effect types give us the best of both worlds. For example with global state, effect types deliver what feels like global state, but without the downsides. With side effects and IO, effect types make let us use side effects in a way that looks like normal procedural code, but provides information to the compiler so the unpredictability of side effects can be removed. (For example, the StoutLang compiler can automatically run code in parallel while still enforcing a total ordering)
+
 1. We didn't have to pass any state through to `save_person` to change the behavoir. This allows us to code for the "normal workflow", then the emitted effects let us customize the behaviour across a wide range of scenarios.
 
-2. 
+2. We maintain composability. By pulling the effects out of functions, we can have both high level building blocks as well as 
+
+
 
 
 Lets say we had some code that would try to call `save_person` multiple times, but we wanted to stop the handle run block as soon as any
