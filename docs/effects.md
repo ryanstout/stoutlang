@@ -184,10 +184,139 @@ Lets say we had some code that would try to call `save_person` multiple times, b
 
 ## Error Handling
 
+[From Ryan. There's a few big articles on why StoutLang exceptions are better than Option types and traditional exceptions... This I put together quickly. Also, I'm not a Rust expert, so I need to brush up a bit, just using it as an example.]
+
+
+### What's wrong with Options?
+
+If you've never used an Option type (the way errors are handled in Rust, Haskell, Scala, Swift, etc..), you can skip to the StoutLang errors.
+
 In the past few years, we've seen Option types gain popularity over Exceptions for a few reasons:
 
 1. Explicit documentation about where code can fail.
-2. You are required 
+2. You are required to handle the errors.
+3. They avoid side effects (exceptions)
+
+StoutLang takes a different approach, giving you Exceptions that have the benefits of Option types, but keeping your code clean.
+
+Before we dive in, lets talk about a few of the problems with Option types. We'll use Rust's option type as an example, but this applies in most languages with an option type.
+
+1. Options can only handle one type. Here's what the Rustlang docs say makes for a good error type:
+
+```
+- Represents different errors with the same type
+- Presents nice error messages to the user
+- Is easy to compare with other types
+  - Good: Err(EmptyVec)
+  - Bad: Err("Please use a vector with at least one element".to_owned())
+- Can hold information about the error
+  - Good: Err(BadChar(c, position))
+  - Bad: Err("+ cannot be used here".to_owned())
+- Composes well with other errors
+```
+
+"Represents different errors with the same type" might sound a little strange. The reason for this isn't that it's the ideal way to represent an error, it's that making Option type check requires all errors be the same type. There's so much more information we can pass about an error, but in Rust a ton of different types of errors end up as io::Error's. Sure, you can use an enum to combine multiple error types, but that brings us to the 2nd problem.
+
+2. Options must be propagated
+
+Lets take a look at calling a function that could fail because of an int parsing error or a file io error. First Rust:
+
+```
+use std::fmt::{self, Display, Formatter};
+use std::io;
+use std::num::ParseIntError;
+
+// Define a custom error type that can encapsulate different kinds of errors.
+#[derive(Debug)]
+enum MyError {
+    Io(io::Error),
+    ParseInt(ParseIntError),
+}
+
+impl Display for MyError {
+    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
+        match *self {
+            MyError::Io(ref err) => write!(f, "IO error: {}", err),
+            MyError::ParseInt(ref err) => write!(f, "Parse int error: {}", err),
+        }
+    }
+}
+
+impl std::error::Error for MyError {}
+
+// Implement conversion from `io::Error` to `MyError`.
+impl From<io::Error> for MyError {
+    fn from(err: io::Error) -> MyError {
+        MyError::Io(err)
+    }
+}
+
+// Implement conversion from `ParseIntError` to `MyError`.
+impl From<ParseIntError> for MyError {
+    fn from(err: ParseIntError) -> MyError {
+        MyError::ParseInt(err)
+    }
+}
+
+// Function that might cause either `io::Error` or `ParseIntError`.
+fn might_fail(input: &str) -> Result<i32, MyError> {
+    if input == "io_error" {
+        return Err(io::Error::new(io::ErrorKind::Other, "simulated IO error").into());
+    }
+
+    let parsed_number: i32 = input.parse()?;
+    Ok(parsed_number)
+}
+
+// Function 'a' that calls 'might_fail'.
+fn a(input: &str) -> Result<i32, MyError> {
+    might_fail(input)
+}
+
+// Function 'b' that calls 'a'.
+fn b(input: &str) -> Result<i32, MyError> {
+    a(input)
+}
+
+// Usage of the functions in main.
+fn main() {
+    match b("100") {
+        Ok(num) => println!("Parsed number: {}", num),
+        Err(e) => println!("Error: {}", e),
+    }
+}
+```
+
+Now StoutLang:
+
+```
+fun might_fail(str_of_number: Str) {
+  str_of_number.to_i
+
+  File.read('missing_file.txt')
+}
+
+fun a() {
+  might_fail()
+}
+
+fun b() {
+  a()
+}
+
+handle {
+  b()
+}.catch(FileIOError) {
+  # ...
+}.catch(ParseIntError) {
+  # ...
+}
+```
+
+
+
+
+Instead of being required to handle errors, we find it more practical to provide an easy to see any places in your code that may cause a crash. In your editor, functions with unhandled exceptions are underlined in yellow. You can rely on the default behavior (the app crashes), or you can add a handler upstream.
 
 
 ---
