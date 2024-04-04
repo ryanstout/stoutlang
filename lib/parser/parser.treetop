@@ -13,7 +13,7 @@ grammar StoutLang
   rule program
     space? program:(assign:assignment space?)* {
       def to_ast
-        Ast::Block.new(program.elements.map {|e| e.assign.to_ast }, self)
+        Block.new(program.elements.map {|e| e.assign.to_ast }, self)
       end
     }
   end
@@ -27,7 +27,7 @@ grammar StoutLang
       def to_ast
         assign_type_sig = assign_type.respond_to?(:to_ast) ? assign_type.to_ast : nil
 
-        Ast::Assignment.new(ident.to_ast, exp.to_ast, assign_type_sig, self)
+        Assignment.new(ident.to_ast, exp.to_ast, assign_type_sig, self)
       end
     } / define_method
   end
@@ -50,7 +50,7 @@ grammar StoutLang
         # If a block was passed, add it to the args
         args_ast << block.to_ast if block && block.respond_to?(:to_ast)
 
-        Ast::FunctionCall.new(function_name, args_ast, self)
+        FunctionCall.new(function_name, args_ast, self)
       end
     }
   end
@@ -97,7 +97,7 @@ grammar StoutLang
   rule comment
     '#' message:[^\n]* '\n'? {
       def to_ast
-        Ast::Comment.new(message.text_value, message)
+        Comment.new(message.text_value, message)
       end
     }
   end
@@ -135,7 +135,7 @@ grammar StoutLang
   rule identifier
     [a-z] [a-zA-Z0-9_]* {
       def to_ast
-        Ast::Identifier.new(text_value, self)
+        Identifier.new(text_value, self)
       end
     }
   end
