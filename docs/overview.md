@@ -10,9 +10,9 @@ StoutLang combines the best of Rust, Zig, and innovative functional languages li
 
 - **Free Maintainability!** 🛠️ - The effect type system gives you most of the code guarantees that might draw you to a pure functional programming language, but the code is much simpler and easier to understand.
 
-- **Free Portability!** 🌍 - StoutLang can generate fast code for any hardware platform supported by the LLVM or WebAssembly. It has first-class WebAssembly support. (meaning it can run in the browser, on edge, in a WebAssembly sandbox instead of needing a container, etc...) Cross compilation is as easy as specifying --target=, everything is statically linked, your binary just runs on any hardware, no dependency installs needed.
+- **Free Portability!** 🌍 - StoutLang can generate fast code for any hardware platform supported by the LLVM or WebAssembly. It has first-class WebAssembly support. (meaning it can run in the browser, on edge, in a WebAssembly sandbox instead of needing a container, etc...)
 
-- **Free (ok, just easy?) Deployment!** 📦 - All code is statically linked, meaning you can easily produce binaries for any platform with a single command. Those binaries run out of the box without installing any dependencies.
+- **Free (ok, just easy?) Deployment!** 📦 - All code is statically linked, meaning you can easily produce binaries for any platform with a single command. (cross compilation) Those binaries run out of the box without installing any dependencies.
 
 - **Free Parallelism!** ⚡ - StoutLang can automatically parallelize code and run it in a deterministic way. (Free multi-core!)
 
