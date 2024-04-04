@@ -3,7 +3,7 @@ grammar Defs
     'def ' method_name:method_name space? def_args:def_args? space? block:block {
       def to_ast
         def_args_ast = def_args.respond_to?(:to_ast) ? def_args.to_ast : []
-        Ast::Def.new(method_name.to_ast, def_args_ast, block.to_ast, self)
+        Def.new(method_name.to_ast, def_args_ast, block.to_ast, self)
       end
     } / macro_define
   end
@@ -12,7 +12,7 @@ grammar Defs
     'macro ' method_name:method_name space? def_args:def_args? space? block:block {
       def to_ast
         def_args_ast = def_args.respond_to?(:to_ast) ? def_args.to_ast : []
-        Ast::Macro.new(method_name.to_ast, def_args_ast, block.to_ast, self)
+        Macro.new(method_name.to_ast, def_args_ast, block.to_ast, self)
       end
     } / infix_chain
   end
@@ -20,8 +20,8 @@ grammar Defs
   rule def_arg
     identifier space? type_sig:type_sig? {
       def to_ast
-        type_sig = type_sig.respond_to?(:to_ast) ? type_sig.to_ast : nil
-        Ast::DefArg.new(identifier.to_ast, type_sig, self)
+        type_sig_ast = type_sig.respond_to?(:to_ast) ? type_sig.to_ast : nil
+        DefArg.new(identifier.to_ast, type_sig_ast, self)
       end
     }
   end

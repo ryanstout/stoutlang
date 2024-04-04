@@ -16,6 +16,9 @@ Before we dive in, lets talk about why you might want to use StoutLang. Mostly i
 
 - **Free Happiness!** 😊 - StoutLang is easy to learn, it builds on a few simple concepts to deliver what your current language isn't. When the language does more of the work, you can focus on writing more on just building the things your project needs.
 
+- **Free Batteries!** 🔋 - The standard library tries to do a lot and do it well. You can't build a great building without a strong foundation.
+
+
 ### StoutLang Feels: JavaScript-ish
 
 StoutLang borrows a lot of syntax from JavaScript, which borrowed it from Java, C, etc..
@@ -43,7 +46,7 @@ fun print_temperature(location: Str) {
     api_key = Env['OPENWEATHER_API_KEY']
     request_url = "http://api.openweathermap.org/data/2.5/weather?q=${location}&appid=${apiKey}&units=metric"
 
-    response = http.get(request_url)
+    response = Http.get(request_url)
     weather_data = Json.parse(response)
     => "The temperature in ${weather_data.name.to_s} is ${weather_data.main.temp.to_f}C"
 }
@@ -78,6 +81,6 @@ From the above we can see the following:
 - StoutLang uses `#` for comments.
 - It uses { and } for blocks.  
 - There is local type inference, only requiring types in function arguments.
-- Some things are provided by default. Env and Json in this example. (Structs in this case, which group code) - don't worry, these are only compiled in if you use it.
+- Some things are provided by default. Env, Json, and Http in this example. (Structs in this case, which group code) - don't worry, these are only compiled in if you use it.
 - We can evaluate code in the main context.
 - StoutLang can run both ahead of time and in an interpreter. There is also a REPL.

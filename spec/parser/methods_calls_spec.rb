@@ -133,8 +133,14 @@ describe StoutLangParser do
             Def.new(
               name="some_method",
               args=[
-                DefArg.new(name=Identifier.new(name="arg1"), type_sig=nil),
-                DefArg.new(name=Identifier.new(name="arg2"), type_sig=nil)
+                DefArg.new(
+                  name=Identifier.new(name="arg1"),
+                  type_sig=TypeSig.new(type_val=Type.new(name="Int"))
+                ),
+                DefArg.new(
+                  name=Identifier.new(name="arg2"),
+                  type_sig=TypeSig.new(type_val=Type.new(name="Str"))
+                )
               ],
               block=Block.new(expressions=[IntegerLiteral.new(value=5)])
             )

@@ -1,7 +1,7 @@
 a = "Cool beans"
 
 struct Blue {
-  def cool {
+  def cool(a: Str, b: Int = 5) {
     "ok"
   }
 }

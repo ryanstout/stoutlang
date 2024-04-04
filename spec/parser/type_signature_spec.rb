@@ -24,4 +24,28 @@ describe StoutLangParser do
       ]
     ))
   end
+
+  it 'should parse the type sig in a def argument' do
+    ast = Parser.new.parse('def say_hi(name: Str) {  }')
+
+    expect(ast).to eq(
+      StoutLang::Ast::Struct.new(
+        name="Root",
+        block=Block.new(
+          expressions=[
+            Def.new(
+              name="say_hi",
+              args=[
+                DefArg.new(
+                  name=Identifier.new(name="name"),
+                  type_sig=TypeSig.new(type_val=Type.new(name="Str"))
+                )
+              ],
+              block=Block.new(expressions=[])
+            )
+          ]
+        )
+      )
+    )
+  end
 end

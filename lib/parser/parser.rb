@@ -19,7 +19,6 @@ Treetop.load(File.expand_path(File.dirname(__FILE__)) + '/grammar/structs')
 Treetop.load(File.expand_path(File.dirname(__FILE__)) + '/parser')
 
 
-
 # Ast nodes need to be in the namespace for treetop
 include StoutLang::Ast
 

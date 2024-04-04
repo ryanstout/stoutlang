@@ -18,7 +18,7 @@ if(something, true_block).else(false_block)
 
 - should be a way for emitted operations to be logged when they happen, so you
     can easily decide to turn on logging for all IO/file ops, network, etc..
-- all methods and friends should be hashed and propigate up the hash. Then tests could only be run when some code that gets called changes.
+- all methods and friends should be hashed and propagate up the hash. Then tests could only be run when some code that gets called changes.
     (maybe use the effect system for this?)
 - easily distributed map reduce (ability to cluster running instances and specific nodes to run code on or have some algorithms to get code closer to the data)
     - seamless rpc calls to other nodes in the cluster (front-end websocket connection hanging around..)
@@ -81,6 +81,8 @@ a : int | str
 
 - Should be able to walk backwards from function signatures in order to create automatic, profiling code
 - Erlang and Koka do thread specific heaps, which allows for GC to happen per heap, providing less pause the world. The trade off is more cost when sharing across threads, but this could be optimized by a work scheduler to minimize cross thread communication.
+
+- Built in Fully Homomorphic Encryption mode for all data structures?
 
 ### Transactional/ACID Functions
 - A way to make functions that don't have certain side effects transactional

@@ -24,5 +24,36 @@ describe StoutLangParser do
         ]
       ))
     end
+
+    it 'should parse defs in structs' do
+      ast = Parser.new.parse("struct Ok { \n def initialize(name: Str) { \n5\n } \n }")
+      expect(ast).to eq(
+        StoutLang::Ast::Struct.new(
+          name="Root",
+          block=Block.new(
+            expressions=[
+              StoutLang::Ast::Struct.new(
+                name=Type.new(name="Ok"),
+                block=Block.new(
+                  expressions=[
+                    Def.new(
+                      name="initialize",
+                      args=[
+                        DefArg.new(
+                          name=Identifier.new(name="name"),
+                          type_sig=TypeSig.new(type_val=Type.new(name="Str"))
+                        )
+                      ],
+                      block=Block.new(expressions=[IntegerLiteral.new(value=5)])
+                    )
+                  ]
+                )
+              )
+            ]
+          )
+        )
+      )
+
+    end
   end
 end
