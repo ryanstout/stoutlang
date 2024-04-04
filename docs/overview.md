@@ -25,4 +25,4 @@ e
 
 Before we dive into learning StoutLang, lets take a look at why we need a new programming language.
 
-[Next - Why WebAssembly](why_webassembly.md)
+[Next - Why a New Language](why_a_new_language.md)
