@@ -2,7 +2,9 @@
 
 ## What Makes StoutLang Special
 
-Before we dive in, lets talk about why you might want to use StoutLang. StoutLang combines the best of Rust, Zig, and innovative functional languages like Koka. StoutLang is designed to let the compiler do more work than what you're used to. (Aka, you get things for free)
+Learning a new language is a daunting task. Lets talk about why you might want to use StoutLang, the amazing things you get for free by using it, and how quickly you can start writing useful code in it.
+
+StoutLang combines the best of Rust, Zig, and innovative functional languages like Koka in an easy to write language that looks similar to TypeScript. In StoutLang the compiler is able to do more of the heavy lifting than you're used to. (Aka, you get things for free)
 
 - **Free Performance!** 🚀 - A novel effect type system and AI based machine code optimizer that can run easy to read/write code faster than hand optimized C. (I know, a bold claim)
 
