@@ -4,7 +4,7 @@ We're entering a new age of software development. Several large changes will dri
 
 ## AI
 
-We can expect that the *majority* of code going forward will be written by AI. While I don't expect AI to full replace developers in the short term, AI generating more and more code will change the priorities with regards to languages and specifically safety guarantees.
+We can expect that the *majority* of code going forward will be written by AI. While I don't expect AI to full replace developers in the short term, AI generated code will change the priorities with regards to languages and specifically safety guarantees.
 
 AI will significantly reduce the cost to write code, which will drive a greater emphases on the cost of running the code. Languages that are able to run code faster (while keeping the code itself very simple to understand) will have a large advantage, as cost to run the code will become more important.
 
@@ -12,7 +12,7 @@ AI will also make porting code to new languages (ones that provide better guaran
 
 ## New Platforms
 
-Often (though not always), new languages gain adoption based on the platforms they are optimized for. WebAssembly not only allows the first real alternative to JavaScript in the browser, it also is well optimized for near instant startup times, allowing for lambda and other edge server usages. The LLVM already targets most existing hardware platforms, but WebAssembly (and specifically [WASI](https://wasi.dev/interfaces)) removes much of the complexity of supporting multiple platforms at a low level.
+Often (though not always), new languages gain adoption based on the platforms they are optimized for. WebAssembly not only allows the first real alternative to JavaScript in the browser, it also is well optimized for near instant startup times, allowing it to run on lambda and other edge services. The LLVM already targets most existing hardware platforms, but WebAssembly (and specifically [WASI](https://wasi.dev/interfaces)) removes much of the complexity of supporting multiple platforms at a low level.
 
 By targeting the LLVM and making WebAssembly a first class citizen, there is the possibility to have an ecosystem where all packages run across the web, server, edge, and mobile without any extra code to manage each platform.
 
@@ -21,15 +21,15 @@ As it stands now, each platform tends to have its own set of languages and packa
 
 ## Performance and Readable Code
 
-In the past, languages sat along a line between `readable/easy to understand` and `performant`. The more performant languages got, the more the programmer had to handle and describe to the compiler so it could optimize. (or the more escape hatches the language had to provide to allow hand written optimized code).
+In the past, languages sat along a line between `readable/easy to understand` and `performant`. The more performant the language, the more the programmer had to handle and describe to the compiler so it could optimize. (or the more escape hatches the language had to provide to allow hand written optimized code -- think of C's memory model for example, the source of thousands of security issues).
 
-The reason for this linear correlation often is down to the information available to the compiler. Languages that provided the compiler more information at compile time can perform optimizations not possible in languages with less information. Something as simple as the compiler having access to the lifetimes of an object can deliver orders of magnitude faster code.
+The reason for this linear correlation between complexity and performance often is down to the information available to the compiler. Languages that provided the compiler more information at compile time can perform optimizations not possible in languages with less information. Something as simple as the compiler having access to the lifetimes of an object can deliver orders of magnitude faster code.
 
 Rust for example requires explicit annotation of value lifetimes in order for the compiler to understand what optimizations are permissable. Functional languages like Haskell can gather this information from things like the IO monad, but monadic code is difficult to write and understand.
 
 We believe Effect Types provide the best of both worlds, extremely fast code (especially for parallel workflows), and code that is extremely simple to read and understand. Effect types allow for extremely clean code while still maintaining the data needed to perform the most advanced optimizations. Effect types allow the complexity of informing the compiler about various side effects to be pushed into the standard library and can be completely transparent to the user. 
 
-Writing purely functional code gives the compilers a full understanding of how data flows. New algorithms now let us build an optimizer that delivers the same performance as complex to write hand optimized code: (see https://www.microsoft.com/en-us/research/uploads/prod/2023/05/fip-tr-v2.pdf)
+Writing purely functional code gives the compilers a full understanding of how data flows. New algorithms now let us build an optimizer that delivers the same performance as complex to write hand optimized code: (see [1](https://www.microsoft.com/en-us/research/uploads/prod/2023/05/fip-tr-v2.pdf) and [2](https://halide-lang.org/papers/halide_autoscheduler_2019.pdf))
 
 ## Security
 
