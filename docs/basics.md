@@ -65,3 +65,12 @@ From the above we can see the following:
 - Some things are provided by default. Env, Json, and Http in this example. (Structs in this case, which group code) - don't worry, these are only compiled in if you use it.
 - We can evaluate code in the main context.
 - StoutLang can run both ahead of time and in an interpreter. There is also a REPL.
+
+TODO: More Basics
+
+
+---
+
+Before we get too deep in the basics, lets introduce Effects, the big innovation in StoutLang.
+
+[Next - Effects](effects.md)

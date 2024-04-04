@@ -189,3 +189,9 @@ In the past few years, we've seen Option types gain popularity over Exceptions f
 1. Explicit documentation about where code can fail.
 2. You are required 
 
+
+---
+
+Next lets take a look at how StoutLang does functions.
+
+[Next - Functions](functions.md)
