@@ -2,7 +2,7 @@
 
 ## What Makes StoutLang Special
 
-Learning a new language is a daunting task. Lets talk about why you might want to use StoutLang, the amazing things you get for free by using it, and how quickly you can start writing useful code in it.
+Learning a new language is a daunting task. Lets learn why you might want to use StoutLang, the great things you get for free by using it, and how quickly you can start writing useful code in it.
 
 StoutLang combines the best of Rust, Zig, and innovative functional languages like Koka in an easy to write language that looks similar to TypeScript. In StoutLang the compiler is able to do more of the heavy lifting than you're used to. (Aka, you get things for free)
 
@@ -16,10 +16,10 @@ StoutLang combines the best of Rust, Zig, and innovative functional languages li
 
 - **Free Parallelism!** ⚡ - StoutLang can automatically parallelize code and run it in a deterministic way. (Free multi-core!)
 
-- **Free Happiness!** 😊 - StoutLang is easy to learn, it builds on a few simple concepts to deliver what your current language isn't. When the language does more of the work, you can focus on writing more on just building the things your project needs.
+- **Free Happiness!** 😊 - StoutLang is easy to learn, it builds on a few simple concepts to deliver what your current language isn't. When the language does more of the work, you can focus on just building the things your project needs.
 
-- **Free Batteries!** 🔋 - The standard library tries to do a lot and do it well. You can't build a great building without a strong foundation.
-e
+- **Free Batteries!** 🔋 - The standard library does a lot and does it well. You can't build a great building without a strong foundation.
+
 
 ---
 
