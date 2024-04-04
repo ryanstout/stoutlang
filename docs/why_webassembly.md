@@ -31,4 +31,4 @@ Hosting services on the edge provides lower latency, but isn't typically cost ef
 
 Ok, now that you're convinced, lets dive into the basics of StoutLang.
 
-[Next - Why WebAssembly](basics.md)
+[Next - The Basics](basics.md)
