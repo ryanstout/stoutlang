@@ -110,4 +110,6 @@ With StoutLang, we believe effect types can finally make the hard things easy an
 
 ---
 
-[Next](why_webassembly.md)
+Next lets quickly see why WebAssembly as a platform is such a game changer.
+
+[Next - Why WebAssembly](why_webassembly.md)
