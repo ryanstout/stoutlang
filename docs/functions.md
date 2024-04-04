@@ -56,3 +56,9 @@ One common problem is Object Oriented programming languages is the "Open/Closed"
 
 
 With StoutLang's method call style, you get the best of both worlds, the clarity and flexibility of functions with the ergonomics of method call syntax.
+
+---
+
+Next lets look at how StoutLang simplifies the type system and macros.
+
+[Next - Unified Compile and Runtime Code](unified_compile_and_runtime_code.md)

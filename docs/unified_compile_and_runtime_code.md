@@ -12,4 +12,4 @@ Being able to run the main language at compile time unlocks some interesting pos
 
 2. You are no longer dependent on the language authors to provide you the tooling needed to accomplish complex type transformations. (Things like Pick, Partial, Required, etc.. in TypeScript can all be implemented in the language themselves)
 
-3. 
+3. This unified approach encourages the development of richer, compile-time validations and transformations, allowing for the implementation of more sophisticated static analysis tools directly in the main language, thereby expanding the capabilities of the language without requiring external tooling.
