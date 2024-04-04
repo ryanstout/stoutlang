@@ -127,19 +127,35 @@
 
       warn("Parse #{document_content}")
       parser = StoutLang.parse(document_content)
+      parser.ast.prepare
       nodes = parser.nodes_at_cursor(total_characters_position)
 
-
       if request.dig('params', 'textDocument', 'uri').end_with?('.sl')
-        {
-          id: request['id'],
-          result: {
-            contents: {
-              kind: 'markdown',
-              value: "```ruby\n#{nodes.last.data.inspect}\n```"
+        # If the first node has a effects method, return the effects only
+        node = nodes.last.data
+        if node.is_a?(StoutLang::Ast::Scope)
+          effects = node.effects
+
+          {
+            id: request['id'],
+            result: {
+              contents: {
+                kind: 'markdown',
+                value: "```ruby\n#{{'effects' => effects}.inspect}\n```"
+              }
             }
           }
-        }
+        else
+          {
+            id: request['id'],
+            result: {
+              contents: {
+                kind: 'markdown',
+                value: "```ruby\n#{node.inspect}\n```"
+              }
+            }
+          }
+        end
       else
         { id: request['id'], result: nil }
       end

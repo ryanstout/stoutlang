@@ -33,9 +33,9 @@ Writing purely functional code gives the compilers a full understanding of how d
 
 ## Security
 
-As AI writes more code, being able to understand the code without diving into every line will become more important. The benefits of AI generated diminish if you have to exhaustively review every line of generated code. StoutLang's Effect Type system can provide you a summary of all actions (effects) a piece of code does. This can be down to the function call level, modules, or whole libraries.
+As AI writes more code, being able to understand the code without diving into every line will become more important. The benefits of AI generated code diminish if you have to exhaustively review every line. StoutLang's Effect Type system can provide you a summary of all actions (effects) a piece of code does. This can be down to the function call level, modules, or whole libraries.
 
-You can even see what effects a library uses in regards to your code.
+You can even see what effects a library uses in regards to your code. (So if you never call a function in the library, it will skip those effects)
 
 Here's a contrived example of what a well behaved database library's effect types would look like:
 

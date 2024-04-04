@@ -9,6 +9,8 @@ module StoutLang
 
       def prepare
         expression.prepare
+
+        register_in_scope(identifier.name, self)
       end
 
       def run

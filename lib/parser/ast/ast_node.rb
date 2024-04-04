@@ -1,9 +1,12 @@
 # The base class for an AST node
 require 'parser/ast/utils/scope'
+require 'parser/ast/utils/ast_scope'
 
 module StoutLang
   module Ast
     class AstNode
+      include AstScope
+
       attr_reader :parse_node
       attr_accessor :parent
 
@@ -20,16 +23,10 @@ module StoutLang
         # Override this method to do any preparation before running the node
       end
 
-      def parent_scope
-        # Walks up the parent chain until it finds a scope
-        cur = parent
-        while cur
-          return cur if cur.is_a?(Scope)
-          cur = cur.parent
-        end
-
-        nil
+      def effects
+        []
       end
+
 
       def children
         instance_variables.reject { |k| [:@parse_node, :@parent].include?(k) }.map do |var|

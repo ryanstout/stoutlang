@@ -66,6 +66,13 @@ From the above we can see the following:
 - We can evaluate code in the main context.
 - StoutLang can run both ahead of time and in an interpreter. There is also a REPL.
 
+Here's some other things that StoutLang has:
+
+- Pattern Matching
+- A compact record update syntax
+
+
+
 TODO: More Basics
 
 

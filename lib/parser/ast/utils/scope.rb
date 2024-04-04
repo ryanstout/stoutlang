@@ -2,15 +2,18 @@
 module StoutLang
   module Ast
     module Scope
-      def prepare
-        @scope = {}
-        super
+      attr_accessor :parent
+
+      def scope
+        @scope ||= {}
+        @scope
       end
 
-      def register_in_scope(identifier, node)
-        @scope[identifier] = node
+      def register_identifier(identifier, node)
+        name = self.name
+        name = name.name if name.is_a?(StoutLang::Ast::Type)
+        scope[identifier] = node
       end
-
     end
   end
 end

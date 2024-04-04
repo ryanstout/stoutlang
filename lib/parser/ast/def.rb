@@ -7,8 +7,19 @@ module StoutLang
       setup :name, :args, :block
 
       def prepare
-        args.each(&:prepare)
+        super
+        args.each do |arg|
+          register_in_scope(arg.name.name, arg.type_sig)
+        end
         block.prepare
+
+        parent_scope.register_identifier(name, self)
+      end
+
+      def effects
+        block.expressions.map do |exp|
+          exp.effects
+        end.flatten.uniq
       end
     end
 

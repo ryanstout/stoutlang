@@ -10,6 +10,10 @@ module StoutLang
       def run
         expressions.map(&:run).last
       end
+
+      def effects
+        expressions.map(&:effects).flatten.uniq
+      end
     end
   end
 end

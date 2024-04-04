@@ -8,11 +8,36 @@ module StoutLang
         true
       end
 
+      def prepare
+
+      end
+
       def run
         if OPERATORS.include?(name)
           args.map(&:run).reduce(name)
         else
           raise "Not implemented"
+        end
+      end
+
+      def effects
+        if name == 'emit'
+          # Emit gets handled directly for now
+
+          # The first argument is the effect
+          effect_type = args[0].run
+
+          return [effect_type]
+        else
+          # Find the function in scope, and return its effects
+          function = lookup_identifier(name)
+
+
+          if function && function.is_a?(Def)
+            function.effects.uniq
+          else
+            []
+          end
         end
       end
     end
