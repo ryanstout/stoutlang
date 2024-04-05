@@ -187,9 +187,9 @@ Lets say we had some code that would try to call `save_person` multiple times, b
 [From Ryan. There's a few big articles on why StoutLang exceptions are better than Option types and traditional exceptions... This I put together quickly. Also, I'm not a Rust expert, so I need to brush up a bit, just using it as an example.]
 
 
-### What's wrong with Options?
+### What's wrong with Option/Maybe/Result?
 
-If you've never used an Option type (the way errors are handled in Rust, Haskell, Scala, Swift, etc..), you can skip to the StoutLang errors.
+If you've never used an Option/Maybe/Result type (the way errors are handled in Rust, Haskell, Scala, Swift, etc..), you can skip to the StoutLang errors.
 
 In the past few years, we've seen Option types gain popularity over Exceptions for a few reasons:
 
@@ -287,7 +287,7 @@ fn main() {
 }
 ```
 
-Now StoutLang:
+## StoutLang Errors
 
 ```
 fun might_fail(str_of_number: Str) {
@@ -313,10 +313,11 @@ handle {
 }
 ```
 
-
-
+In StoutLang, exceptions are effects. Notice how the errors can pass through the falls to `a` and `b` without any extra code. (But the type/effect system understands that both `a` and `b` have the FileIOError and ParseIntError effects) 
 
 Instead of being required to handle errors, we find it more practical to provide an easy to see any places in your code that may cause a crash. In your editor, functions with unhandled exceptions are underlined in yellow. You can rely on the default behavior (the app crashes), or you can add a handler upstream.
+
+If you're ok with you're app crashing if the disk is full for example, you can just let the error bubble up to the top level.
 
 
 ---
