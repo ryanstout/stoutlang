@@ -39,6 +39,25 @@ module StoutLang
           end
         end
       end
+
+      def codegen(mod, bb)
+        if name == "=>"
+          method_call = lookup_identifier("=>")
+
+          arg = args[0].codegen(mod, bb)
+
+          zero = LLVM.Int(0) # a LLVM Constant value
+
+          # Read here what GetElementPointer (gep) means http://llvm.org/releases/3.2/docs/GetElementPtr.html
+          # Convert [13 x i8]* to i8  *...
+          cast210 = bb.gep arg, [zero, zero], 'cast210'
+          # Call puts function to write out the string to stdout.
+          bb.call method_call, cast210
+          nil
+        else
+          raise "Not implemented"
+        end
+      end
     end
   end
 end

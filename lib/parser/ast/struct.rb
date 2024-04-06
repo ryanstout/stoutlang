@@ -17,6 +17,10 @@ module StoutLang
       def run
         block.run
       end
+
+      def codegen(mod, bb)
+        block.codegen(mod, bb)
+      end
     end
   end
 end

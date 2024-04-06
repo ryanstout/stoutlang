@@ -18,6 +18,12 @@ module StoutLang
       def add_expression(expression)
         expressions << expression
       end
+
+      def codegen(mod, bb)
+        expressions.map do |exp|
+          exp.codegen(mod, bb)
+        end.last
+      end
     end
   end
 end

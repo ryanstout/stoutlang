@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# Run lib/codegen/build.rb and pass all args
+
+bundle exec ruby lib/codegen/build.rb $@

@@ -1,3 +1,15 @@
+# StoutLang
+
+## Install
+
+```
+brew install llvm@17
+
+# ruby-ffi doesn't look at the right location
+sudo mkdir -p /opt/local/
+sudo ln -s $(brew --prefix llvm@18)/lib /opt/local/lib
+
+
 could you track that a string was made by interpolating an unsanitized string, even if passed through stuff
 
 
