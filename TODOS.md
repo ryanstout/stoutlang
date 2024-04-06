@@ -7,3 +7,4 @@
 - Move creation of assignments to the infix operators
 - What should assignment do inside of a list  [a = 5, b = 10]
 - Assignment inside of StringLiterals?
+- Infix operators should be able to be run with parens like: *(5, 10) or =>("Hello World")

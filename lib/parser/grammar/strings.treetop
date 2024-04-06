@@ -11,7 +11,7 @@ grammar Strings
           if is_string
             parts.join
           else
-            parts
+            parts[0]
           end
         end
         StringLiteral.new(merged_parts, self)

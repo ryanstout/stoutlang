@@ -13,6 +13,12 @@ module InfixChainAst
   end
 end
 
+module InfixUnaryChainAst
+  def to_ast
+    StoutLang::Ast::FunctionCall.new(op.to_ast, [expression.to_ast], op)
+  end
+end
+
 module InfixOps
   def to_ast
     operator.text_value

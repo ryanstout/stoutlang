@@ -19,5 +19,28 @@ describe StoutLangParser do
       expect(ast).to eq(Block.new(expressions=[FunctionCall.new(name="print", args=[])]))
 
     end
+
+    it 'should parse functions after some method calls' do
+      ast = Parser.new.parse("a = 5\n5.name()\nprint(\"Hello\").to_i()", wrap_root: false)
+
+      expect(ast).to eq(
+        Block.new(
+          expressions=[
+            Assignment.new(
+              identifier=Identifier.new(name="a"),
+              expression=IntegerLiteral.new(value=5),
+              type_sig=nil
+            ),
+            FunctionCall.new(name="name", args=[IntegerLiteral.new(value=5)]),
+            FunctionCall.new(
+              name="to_i",
+              args=[
+                FunctionCall.new(name="print", args=[StringLiteral.new(value=["Hello"])])
+              ]
+            )
+          ]
+        )
+      )
+    end
   end
 end

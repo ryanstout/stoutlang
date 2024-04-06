@@ -24,15 +24,19 @@ describe StoutLangParser do
         StringLiteral.new(
           value=[
             "hello ",
-            [
-              StringInterpolation.new(
-                expressions=Block.new(expressions=[Identifier.new(name="world")])
-              )
-            ]
+            StringInterpolation.new(
+              block=Block.new(expressions=[Identifier.new(name="world")])
+            )
           ]
         )
       )
+    end
 
+    it 'should evaluate interpolations' do
+      ast = Parser.new.parse('"hello ${5 + 10}"', root: 'string', wrap_root: false)
+      ast.prepare
+
+      expect(ast.run).to eq("hello 15")
     end
   end
 end

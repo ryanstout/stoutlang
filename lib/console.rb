@@ -17,6 +17,9 @@ class Console
     puts "StoutLang console"
     puts "Type 'exit' to quit"
 
+    # Create a root and starting block
+    root = StoutLang::Ast::Struct.new('Root', StoutLang::Ast::Block.new([]), nil)
+
     while line = Readline.readline('> ', true)
       break if line.nil? || line == "exit"
       if line =~ /\S/ # skip blank lines
@@ -26,7 +29,14 @@ class Console
         input = line.chomp
 
         # Parse the line and run it
-        parser = StoutLang.parse(input)
+        parser = StoutLang.parse(input, wrap_root: false)
+
+        # After we parse, we add to the root block for the console
+        parser.ast.parent = root
+        root.add_expression(parser.ast)
+
+        # prepare everything, then run it
+        parser.ast.prepare
 
         puts parser.ast.inspect
         puts parser.ast.run

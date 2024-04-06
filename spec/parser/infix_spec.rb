@@ -179,6 +179,24 @@ describe StoutLangParser do
 
       expect(ast).to eq(match_ast)
     end
+
+    it 'should parse the => operator' do
+      ast = Parser.new.parse("a = 5\n=> \"10\"", wrap_root: false)
+
+      expect(ast).to eq(
+        Block.new(
+          expressions=[
+            Assignment.new(
+              identifier=Identifier.new(name="a"),
+              expression=IntegerLiteral.new(value=5),
+              type_sig=nil
+            ),
+            FunctionCall.new(name="=>", args=[StringLiteral.new(value=["10"])])
+          ]
+        )
+      )
+    end
+
   end
 
 end

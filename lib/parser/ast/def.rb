@@ -21,6 +21,10 @@ module StoutLang
           exp.effects
         end.flatten.uniq
       end
+
+      def run
+        # for dev, we don't run it when we define it, only when we call it
+      end
     end
 
     class DefArg < AstNode

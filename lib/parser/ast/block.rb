@@ -14,6 +14,10 @@ module StoutLang
       def effects
         expressions.map(&:effects).flatten.uniq
       end
+
+      def add_expression(expression)
+        expressions << expression
+      end
     end
   end
 end

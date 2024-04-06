@@ -66,6 +66,7 @@ a : int | str
 - If we distinguish world read side effects (file read, db read, etc..) vs world writes/mutations (file write, db update, etc..) we can make functions transactionional up until the writes.
 - You'll want a way to access the parent handlers (and probably a way to access the whole chain so you can skip some if you want)
 - Maybe custom infix operations  def (*++*)  { ... }
+- String literals with interpolation need a way to hook, so you could build things like svelt from heredocs or something.
 
 - package manager: https://medium.com/@sdboyer/so-you-want-to-write-a-package-manager-4ae9c17d9527
     - packages need a way to be parameterized (build target, compiler options, optimization level, etc..)

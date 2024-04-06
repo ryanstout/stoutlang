@@ -3,11 +3,16 @@ require 'parser/grammar/infix'
 grammar Infix
   # Start with lowest precidence first
   rule infix_chain
-    chain:infix_assignment_chain {
+    chain:print_expression_chain {
       def to_ast
         chain.to_ast
       end
     }
+  end
+
+  rule print_expression_chain
+    op:print_ops expression:infix_assignment_chain <InfixUnaryChainAst>
+    / infix_assignment_chain
   end
 
   rule infix_assignment_chain
@@ -100,6 +105,10 @@ grammar Infix
 
   rule range_ops
     space? operator:('..' / '...') space? <InfixOps>
+  end
+
+  rule print_ops
+    space? operator:('=>') space? <InfixOps>
   end
 
   # TODO: 

@@ -5,7 +5,16 @@ grammar Methods
       def to_ast
         text_value
       end
+    } / method_name_operators {
+      def to_ast
+        text_value
+      end
     }
+  end
+
+  # Methods can also be defined with operators for the method name
+  rule method_name_operators
+    '=>' / '..' / '...' / '||' / '&&' / '==' / '!=' / '<' / '<=' / '>' / '>=' / '|' / '^' / '&' / '<<' / '>>' / '+' / '-' / '*' / '/' / '%' / '^'
   end
 
 

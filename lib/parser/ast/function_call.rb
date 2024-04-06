@@ -9,7 +9,6 @@ module StoutLang
       end
 
       def prepare
-
       end
 
       def run
