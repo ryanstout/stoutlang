@@ -197,7 +197,7 @@ Effect types give us the best of both worlds. For example with global state, eff
 
 **Note**: passing down from higher levels isn't possible in most languages due to asynchronous code. StoutLang doesn't have any asynchronous code (we can accomplish the same goals without it). This means every line of code runs has a handler stack that goes back to the start of the program. When we spawn a new coroutine, it maintains a copy of the handlers at the time it was spawned.
 
-2. **We maintain composability.** Functional developers love functional composition. Unfortunately, monads can't be composed. So to have a function that has two side effects, you have to do a lot of Monad Transformer gymnastics. I'll spare you the details, but it gets complex fast.
+3. **We maintain composability.** Functional developers love functional composition. Unfortunately, monads can't be composed. So to have a function that has two side effects, you have to do a lot of Monad Transformer gymnastics. I'll spare you the details, but it gets complex fast.
 
 Effect types make it easy for us to compose our functions.
 
@@ -346,11 +346,28 @@ handle {
 }
 ```
 
+I think the above code speaks for itself, though honestly, Rust could make this simpler (and maybe there's some libraries that wrap it up the complexity better, I'm not a Rust expert)
+
+3. No Stacktraces
+
+When you ask people why Option's are better than Exceptions, one reason I hear a lot is that they are more performant. When I dig into that, people say that Exceptions are slow. I'm always amazed by this because that hasn't been true for more than a decade. Backend compilers like the LLVM can generate zero cost exception handling, where the normal path has no extra instructions in the path and the exception path only has a (very small) cost when finding the handler or generating a stack trace. (They have to walk the stack). But for a lot of code, you can monomorphise frequent paths and get zero cost for the handling also.
+
+Languages that use Option types for exception handling tend to recommend you handle the exception as soon as it happens. This sounds good in theory, but most of the time you don't know how to handle it where it happens. If we're writing to a database and the disk fails to write, the database library itself can't know what the right way to handle it is. Maybe we can try it again, maybe we can just log to Sentry and keep going, it all depends on the code calling the database library.
+
+In languages like Rust, exceptions end up getting passed up the call chain (which just from a code standpoint is complex), but worse, when the Err result ends up being handled, you have no idea where it came from. (Because it got merged with other similar errors in the path)
+
+In StoutLang, handlers (even actions) provide a simple way to get a stack trace to the emit.
+
+
+## StoutLang Exceptions
+
 In StoutLang, exceptions are effects. Notice how the errors can pass through the calls to `a` and `b` without any extra code. (The type/effect system understands that both `a` and `b` can emit `FileIOError` and `ParseIntError` effects) 
 
 Instead of being required to handle errors, we find it more practical to provide an easy to see any places in your code that may cause a crash. In your editor, functions with unhandled exceptions are underlined in yellow. You can rely on the default behavior (the app crashes), or you can add a handler upstream.
 
 If you're ok with you're app crashing if the disk is full for example, you can just let the error bubble up to the top level.
+
+
 
 ## Summary
 
