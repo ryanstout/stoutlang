@@ -1,12 +1,10 @@
 # Effects
 
-Effects serve three purposes.
+Effect are a simple concept that lead to cleaner code, better handling when things go wrong, and they give the compiler the information it needs to automatically generate extremely performant code without extra work on the developers part. 
 
-Effect are a simple concept that leads to cleaner code, better handling when things go wrong, and gives the compiler the information needed to automatically generate extremely performant code without any extra work on the developers part. 
+Effects signal to the compiler where things like state, IO, and non-determinism live. Combined with StoutLang's pass by value semantics, the compiler can do automatic optimizations that are not possible in other languages.
 
-1. They signal to the compiler where things like state, IO, and non-determinism live so the compiler can do automatic optimizations that up until now were not possible.
-2. They allow sections of code to easily change behavior in a simple and type safe way.
-3. They allow
+Effects allow sections of code to easily change behavior in a simple and type safe way.
 
 
 ## Basic Effect Types
@@ -18,13 +16,15 @@ def save_person(person: Person) {
 }
 ```
 
-If we hover over `save_person` on our editor, we can see not only it's return type, but also it's effects.
+If we hover over `save_person` in our editor, we can see not only it's return type, but also it's effects. There are two types of effects Actions and Errors. They vary only in their handling dynamics.
 
 ```
-Return: Nil, Effects: [FileWriteAction, FileAccessError, DiskQuotaError, FileExistsError, ReadOnlyFileSystemError, FileIOError]
+Return: Nil
+Actions: [FileWriteAction]
+Errors: [FileAccessError, DiskQuotaError, FileExistsError, ReadOnlyFileSystemError, FileIOError]
 ```
 
-The effects for `File.write` tell us the function can perform actions (mutable state, IO, non-determinism, etc..), in this case the `FileWriteAction`. It also tells us any errors that `File.write` might throw. The effects of a function are a union of the effects emitted by any code within the function. Lets add a 2nd function to `save_person` and see what effects we get:
+The effects from `File.write` tell us what the function can perform (mutable state, IO, non-determinism, and other side effects), in this case the `FileWriteAction`. The effect system will also tells us any errors that `File.write` might throw. (exceptions) The effects of a function are a union of the effects emitted by any code within the function. Lets add a 2nd function to `save_person` and see what effects we get:
 
 ```
 def save_person(person: Person) {
@@ -37,7 +37,9 @@ Now we get both the effects from `File.write` and the effects from `log`:
 
 ```
 # save_person
-Return: Nil, Effects: [LogAction, FileWriteAction, FileAccessError, DiskQuotaError, FileExistsError, ReadOnlyFileSystemError, FileIOError]
+Return: Nil
+Actions: [LogAction, FileWriteAction]
+Errors: [FileAccessError, DiskQuotaError, FileExistsError, ReadOnlyFileSystemError, FileIOError]
 ```
 
 Lets write a custom save_doctor function that then calls save_person.
@@ -57,7 +59,9 @@ Now lets look at the return and effect types of `save_doctor`
 
 ```
 # save_person
-Return: Nil, Effects: [LogAction, FileWriteAction, FileAccessError, DiskQuotaError, FileExistsError, ReadOnlyFileSystemError, FileIOError]
+Return: Nil
+Actions: [LogAction, FileWriteAction]
+Errors: [FileAccessError, DiskQuotaError, FileExistsError, ReadOnlyFileSystemError, FileIOError]
 ```
 
 Because save_doctor calls save_person, it inherits the effects of save_person. For clarification, the effect types of any function is a union of all functions it calls.
@@ -65,11 +69,12 @@ Because save_doctor calls save_person, it inherits the effects of save_person. F
 
 ## Modifying behavior externally
 
-Effect types allow you to change the behavior of large sections of code without needing to pass data through every function.
+Effect types allow you to change the behavior of large sections of code without needing to pass data through every function. You also don't need to rely on something like dependency injection, and everything type checks the whole way through.
 
 In the `save_person` example above, we would normally want File.write to save a file to disk. (Since that's what we asked it to do), but when running tests, we might want File.write to change the path to a temp directory, only save in memory, or not save at all. Lets take a look at `File.write`'s implementation to see how we might accomplish that.
 
 ```
+# The action effect definition
 struct FileWriteAction < FileAction {
     def initialize(path: Path, contents: Str) {
         # ...
@@ -78,36 +83,51 @@ struct FileWriteAction < FileAction {
 
 struct File {
   def write(path, contents) {
-    emit(FileWriteAction, path, contents) { |path, contents| 
+    emit(FileWriteAction.new(path, contents)) { |file_write_action, _|
         # ... (the code to do the actual saving)
     }
   }
 }
 ```
 
-Notice that the actual file writing code (which is skipped here) is wrapped with an `emit`. The `emit` takes in an effect type, typically parameterized with the options we need to perform the action, and performs the action. In the `emit` example above, we have provided a default handler (the block passed to the function). In a typical program flow, the `path` and `contents` arguments will pass through to the block and the write code will be performed.
+Notice that the actual file writing code (which is skipped here) is wrapped with an `emit`. The `emit` takes in an effect type, typically parameterized with the options we need to perform the action (more on effect parameters later), and performs the action in the emit's block.
 
-But lets say we want to run this code in a test. Instead of writing out the file, lets say we just want to save the file to an object in memory.
+In the `emit` example above, we have provided a "default handler" (the block passed to the function). In a typical program flow, the `path` and `contents` arguments will pass through to the block and the write code will be performed.
+
+If we want to rely on the default handler, we can just call the code like:
+
+```
+File.write('myfile.txt', 'Hello world in a file')
+```
+
+Or we can call a function that calls File.write:
+
+```
+save_person(Person.new(name: "Ryan"))
+```
+
+But lets say we want to run the above code in a test. Instead of writing out the file, lets say we just want to save the file to an object in memory.
 
 ```
 handle {
   save_person(Person.new(name: "Ryan"))
 }.action(FileWriteAction) { |file_write_action, handler_chain|
   # save to an in memory record
-  test_files[file_write_action.path] = contents
-
+  test_files[file_write_action.path] = file_write_action.contents
 }
 ```
 
+By wrapping the code in a handler (the `handle` syntax), we can replace the FileAction's handler.
+
 The flow of the above works like so:
 1. we setup the handler
-2. the run block is called
+2. the handle block is called.
 3. `save_person` is called, which calls `File.write`.
 4. `File.write` emits a FileWriteAction, which jumps into the main block of handle.
 5. We save the file contents to a map.
 6. `File.write` resumes *AFTER* the emit block.
 
-If we wanted to, we could call the original `File.write` emit block and save to a map:
+If we wanted to, we could call the original `File.write` emit block and also save to a map:
 
 ```
 handle {
@@ -117,7 +137,7 @@ handle {
   handler_chain[-1].call(file_write_action.path, file_write_action.content)
 
   # save to an in memory record
-  test_files[file_write_action.path] = contents
+  test_files[file_write_action.path] = file_write_action.contents
 }
 ```
 
@@ -126,9 +146,11 @@ If we were to call `save_person` more than once, the handler block would be call
 
 ## Example 2.
 
-Lets do another example to make things clearer. In this case, we're going to introduce some state that we want to use across our program. Normally this would be global state. There's a lot of reasons to not do global state, but the one big reason is it keeps the rest of the program clean. Especially for things that are unlikely to change often, using global state can be very tempting as a way to keep code from getting too messy.
+Lets do another example to make things clearer. In this case, we're going to introduce some state that we want to use across our program. Normally this would be global state. There's a lot of reasons to not do global state, but the one big reason to use global state is that it keeps functions cleaner. Especially for things that are unlikely to change often, using global state can be very tempting as a way to keep code from getting too messy.
 
-In the example below, lets take a `save_purchase` function that takes a record and post it to an external REST api to record the purchase. In a case like this, we might be tempted to just inline the url we're going to POST to. It's unlikely to change. We might end up wanting different urls when in staging and production. (Maybe when we're testing in staging, we also want to hit the staging url).
+In the example below, lets take a `save_purchase` function that takes a record and post it to an external REST api to record the purchase. In a case like this, we might be tempted to just inline the url we're going to POST to. It's unlikely to change.
+
+However, we might end up wanting different urls when in staging and production. (Maybe we run tests against staging, so when testing, we want to hit the staging url). Below, we can use effects to keep `save_purchase` clean. The effects let us avoid needing to pass the url through layers of functions. Instead, we can define a program level handler to provide the url when it's needed.
 
 ```
 def save_purchase(r: PurchaseInfo) {
@@ -137,7 +159,7 @@ def save_purchase(r: PurchaseInfo) {
 }
 ```
 
-Unlike the previous effect example, the emit performed in `save_purchase` does not provide a default handler. If we try to call `save_purchase` without a handler, we will get the following:
+Unlike the previous effect example, the emit performed in `save_purchase` does not provide a default handler. If we try to call `save_purchase` without a handler, we will get the following compile time error:
 
 ```
 Handler not provided: `save_purchase` requires a `GetPurchaseSaveUrlAction` handler
@@ -153,9 +175,9 @@ handle {
 }
 ```
 
-When save purchase emits the effect (GetPurchaseSaveUrlAction), it jumps to the outermost handler. From inside of the .action block, we could call the default handler if one existed, but in this case we're just going to return a url string. The returned url string gets returned from the emit function and `save_purchase` continues.
+When `save_purchase` emits the effect (GetPurchaseSaveUrlAction), it jumps to the outermost handler (for actions). From inside of the .action block, we could call the default handler if one existed, but in this case we're just going to return a url string. The returned url string gets returned from the emit function and `save_purchase` continues.
 
-If we want, we can wrap our whole program in this handler, thus providing the save url across all of our codebase. Because concurrency in Stoutlang is done with coroutines and there is no asynchronous callbacks, handlers are guaranteed to be provided to all code launched from within the handler.
+If we want, we can wrap our whole program in this handler, thus providing the save url across all of our codebase. Because concurrency in Stoutlang is done with coroutines and there are no asynchronous callbacks, handlers are guaranteed to be provided to all code launched from within the handler. (even if new coroutines are created along the way)
 
 Instead of having an action for each piece of global configuration, you will typically have one handler that provides a configuration struct. Things like environment variables can also be provided in this way, the default handler will look up in the program's ENV, but giving you a way to easily override the lookup for testing, sandboxing, or changing config inside of a handler.
 
@@ -167,18 +189,26 @@ Instead of having an action for each piece of global configuration, you will typ
 
 The above doesn't seem too revolutionary, but it provides us with a lot of really useful properties for writing simple, typesafe, and extremely optimizable code.
 
-1. In the functional world, there's a big trade off. There's a lot of `bad things™` that make software development harder (in the long run) This is a long list: mutations, global state, side effects, non-determinism, null, exceptions, etc... Unfortunately, to get rid of these `bad things™`, we need to make our programs more complicated and harder to understand.
+1. **Practical features without the downsides** - In the functional world, there's a trade off. There's a lot of `bad things™` that make software development harder (in the long run) This is a long list: mutations, global state, side effects, non-determinism, exceptions, etc... Unfortunately, to get rid of these `bad things™`, we need to make our programs more complicated and harder to understand.
 
 Effect types give us the best of both worlds. For example with global state, effect types deliver what feels like global state, but without the downsides. With side effects and IO, effect types make let us use side effects in a way that looks like normal procedural code, but provides information to the compiler so the unpredictability of side effects can be removed. (For example, the StoutLang compiler can automatically run code in parallel while still enforcing a total ordering)
 
-1. We didn't have to pass any state through to `save_person` to change the behavior. This allows us to code for the "normal workflow", then the emitted effects let us customize the behavior across a wide range of scenarios.
+2. **Simpler, easier to compose functions** - We didn't have to pass any state through to `save_person` to change the behavior. This allows us to code for the "normal workflow", then the emitted effects let us customize the behavior across a wide range of scenarios. Effect types also can save us from passing lots of arguments through every level. Instead we can just provide information where we care about it and pass it "down from on high".
 
-2. We maintain composability. By pulling the effects out of functions, we can have both high level building blocks as well as 
+**Note**: passing down from higher levels isn't possible in most languages due to asynchronous code. StoutLang doesn't have any asynchronous code (we can accomplish the same goals without it). This means every line of code runs has a handler stack that goes back to the start of the program. When we spawn a new coroutine, it maintains a copy of the handlers at the time it was spawned.
+
+2. **We maintain composability.** Functional developers love functional composition. Unfortunately, monads can't be composed. So to have a function that has two side effects, you have to do a lot of Monad Transformer gymnastics. I'll spare you the details, but it gets complex fast.
+
+Effect types make it easy for us to compose our functions.
 
 
+## Other Effect Type Features
 
+Effect types also let you stop running the handle block at any point.
 
-Lets say we had some code that would try to call `save_person` multiple times, but we wanted to stop the handle run block as soon as any
+TODO: Explain handler halting
+
+TODO: Parametric Effects
 
 
 
@@ -186,6 +216,9 @@ Lets say we had some code that would try to call `save_person` multiple times, b
 
 [From Ryan. There's a few big articles on why StoutLang exceptions are better than Option types and traditional exceptions... This I put together quickly. Also, I'm not a Rust expert, so I need to brush up a bit, just using it as an example.]
 
+tl;dr Exception handling (we call them errors) can be done with effect types, only everything type checks, both the happy path and the exception path. The compiler also tells you if you don't handle a possible exception, and you can provide top level handlers for the things you don't care about handling. (File IO errors, for example, if you just want to assume that the disk works as expected)
+
+This gives you the benefits of Option/Maybe/Result types (see below), but with way less code and complexity.
 
 ### What's wrong with Option/Maybe/Result?
 
@@ -291,7 +324,7 @@ fn main() {
 
 ```
 fun might_fail(str_of_number: Str) {
-  str_of_number.to_i
+  str_of_number.to_i!
 
   File.read('missing_file.txt')
 }
@@ -313,12 +346,19 @@ handle {
 }
 ```
 
-In StoutLang, exceptions are effects. Notice how the errors can pass through the falls to `a` and `b` without any extra code. (But the type/effect system understands that both `a` and `b` have the FileIOError and ParseIntError effects) 
+In StoutLang, exceptions are effects. Notice how the errors can pass through the calls to `a` and `b` without any extra code. (The type/effect system understands that both `a` and `b` can emit `FileIOError` and `ParseIntError` effects) 
 
 Instead of being required to handle errors, we find it more practical to provide an easy to see any places in your code that may cause a crash. In your editor, functions with unhandled exceptions are underlined in yellow. You can rely on the default behavior (the app crashes), or you can add a handler upstream.
 
 If you're ok with you're app crashing if the disk is full for example, you can just let the error bubble up to the top level.
 
+## Summary
+
+Effect types really feel like magic (in a good way) when you get the hang of them. They provide 80% of the benefits you get from a using a pure functional language, but are an order of magnitude simpler to understand. Under the hood, many of the code paths can be monomorphised (meaning there is no performance penalty compared to Option/Maybe/Result types).
+
+I think my favorite thing about effect types is that you don't really need to think about them. Because the standard library implements effect types for all side effects, any code downstream (all code except calls to C or other languages (unsafe code)) automatically have the effects created and tracked.
+
+Because effects are parameterized by the arguments to the core action, we can see at a high level exact details about what a chunk of code does. This kind of compile introspection has never been done before (that I'm aware). With more concern about security, and more AI generated code, I think these guarantees have never been more relevant.
 
 ---
 

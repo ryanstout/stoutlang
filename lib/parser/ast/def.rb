@@ -25,6 +25,17 @@ module StoutLang
       def run
         # for dev, we don't run it when we define it, only when we call it
       end
+
+      def codegen(mod, bb)
+        func_types = args.map do |arg|
+          arg.type_sig.codegen(mod, bb)
+        end
+        func = mod.functions.add(name, )
+
+        func_body = block.codegen(mod, bb)
+
+        block = LLVM::BasicBlock.create(mod, "entry", function_body)
+      end
     end
 
     class DefArg < AstNode

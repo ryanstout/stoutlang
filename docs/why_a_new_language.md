@@ -43,11 +43,11 @@ Here's a contrived example of what a well behaved database library's effect type
 ## Sqlite.sl
 
 new(db_path?: Str)
-    - Env(name: "DATABASE_URL")
     - FileWrite(path: db_path | 'db_log.txt', content: Str)
     - FileRead(path: db_path, content: Str)
 select(query: Str)
-    - DbRead(table: Str)
+    - DbRead(table: 'subscriptions' | 'users')
+        - FileRead(path: db_path, content: Str)
     ...
 ```
 
@@ -67,6 +67,7 @@ If we hover over the select, we get the following effects:
 ## Sqlite#select
 
 - DbRead(table: 'SomeTable')
+    - FileRead(path: db_path, content: Str)
 ```
 
 While the DbRead effect depends on the Sqlite library emitting it, the FileWrite's are emitted when any file write occurs. This feature alone would have prevented the recent OpenSSL compromise. (because it would have been simple to see that the tests were overwriting binary files)
@@ -78,17 +79,19 @@ TODO: there's a lot more examples here I should write out.
 
 ## Parallel and Distributed
 
-While EUV photo lithography provided some improvements to single core performance, we are unlikely to see major single core gains. As in the past decade, the evidence suggests that most of CPU performance improvements will happen by adding more cores. Current programming languages do not have a good story around concurrency. Async/await is an improvement over callback hell, but is a far cry from making concurrent programming simple. Async/await provides no guarantees you won't run into race conditions or dead locks. In languages with true concurrency (running multiple threads of code at once), you can mutate state on objects/variables and result in invalid states and very hard to debug crashes.
+While EUV photo lithography provided some improvements to single core performance, we are unlikely to see major single core gains in the next decade. As in the past decade, the evidence suggests that most of CPU performance improvements will happen by adding more cores. Current programming languages do not have a good story around parallelism. Async/await is an improvement over callback hell, but is a far cry from making parallel programming simple. Async/await provides no guarantees you won't run into race conditions or dead locks. In languages with true concurrency (running multiple threads of code at once), mutating state on objects/variables can result in invalid states and very hard to debug crashes.
 
 ## Heterogeneous Processors
 
 GPU, DPU, VPU, NPU, FPGA's, oh my.
 
+TODO:...
+
 ## Language Servers
 
-Most don't see it yet, but language servers provide an opportunity to fundamentally change the way we write code. In the past any languages that targeted anything other than just taking text in were doomed to fail. (See SmallTalk) The environment people edit their code in seems to be a very personal (if not religious) choice. Because of this constraint, programming languages had to build to the lowest common denominator (plain text), no assumptions could be made about information and tools available in an editor.
+Most don't see it yet, but language servers provide an opportunity to fundamentally change the way we write code. In the past any languages that targeted anything other than just plain text were doomed to fail. (See SmallTalk) The environment people edit their code in seems to be a very personal (if not religious) choice. Because of this constraint, programming languages had to build to the lowest common denominator (e.g. plain text), no assumptions could be made about information and tools available in an editor.
 
-Language servers raise the bar for the "lowest common denominator" editing experience. In StoutLang, all effect type information is provided through the language server's hover tips. This helps keep code clean when you don't need to know the effects, but keeps the information a hover away. It also means as a user you don't need to worry about adding these annotations directly to your code.
+Language servers raise the bar for the "lowest common denominator" editing experience. In StoutLang, all effect type information is provided through the language server's hover tips. This helps keep code clean when you don't need to see the effects, but always leaves the information a hover away. It also means as a user you don't need to worry about adding these annotations directly to your code.
 
 ## Bringing Functional Ideas to the Mainstream
 
@@ -96,20 +99,20 @@ There are a lot of great ideas buried in the depth of often mentioned, but seldo
 
 1. A prioritization of correctness over simplicity. (You can't have both unfortunately, choosing where correctness is necessary (memory safety) and where it's not ([`any` in typescript](https://effectivetypescript.com/2021/05/06/unsoundness/) for example) can mean the difference between a language thats easy to use and one thats seldom used.) (See https://en.wikipedia.org/wiki/Worse_is_better)
 
-2. Familiarity. Learning any programming language is difficult. Learning one where the syntax is entirely foreign seems to be a tripping point for people. People are more willing to exert mental energy to learn their first programming language than their 2nd. They already know how to solve problems in their first language, so when learning a second, they weight the opportunity cost of learning the new language vs just implementing what they need in their new language. Functional programming languages tend to differ quite a bit from what I call `C style` that the majority of software developers learn in their first language. (C, C++, Java, C#, Rust, Go, JavaScript/TypeScript, and to a bit lesser extent Ruby and Python)
+2. Familiarity. Learning any programming language is difficult. Learning one where the syntax is entirely foreign seems to be a tripping point for people. People are more willing to exert mental energy to learn their first programming language than their 2nd. They already know how to solve problems in their first language, so when learning a second, they weight the opportunity cost of learning the new language vs just implementing what they need in their current language. Functional programming languages tend to differ quite a bit from what I call `C style` that the majority of software developers learn in their first language. (C, C++, Java, C#, Rust, Go, JavaScript/TypeScript, and to a bit lesser extent Ruby and Python)
 
-3. Complexity - Often as language designers, we want to make our language as powerful as possible. Monadic transformers are probably the best example of this. But with great power comes great confusion. I've heard it said that the hard part with designing a good board game isn't coming with a mechanic that makes it fun, it's coming up with a mechanic that makes it fun and can be understood in 5 minutes. I think the functional community has some great ideas, but for a language to go mainstream, we have to select from the ideas that can be quickly understood. Even if that means there is a slight loss in power. (Though I would argue, often you can get 80% of the power for 20% of the complexity)
+3. Complexity - Often as language designers, we want to make our language as powerful as possible. Monads and Monadic Transformers are probably the best example of this. With great power comes great confusion. I've heard it said that the hard part with designing a good board game isn't coming with a mechanic that makes it fun, it's coming up with a mechanic that makes it fun and can be understood in 5 minutes. I think the functional community has some great ideas, but for a language to go mainstream, we have to select from the ideas that can be quickly understood. Even if that means there is a slight loss in power. (Though I would argue, often you can get 80% of the power for 20% of the complexity)
 
-4. Poor Marketing - The functional world tends to attract more academic programmers. For reasons I don't fully understand, once people are in the functional world for a year or two, they seem to lose the ability to explain concepts to developers who are new to functional programming. Part of this stems back to #3. If your language is complex, you have to explain more before you can get to the interesting features.
+4. Poor Marketing - The functional world tends to attract more academic programmers. For reasons I don't fully understand, once people are in the functional world for a year or two, they seem to lose the ability to explain concepts to developers who are new to functional programming. Part of this stems back to #3. If your language is complex, you have to explain more before you can get to the new and interesting ideas.
 
-5. Unclear Benefits - The challenge the functional world faces is that the benefits of functional programming are often not clear until you're completely immersed in functional programming, but the trade-offs are immediately apparent. Open any Haskell book and you'll see that understanding the downsides of functional programming when you try to print. (And realize you have to understand a mountain of concepts to do something thats so simple in other languages) On the flip side, concepts like functional purity have a lot of benefits, but they won't be obvious until you've built a larger program.
+5. Unclear Benefits - The challenge the functional world faces is that the benefits of functional programming are often not clear until you're completely immersed in functional programming, but the trade-offs are immediately apparent. Open any Haskell book and you'll immediately understand the downsides of pure functional programming languages when you try to print. (And realize you have to understand a mountain of concepts to do something thats so simple in other languages) On the flip side, concepts like functional purity have a lot of benefits, but they won't be obvious until you've built a larger program.
 
 Haskell makes the easy things hard so the hard things are easy.
 
-With StoutLang, we believe effect types can finally make the hard things easy and keep the easy things easy as well.
+With StoutLang, we believe effect types can finally make the hard things easy and keep the easy things easy as well. We think effect types bring the most of the benefits of pure functional languages, but without the complexity.
 
 ---
 
-Next lets quickly see why WebAssembly as a platform is such a game changer.
+Next lets change gears and see why WebAssembly as a platform is such a game changer.
 
 [Next - Why WebAssembly](why_webassembly.md)

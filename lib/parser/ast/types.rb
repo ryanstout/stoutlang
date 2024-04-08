@@ -22,6 +22,10 @@ module StoutLang
       def run
         self
       end
+
+      def codegen(mod, bb)
+        type_val.codegen(mod, bb)
+      end
     end
   end
 end

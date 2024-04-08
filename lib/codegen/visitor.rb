@@ -68,7 +68,8 @@ class Visitor
 
       # Link machine code to create an executable
       bm('clang') do
-        system("clang builds/out.s -o builds/out")
+        #  -nostdlib (enable once we get musl)
+        system("clang -O3 -flto builds/out.s -o builds/out")
       end
     end
   end

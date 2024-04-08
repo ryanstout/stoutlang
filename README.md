@@ -79,6 +79,7 @@ a : int | str
 - You'll want a way to access the parent handlers (and probably a way to access the whole chain so you can skip some if you want)
 - Maybe custom infix operations  def (*++*)  { ... }
 - String literals with interpolation need a way to hook, so you could build things like svelt from heredocs or something.
+- A way to shell out using cgroups where you only permit certain effects. (You would have to specify the effects ahead of time, since the programs can't emit them)
 
 - package manager: https://medium.com/@sdboyer/so-you-want-to-write-a-package-manager-4ae9c17d9527
     - packages need a way to be parameterized (build target, compiler options, optimization level, etc..)
