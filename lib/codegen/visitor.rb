@@ -58,18 +58,18 @@ class Visitor
       # triple = LLVM::C.get_default_target_triple
 
       bm('write llir') do
-        @mod.write_bitcode("builds/out.ll")
+        @mod.write_bitcode("#{output_file_path}.ll")
       end
 
       # Compile LLVM IR to machine code
       bm('llc') do
-        system("llc -O3 builds/out.ll -o builds/out.s")
+        system("llc -O3 #{output_file_path}.ll -o #{output_file_path}.s")
       end
 
       # Link machine code to create an executable
       bm('clang') do
         #  -nostdlib (enable once we get musl)
-        system("clang -O3 -flto builds/out.s -o builds/out")
+        system("clang -O3 -flto #{output_file_path}.s -o #{output_file_path}")
       end
     end
   end
