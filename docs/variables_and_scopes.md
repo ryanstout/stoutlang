@@ -26,6 +26,8 @@ So in StoutLang, we don't have to worry about a value being changed when we pass
 
 ## Structs
 
+TODO: Below is a WIP.
+
 We haven't talked much about Struct's yet, but they are essentially a collection of other Structs or Basic types. (Int, Float, Str, List, etc..)
 
 Structs look like this:
@@ -99,7 +101,7 @@ fun count=(self: Accident, count) {
   @count = count
 }
 
-car->accidents->count += 20
+car->.accidents->.count += 20
 # ^ sugar for car = car=(car, accidents=(car, count=(car.accidents, car.accidents.count + 20)))
 
 car = car->(car, accidents->(car, count->(car.accidents, car.accidents.count + 20)))
@@ -127,3 +129,8 @@ The following contain scopes.
 
 Note that Blocks do not contain a scope, this means things like .each and if expressions don't create scopes.
 
+---
+
+Lets look at how StoutLang handles concurrency and paraellelism.
+
+[Next - Concurrency and Parallelism](parallelism.md)
