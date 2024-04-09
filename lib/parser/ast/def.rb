@@ -5,6 +5,7 @@ module StoutLang
     class Def < AstNode
       include Scope
       setup :name, :args, :block
+      attr_accessor :ir
 
       def prepare
         super
@@ -26,15 +27,24 @@ module StoutLang
         # for dev, we don't run it when we define it, only when we call it
       end
 
-      def codegen(mod, bb)
+      def codegen(mod, func, bb)
         func_types = args.map do |arg|
-          arg.type_sig.codegen(mod, bb)
+          arg.type_sig.codegen(mod, func, bb)
         end
-        func = mod.functions.add(name, )
+        args = []
+        return_type = LLVM::Type.void
 
-        func_body = block.codegen(mod, bb)
+        func = mod.functions.add(name, args, return_type) do |function|
+          function.add_attribute :no_unwind_attribute
 
-        block = LLVM::BasicBlock.create(mod, "entry", function_body)
+          bb, last_expr = block.codegen(mod, function, nil)
+
+          bb.ret(last_expr)
+        end
+
+        self.ir = func
+
+        return func
       end
     end
 

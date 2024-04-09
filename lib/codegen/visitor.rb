@@ -27,13 +27,13 @@ class Visitor
     end
 
     # Register cputs as %> on root
-    @ast.register_identifier('%>', cputs)
-
+    cputs_func = ExternFunc.new(cputs)
+    @ast.register_identifier('%>', cputs_func)
 
     main = @mod.functions.add('main', [], LLVM::Int32) do |function|
       function.basic_blocks.append.build do |b|
-        # Codegen in place the main ast
-        @ast.codegen(@mod, b)
+        # Codegen in place in the main ast
+        @ast.codegen(@mod, function, b)
 
         zero = LLVM.Int(0) # a LLVM Constant value
         b.ret zero

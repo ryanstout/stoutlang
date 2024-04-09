@@ -18,8 +18,8 @@ module StoutLang
         block.run
       end
 
-      def codegen(mod, bb)
-        block.codegen(mod, bb)
+      def codegen(mod, func, bb)
+        block.codegen(mod, func, bb)
       end
     end
   end

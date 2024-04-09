@@ -23,8 +23,8 @@ module StoutLang
         self
       end
 
-      def codegen(mod, bb)
-        type_val.codegen(mod, bb)
+      def codegen(mod, func, bb)
+        type_val.codegen(mod, func, bb)
       end
     end
   end

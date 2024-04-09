@@ -14,11 +14,11 @@ module StoutLang
         end
       end
 
-      def codegen(mod, bb)
+      def codegen(mod, func, bb)
         identified = lookup_identifier(name)
 
         if identified
-          identified.codegen(mod, bb)
+          identified.codegen(mod, func, bb)
         else
           raise "Identifier #{name} not found"
         end

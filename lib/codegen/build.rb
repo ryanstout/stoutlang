@@ -1,6 +1,5 @@
 # Make sure this files directory is on the $LOAD_PATH
 lib_path = File.expand_path(File.dirname(__FILE__)+"../..")
-puts lib_path
 unless $LOAD_PATH.include?(lib_path)
   $LOAD_PATH << lib_path
 end

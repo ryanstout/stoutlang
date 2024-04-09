@@ -17,8 +17,8 @@ module StoutLang
         expression.run
       end
 
-      def codegen(mod, bb)
-        expression.codegen(mod, bb)
+      def codegen(mod, func, bb)
+        expression.codegen(mod, func, bb)
       end
     end
   end
