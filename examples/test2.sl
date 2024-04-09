@@ -1,3 +1,3 @@
 a = "Hello World"
-=> a
-=> "Also hello!"
+%> a
+%> "Also hello!"

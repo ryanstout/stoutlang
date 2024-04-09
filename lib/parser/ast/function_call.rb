@@ -41,8 +41,8 @@ module StoutLang
       end
 
       def codegen(mod, bb)
-        if name == "=>"
-          method_call = lookup_identifier("=>")
+        if name == "%>"
+          method_call = lookup_identifier("%>")
 
           arg = args[0].codegen(mod, bb)
 

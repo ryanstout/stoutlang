@@ -361,11 +361,42 @@ In StoutLang, handlers (even actions) provide a simple way to get a stack trace 
 
 ## StoutLang Errors
 
-In StoutLang, exceptions are effects. Notice how the errors can pass through the calls to `a` and `b` without any extra code. (The type/effect system understands that both `a` and `b` can emit `FileIOError` and `ParseIntError` effects) 
+In StoutLang, exceptions are effects. Notice how in the example above, the errors can pass through the calls to `a` and `b` without any extra code. (The type/effect system understands that both `a` and `b` can emit `FileIOError` and `ParseIntError` effects) 
+
 
 Instead of being required to handle errors, we find it more practical to provide an easy to see any places in your code that may cause a crash. In your editor, functions with unhandled exceptions are underlined in yellow. You can rely on the default behavior (the app crashes), or you can add a handler upstream.
 
 If you're ok with you're app crashing if the disk is full for example, you can just let the error bubble up to the top level.
+
+## Action vs Error Handlers
+
+Error handlers use the same mechanism under the hood, but the handlers themselves behave a bit differently. When you define an action handler, the outer most handler receives the action. (The handler furthest up the stack) This lets you override handles for all tests for example. If you want, the action handler can call the other handlers down the call stack and use those values. (think nested ruby yield blocks) Once the action handler is called, by default it returns to the `emit` call that emitted the action. The return value of the handler becomes the return value of the `emit`
+
+Error handlers act more like traditional exception handlers, the inner handler gets the error. It can emit the effect again (aka re-raise) and it will go to the next handler up the call stack. It can also `retry`, which will start the handle block (think try block) over again. This is usually done in the hopes if the retry working at some point.
+
+Here's a contrived example:
+
+```
+struct CoinFlipError < Error {
+  # ...
+}
+
+try_count = 1
+handle {
+  heads = (rand(1) == 0)
+  if heads {
+    print("You got heads on the ${try_count} try")
+  } else {
+    emit(CoinFlipError)
+  }
+}.catch(CoinFlipError) {
+  try_count += 1
+  if try_count < 5 {
+    retry
+  } else {
+    print("You failed to get heads")
+  }
+}
 
 
 

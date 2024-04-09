@@ -108,7 +108,7 @@ grammar Infix
   end
 
   rule print_ops
-    space? operator:('=>') space? <InfixOps>
+    space? operator:('%>') space? <InfixOps>
   end
 
   # TODO: 

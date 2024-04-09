@@ -7,14 +7,15 @@ StoutLang borrows a lot of syntax from JavaScript, which borrowed it from Java, 
 Here's hello world:
 
 ```
-=> "Hello World"
+%> "Hello World"
 ```
 
 Ok, I just said we try to feel like JavaScript, but printing is a bit different. One goal with StoutLang is to make things take the "right" amount of space. So things that are extremely common (printing) are made to be shorter, and things that don't happen as much we may be longer but clearer. This makes code more readable in the long run.
 
-In the above, `=>` is a unary infix function which prints. (Just read `=>` as `print`). It's the same as `=>("hello world")`
+In the above, `%>` is a unary infix function which prints. (Just read `%>` as `print`). It's the same as `%>("hello world")`
 
 Most things from here will feel familiar I swear :-)
+
 
 ### Example Code
 
@@ -29,11 +30,11 @@ fun print_temperature(location: Str) {
 
     response = Http.get(request_url)
     weather_data = Json.parse(response)
-    => "The temperature in ${weather_data.name.to_s} is ${weather_data.main.temp.to_f}C"
+    %> "The temperature in ${weather_data.name.to_s} is ${weather_data.main.temp.to_f}C"
 }
 
 # Get the users location and print the weather.
-=> "Enter your location."
+%> "Enter your location."
 location = Console.read_line()
 print_weather(location)
 ```

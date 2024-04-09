@@ -26,8 +26,8 @@ class Visitor
       string.add_attribute :no_capture_attribute
     end
 
-    # Register cputs as => on root
-    @ast.register_identifier('=>', cputs)
+    # Register cputs as %> on root
+    @ast.register_identifier('%>', cputs)
 
 
     main = @mod.functions.add('main', [], LLVM::Int32) do |function|
