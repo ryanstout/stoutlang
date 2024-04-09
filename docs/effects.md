@@ -359,7 +359,7 @@ In languages like Rust, exceptions end up getting passed up the call chain (whic
 In StoutLang, handlers (even actions) provide a simple way to get a stack trace to the emit.
 
 
-## StoutLang Exceptions
+## StoutLang Errors
 
 In StoutLang, exceptions are effects. Notice how the errors can pass through the calls to `a` and `b` without any extra code. (The type/effect system understands that both `a` and `b` can emit `FileIOError` and `ParseIntError` effects) 
 
