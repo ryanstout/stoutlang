@@ -54,7 +54,7 @@ Automatic parallelization is the big reason why you need a new language, it woul
 Lets start with the basics, we're iterating over list elements in a loop. This seems like languages should just run the loop in parallel by default right? But they don't, the reason being that the code in the loop can easily change things outside of the loop. (aka "side effects") Any code with side effects
 
 
-TODO:
+TODO: Still finishing, going to walk through how automatic parallelization works. (when it works and when it won't. It usually will)
 
 
 
