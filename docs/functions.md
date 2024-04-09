@@ -17,7 +17,7 @@ Weather provides some functions when we import it. Functions with the same name 
 
 **Method Style**
 
-StoutLang also provides a second functional call syntax. This style looks more like a method call, but it's exactly the same as the above under the hood. Lets look at an example.
+StoutLang also provides a second functional call syntax. This style looks more like a method call, but it's exactly the same as the function style under the hood. Lets look at an example.
 
 ```
 import weather
@@ -30,7 +30,7 @@ Notice this time we did `bozeman_weather.current_temperature("Celsius")` instead
 
 The `.{function_name}` syntax takes the argument to the left of the dot and passes it in as the first argument to the function. This gives the feel of Object Oriented programming, but as we'll see later, few of the downsides.
 
-The advantage of the method style is it allows you to chain operations, resulting in smaller code, which personally I find easier to read/write. It's usually easier to think about telling a `cow` to `moo`, than having a `moo` function that takes a `cow`.
+The advantage of the method style is it allows you to chain operations, resulting in smaller code, which personally I find easier to read/write. It's usually easier to think about telling a `cow` to `moo`, than having a `moo` function that takes a `cow`. (in English at least)
 
 Method style chaining is especially ergonomic for dealing with collections.
 
@@ -73,9 +73,9 @@ bozeman_weather = Weather.lookup("Bozeman")
 bozeman_temperature = bozeman_weather.current_temperature_kelvin()
 ```
 
-Note: the . before current_temperature tells us that we are calling current_temperature on self. (method style) We could also have passed in self in as the first argument (function style)
+Note: the . before current_temperature tells us that we are calling current_temperature on self. (method style) We could also have passed in `bozeman_weather` in as the first argument (function style)
 
-If we wanted, we could put `current_temperature_kelvin` in another file and import it. As long as it's imported into the scope before we call it, it will be available.
+If we wanted, we could put `current_temperature_kelvin` in another file and import it. As long as it's imported into the scope before we call it, it will be available and you can call it in either style.
 
 We can also emulate some object oriented behaviors. Lets say in our scope, we wanted `current_temperature` to support taking "Kelvin" as an argument (instead of making a new function).
 
@@ -84,9 +84,9 @@ import weather
 
 fun current_temperature(self: Weather, unit: Str) {
   if unit == "Kelvin" {
-    return .super("Celsius") + 273.15
+    return self.super("Celsius") + 273.15
   } else {
-    return .super
+    return self.super(unit)
   }
 }
 
