@@ -82,12 +82,14 @@ Here's some other things that StoutLang has:
 In StoutLang, types always start with a capital letter.
 
 | Type category   | Types                                                       | Literals                              |
+|:---------------:|:-----------------------------------------------------------:|:-------------------------------------:|
 | Signed Numbers  | Int, Int32, Int64, Float, Float32, Float64 (< Number)       | 1, 200_u32, 99334.45, 99234.23_f32    |
 | Strings         | Str, Bytes (a char is a length 1 string)                    | "hello world"                         |
 | Booleans        | True, False (< Boolean)                                     | true, false                           |
 | List            | List(...)                                                   | []  (example: [1,2,3,4] )             |
 | Map             | Map(...)                                                    | {name: "Ryan", role: "Dev"}           |
 | Tuple           | Tuple(...)                                                  | (1, "hello", 2)                       |
+
 
 TODO: More Basics
 
