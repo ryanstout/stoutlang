@@ -19,11 +19,16 @@ sudo ln -s $(brew --prefix llvm@18)/lib /opt/local/lib
 
 
 ```
-./bin/build {.sl file path} {output file path}
+./bin/run {.sl file path}
 
-./bin/build examples/test2.sl test
+./bin/run examples/test2.sl
 ```
 
 ## AOT compile
 
+
+```
+./bin/build {.sl file path} {output file path}
+
+./bin/build examples/test2.sl test
 ```
