@@ -5,7 +5,7 @@ module StoutLang
     class Def < AstNode
       include Scope
       setup :name, :args, :block
-      attr_accessor :ir
+      attr_accessor :ir, :return_type
 
       def prepare
         super
@@ -14,6 +14,7 @@ module StoutLang
         end
         block.prepare
 
+        # Def's should register themselves in the parent scope
         parent_scope.register_identifier(name, self)
       end
 
