@@ -44,6 +44,7 @@ describe StoutLangParser do
                           type_sig=TypeSig.new(type_val=Type.new(name="Str"))
                         )
                       ],
+                      return_type=nil,
                       block=Block.new(expressions=[IntegerLiteral.new(value=5)])
                     )
                   ]

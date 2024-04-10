@@ -54,7 +54,7 @@ grammar Types
 
   rule type_infix_op
     # We want to process lower precedence operators first
-    space? operator:('||' / '&&' / '|' / '&') space? {
+    space? operator:('||' / '&&' / '|' / '&' / '<') space? {
       def to_ast
         operator.text_value
       end

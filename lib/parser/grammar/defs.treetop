@@ -1,9 +1,10 @@
 grammar Defs
   rule define_method
-    'def ' method_name:method_name space? def_args:def_args? space? block:block {
+    'def ' method_name:method_name space? def_args:def_args? space? def_return_type_sig:def_return_type_sig? space? block:block {
       def to_ast
         def_args_ast = def_args.respond_to?(:to_ast) ? def_args.to_ast : []
-        Def.new(method_name.to_ast, def_args_ast, block.to_ast, self)
+        return_type = def_return_type_sig.respond_to?(:to_ast) ? def_return_type_sig.to_ast : nil
+        Def.new(method_name.to_ast, def_args_ast, return_type, block.to_ast, self)
       end
     } / macro_define
   end
@@ -22,6 +23,14 @@ grammar Defs
       def to_ast
         type_sig_ast = type_sig.respond_to?(:to_ast) ? type_sig.to_ast : nil
         DefArg.new(identifier.to_ast, type_sig_ast, self)
+      end
+    }
+  end
+
+  rule def_return_type_sig
+    '->' space? type_expression:type_expression {
+      def to_ast
+        type_expression.to_ast
       end
     }
   end

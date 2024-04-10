@@ -4,8 +4,8 @@ module StoutLang
   module Ast
     class Def < AstNode
       include Scope
-      setup :name, :args, :block
-      attr_accessor :ir, :return_type
+      setup :name, :args, :return_type, :block
+      attr_accessor :ir
 
       def prepare
         super

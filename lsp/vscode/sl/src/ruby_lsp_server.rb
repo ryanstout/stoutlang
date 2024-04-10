@@ -141,7 +141,7 @@ class RubyLSPServer
           result: {
             contents: {
               kind: 'markdown',
-              value: "```ruby\n{'effects' => [#{effects}]}\n```"
+              value: "```ruby\n{'effects' => [gitx#{effects}]}\n```"
             }
           }
         }

@@ -30,10 +30,36 @@ describe StoutLangParser do
                           type_sig=TypeSig.new(type_val=Type.new(name="Int"))
                         )
                       ],
+                      return_type=nil,
                       block=Block.new(expressions=[])
                     )
                   ]
                 )
+              )
+            ]
+          )
+        )
+      )
+    end
+
+    it 'should allow -> to define the return type' do
+      ast = Parser.new.parse("def say_hi(name: Str) -> Int { 5 }")
+
+      expect(ast).to eq(
+        StoutLang::Ast::Struct.new(
+          name="Root",
+          block=Block.new(
+            expressions=[
+              Def.new(
+                name="say_hi",
+                args=[
+                  DefArg.new(
+                    name=Identifier.new(name="name"),
+                    type_sig=TypeSig.new(type_val=Type.new(name="Str"))
+                  )
+                ],
+                return_type=Type.new(name="Int"),
+                block=Block.new(expressions=[IntegerLiteral.new(value=5)])
               )
             ]
           )
