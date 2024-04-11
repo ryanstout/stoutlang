@@ -60,5 +60,61 @@ describe StoutLangParser do
         )
       )
     end
+
+    it 'should handle shell strings' do
+      ast = Parser.new.parse('`echo hello`', root: 'string', wrap_root: false)
+
+      expect(ast).to eq(
+        ShellStringLiteral.new(value=["echo hello"], language=nil)
+      )
+    end
+
+    it 'should support shell string interpolation' do
+      ast = Parser.new.parse('`echo ${world}`', root: 'string', wrap_root: false)
+
+      expect(ast).to eq(
+        ShellStringLiteral.new(
+          value=[
+            "echo ",
+            StringInterpolation.new(
+              block=Block.new(expressions=[Identifier.new(name="world")])
+            )
+          ],
+          language=nil
+        )
+      )
+    end
+
+    it 'should support shell heredocs' do
+      ast = Parser.new.parse('```hello' + "\n" + 'world```', root: 'string', wrap_root: false)
+
+      expect(ast).to eq(
+        ShellStringLiteral.new(value=["hello\nworld"])
+      )
+    end
+
+    it 'should support shell heredoc interpolation' do
+      ast = Parser.new.parse('```hello ${world}' + "\n" + 'world```', root: 'string', wrap_root: false)
+
+      expect(ast).to eq(
+        ShellStringLiteral.new(
+          value=[
+            "hello ",
+            StringInterpolation.new(
+              block=Block.new(expressions=[Identifier.new(name="world")])
+            ),
+            "\nworld"
+          ]
+        )
+      )
+    end
+
+    it 'should support shell heredocs with a custom language' do
+      ast = Parser.new.parse('ruby```hello' + "\n" + 'world```', root: 'string', wrap_root: false)
+
+      expect(ast).to eq(
+        ShellStringLiteral.new(value=["hello\nworld"], language="ruby")
+      )
+    end
   end
 end

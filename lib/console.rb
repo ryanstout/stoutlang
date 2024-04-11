@@ -1,7 +1,7 @@
 # The StoutLang console
 
 # Add main path to load path
-main_path = File.expand_path(File.dirname(__FILE__) + "/..")
+main_path = File.expand_path(File.dirname(__FILE__))
 unless $LOAD_PATH.include?(main_path)
   $LOAD_PATH << main_path
   puts main_path

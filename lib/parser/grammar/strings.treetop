@@ -72,7 +72,7 @@ grammar Strings
   end
 
   rule string
-    heredoc / double_quoted_string
+    heredoc / double_quoted_string / shell_heredoc / shell_string
   end
 
   # Heredocs
@@ -103,6 +103,71 @@ grammar Strings
 
   rule heredoc_string_content
   (!'"""' [^$\\])+ {
+      def to_ast
+        text_value
+      end
+    }
+  end
+
+  rule shell_string
+    language:[a-z]* '`' str:(shell_string_content / escape_sequence / interpolation)* '`' {
+      def to_ast
+        lang = language.text_value
+        lang = nil if lang.empty?
+        parts = str.elements.map(&:to_ast)
+
+        # Merge adjacent string parts
+        merged_parts = parts.chunk { |part| part.is_a?(String) }.map do |is_string, parts|
+          if is_string
+            parts.join
+          else
+            parts[0]
+          end
+        end
+        ShellStringLiteral.new(merged_parts, lang, self)
+      end
+    }
+  end
+
+  rule shell_string_content
+    (!'`' [^$\\])+ {
+      def to_ast
+        text_value
+      end
+    }
+  end
+
+  rule shell_heredoc
+    language:[a-z]* '```' shell_heredoc_content:shell_heredoc_content '```' {
+      def to_ast
+        lang = language.text_value
+        lang = nil if lang.empty?
+          
+
+        parts = shell_heredoc_content.elements.map(&:to_ast)
+        # Merge adjacent string parts
+        merged_parts = parts.chunk { |part| part.is_a?(String) }.map do |is_string, parts|
+          if is_string
+            parts.join
+          else
+            parts[0]
+          end
+        end
+        ShellStringLiteral.new(merged_parts, lang, self)
+      end
+    }
+  end
+
+  rule shell_heredoc_content
+    (shell_heredoc_string_content / escape_sequence / interpolation)* {
+      def to_ast
+        elements.map(&:to_ast)
+      end
+    }
+  end
+
+  rule shell_heredoc_string_content
+    (!'```' [^$\\])+ {
       def to_ast
         text_value
       end
