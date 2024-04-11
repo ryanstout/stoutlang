@@ -7,7 +7,7 @@ setup:
 		fi
 
 # ruby-ffi doesn't look at the right location for llvm by default
-		PATH=$$PATH:$(shell brew --prefix $(BREW_LLM_VERSION))/bin DYLD_LIBRARY_PATH=$(shell brew --prefix $(BREW_LLM_VERSION))/lib:$$(DYLD_LIBRARY_PATH) bundle install
+		PATH=$(PATH):$(shell brew --prefix $(BREW_LLM_VERSION))/bin DYLD_LIBRARY_PATH=$(shell brew --prefix $(BREW_LLM_VERSION))/lib:$(DYLD_LIBRARY_PATH) bundle install
 
 clean:
 	rm -rf vendor/bundle
