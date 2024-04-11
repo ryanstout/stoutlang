@@ -2,3 +2,5 @@
 .DS_Store
 lsp/vscode/sl/node_modules
 builds/*
+
+/vendor/bundle
