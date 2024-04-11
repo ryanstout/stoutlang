@@ -123,7 +123,7 @@ The flow of the above works like so:
 1. we setup the handler
 2. the handle block is called.
 3. `save_person` is called, which calls `File.write`.
-4. `File.write` emits a FileWriteAction, which jumps into the main block of handle.
+4. `File.write` emits a FileWriteAction, which jumps into the matching action block of handle.
 5. We save the file contents to a map.
 6. `File.write` resumes *AFTER* the emit block.
 
