@@ -148,7 +148,7 @@ If we were to call `save_person` more than once, the handler block would be call
 
 Lets do another example to make things clearer. In this case, we're going to introduce some state that we want to use across our program. Normally this would be global state. There's a lot of reasons to not do global state, but the one big reason to use global state is that it keeps functions cleaner. Especially for things that are unlikely to change often, using global state can be very tempting as a way to keep code from getting too messy.
 
-In the example below, lets take a `save_purchase` function that takes a record and post it to an external REST api to record the purchase. In a case like this, we might be tempted to just inline the url we're going to POST to. It's unlikely to change.
+In the example below, lets take a `save_purchase` function that takes a record and posts it to an external REST api to record the purchase. In a case like this, we might be tempted to just inline the url we're going to POST to. It's unlikely to change.
 
 However, we might end up wanting different urls when in staging and production. (Maybe we run tests against staging, so when testing, we want to hit the staging url). Below, we can use effects to keep `save_purchase` clean. The effects let us avoid needing to pass the url through layers of functions. Instead, we can define a program level handler to provide the url when it's needed.
 
@@ -370,7 +370,7 @@ If you're ok with you're app crashing if the disk is full for example, you can j
 
 ## Action vs Error Handlers
 
-Error handlers use the same mechanism under the hood, but the handlers themselves behave a bit differently. When you define an action handler, the outer most handler receives the action. (The handler furthest up the stack) This lets you override handles for all tests for example. If you want, the action handler can call the other handlers down the call stack and use those values. (think nested ruby yield blocks) Once the action handler is called, by default it returns to the `emit` call that emitted the action. The return value of the handler becomes the return value of the `emit`
+Error handlers use the same mechanism under the hood, but the handlers themselves behave a bit differently. When you define an action handler, the outer most handler receives the action. (The handler furthest up the stack) This lets you override handles for all tests for example. If you want, the action handler can call the other handlers down the call stack and use those values. (think nested ruby yield blocks) Once the action handler is called, by default the `emit` call returns the return value of the handler. The return value of the handler becomes the return value of the `emit`
 
 Error handlers act more like traditional exception handlers, the inner handler gets the error. It can emit the effect again (aka re-raise) and it will go to the next handler up the call stack. It can also `retry`, which will start the handle block (think try block) over again. This is usually done in the hopes if the retry working at some point.
 
