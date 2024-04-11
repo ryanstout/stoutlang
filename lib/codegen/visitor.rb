@@ -1,3 +1,4 @@
+require 'llvm'
 require 'llvm/core'
 require 'llvm/execution_engine'
 require 'benchmark'
@@ -12,26 +13,31 @@ def bm(name)
 end
 
 class Visitor
-  def initialize(ast, output_file_path, aot=false)
+  attr_reader :mod, :main
+
+  def initialize(ast)
     @ast = ast
     @ast.prepare
 
     @mod = LLVM::Module.new('root')
     @builder = LLVM::Builder.new
 
-    puts "Parse: #{ast.inspect}"
-
     cputs = @mod.functions.add('puts', [LLVM.Pointer(LLVM::Int8)], LLVM::Int32) do |function, string|
       function.add_attribute :no_unwind_attribute
       string.add_attribute :no_capture_attribute
     end
 
+    # Register the build in types
+    @ast.register_identifier("Int", StoutLang::Int)
+    @ast.register_identifier("Str", StoutLang::Str)
+
     # Register cputs as %> on root
     cputs_func = ExternFunc.new(cputs)
     @ast.register_identifier('%>', cputs_func)
 
-    main = @mod.functions.add('main', [], LLVM::Int32) do |function|
+    @main = @mod.functions.add('main', [], LLVM::Int32) do |function|
       function.basic_blocks.append.build do |b|
+
         # Codegen in place in the main ast
         @ast.codegen(@mod, function, b)
 
@@ -39,6 +45,10 @@ class Visitor
         b.ret zero
       end
     end
+
+  end
+
+  def generate(output_file_path, aot=false)
 
     @mod.dump
     @mod.verify
@@ -50,7 +60,7 @@ class Visitor
       LLVM.init_jit
 
       engine = LLVM::JITCompiler.new(@mod)
-      engine.run_function(main)
+      engine.run_function(@main)
       engine.dispose
     else
 
