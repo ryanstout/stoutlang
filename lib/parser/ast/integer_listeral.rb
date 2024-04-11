@@ -6,6 +6,10 @@ module StoutLang
       def run
         value
       end
+
+      def codegen(mod, func, bb)
+        LLVM::Int(value)
+      end
     end
   end
 end

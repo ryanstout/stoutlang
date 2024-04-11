@@ -38,5 +38,27 @@ describe StoutLangParser do
 
       expect(ast.run).to eq("hello 15")
     end
+
+    it 'should handle heredocs' do
+      ast = Parser.new.parse('"""hello' + "\n" + 'world"""', root: 'string', wrap_root: false)
+
+      expect(ast).to eq(StringLiteral.new(value=["hello\nworld"]))
+    end
+
+    it 'should support a heredoc with interpolation' do
+      ast = Parser.new.parse('"""hello ${world}' + "\n" + 'world"""', root: 'string', wrap_root: false)
+
+      expect(ast).to eq(
+        StringLiteral.new(
+          value=[
+            "hello ",
+            StringInterpolation.new(
+              block=Block.new(expressions=[Identifier.new(name="world")])
+            ),
+            "\nworld"
+          ]
+        )
+      )
+    end
   end
 end

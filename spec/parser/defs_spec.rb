@@ -15,7 +15,7 @@ describe StoutLangParser do
 
       expect(ast).to eq(
         StoutLang::Ast::Struct.new(
-          name="Root",
+          name=Type.new("Root"),
           block=Block.new(
             expressions=[
               StoutLang::Ast::Struct.new(
@@ -47,7 +47,7 @@ describe StoutLangParser do
 
       expect(ast).to eq(
         StoutLang::Ast::Struct.new(
-          name="Root",
+          name=Type.new("Root"),
           block=Block.new(
             expressions=[
               Def.new(
@@ -65,6 +65,13 @@ describe StoutLangParser do
           )
         )
       )
+    end
+
+    it 'should use argumnt types' do
+      ast = Parser.new.parse("def add_one(val: Int) -> Int { 1 }")
+
+      visitor = Visitor.new(ast)
+
     end
   end
 end

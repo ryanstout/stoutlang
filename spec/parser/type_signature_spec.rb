@@ -31,7 +31,7 @@ describe StoutLangParser do
 
       expect(ast).to eq(
         StoutLang::Ast::Struct.new(
-          name="Root",
+          name=Type.new("Root"),
           block=Block.new(
             expressions=[
               Def.new(
@@ -56,7 +56,7 @@ describe StoutLangParser do
 
       expect(ast).to eq(
         StoutLang::Ast::Struct.new(
-          name="Root",
+          name=Type.new("Root"),
           block=Block.new(
             expressions=[
               Def.new(
@@ -86,7 +86,7 @@ describe StoutLangParser do
 
     #   expect(ast).to eq(
     #     StoutLang::Ast::Struct.new(
-    #       name="Root",
+    #       name=Type.new("Root"),
     #       block=Block.new(
     #         expressions=[
     #           Def.new(

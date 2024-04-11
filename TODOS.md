@@ -8,3 +8,6 @@
 - What should assignment do inside of a list  [a = 5, b = 10]
 - Assignment inside of StringLiterals?
 - Infix operators should be able to be run with parens like: *(5, 10) or %>("Hello World")
+- article on how effects can rerun production code to do profiled ai optimization
+- Demo of how hard stack traces are in rust
+- Maybe Any types show up in yellow in LSP?

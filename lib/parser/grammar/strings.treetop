@@ -72,10 +72,42 @@ grammar Strings
   end
 
   rule string
-    str:double_quoted_string {
+    heredoc / double_quoted_string
+  end
+
+  # Heredocs
+  rule heredoc
+    '"""' heredoc_content:heredoc_content '"""' {
       def to_ast
-        str.to_ast
+        parts = heredoc_content.elements.map(&:to_ast)
+        # Merge adjacent string parts
+        merged_parts = parts.chunk { |part| part.is_a?(String) }.map do |is_string, parts|
+          if is_string
+            parts.join
+          else
+            parts[0]
+          end
+        end
+        StringLiteral.new(merged_parts, self)
       end
     }
   end
+
+  rule heredoc_content
+    (heredoc_string_content / escape_sequence / interpolation)* {
+      def to_ast
+        elements.map(&:to_ast)
+      end
+    }
+  end
+
+  rule heredoc_string_content
+  (!'"""' [^$\\])+ {
+      def to_ast
+        text_value
+      end
+    }
+  end
+
+
 end

@@ -29,7 +29,7 @@ describe StoutLangParser do
       ast = Parser.new.parse("struct Ok { \n def initialize(name: Str) { \n5\n } \n }")
       expect(ast).to eq(
         StoutLang::Ast::Struct.new(
-          name="Root",
+          name=Type.new("Root"),
           block=Block.new(
             expressions=[
               StoutLang::Ast::Struct.new(
@@ -54,7 +54,21 @@ describe StoutLangParser do
           )
         )
       )
-
     end
+
+    # it 'should codegen the properties into a llvm struct' do
+    #   ast = Parser.new.parse("struct Person {\n  @age: Int\n}")
+    #   puts "PARSER: #{ast.inspect}"
+
+    #   visitor = Visitor.new(ast)
+    #   mod = visitor.mod
+
+    #   # struct = mod.structs['Person']
+    #   # expect(struct).to be_a(LLVM::Type)
+    #   # expect(struct.name).to eq('Person')
+    #   # expect(struct.elements.size).to eq(2)
+    #   # expect(struct.elements[0]).to eq(LLVM::Type.pointer(LLVM::Type::Int8))
+    #   # expect(struct.elements[1]).to eq(LLVM::Type::Int32)
+    # end
   end
 end

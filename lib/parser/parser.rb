@@ -1,6 +1,7 @@
 # require 'parser/parse_nodes/parse_nodes'
 require 'parser/ast/ast_node'
 Dir["#{File.dirname(__FILE__)}/ast/*.rb"].each {|file| require file }
+Dir["#{File.dirname(__FILE__)}/../types/*.rb"].each {|file| require file }
 
 require 'treetop'
 require 'parser/parser'
@@ -44,7 +45,7 @@ module StoutLang
 
       # Wrap the root_ast in a Root Struct
       unless options[:wrap_root] == false
-        root_struct = StoutLang::Ast::Struct.new('Root', root_ast, root_ast.parse_node)
+        root_struct = StoutLang::Ast::Struct.new(Type.new("Root"), root_ast, root_ast.parse_node)
         root_ast.parent = root_struct
         root_struct.parent = nil
         root_ast = root_struct
@@ -63,10 +64,9 @@ module StoutLang
 
     def build_range_tree(node)
       return unless node.is_a?(AstNode)
-      if node.parse_node.nil?
-        raise "Node has no parse node: #{node.inspect}"
+      unless node.parse_node.nil?
+        @range_tree.insert(node.parse_node.interval.first, node.parse_node.interval.last, node)
       end
-      @range_tree.insert(node.parse_node.interval.first, node.parse_node.interval.last, node)
 
       node.children.each do |child|
         self.build_range_tree(child)

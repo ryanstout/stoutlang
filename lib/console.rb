@@ -18,7 +18,7 @@ class Console
     puts "Type 'exit' to quit"
 
     # Create a root and starting block
-    root = StoutLang::Ast::Struct.new('Root', StoutLang::Ast::Block.new([]), nil)
+    root = StoutLang::Ast::Struct.new(StoutLang::Ast::Type.new("Root"), StoutLang::Ast::Block.new([]), nil)
 
     while line = Readline.readline('> ', true)
       break if line.nil? || line == "exit"

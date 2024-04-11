@@ -3,7 +3,10 @@ require 'io/console'
 
 # TODO: change require off of absolute
 
-require '/Users/ryanstout/Sites/stoutlang/stoutlang/stoutlang'
+# Add the stoutlang lib to the load path
+$LOAD_PATH.unshift(File.expand_path(File.join(File.dirname(__FILE__), '../../../..', 'lib')))
+
+require 'stoutlang'
 
 class RubyLSPServer
   def initialize
@@ -141,7 +144,7 @@ class RubyLSPServer
           result: {
             contents: {
               kind: 'markdown',
-              value: "```ruby\n{'effects' => [gitx#{effects}]}\n```"
+              value: "```ruby\n{'effects' => [#{effects}]}\n```"
             }
           }
         }
