@@ -3,7 +3,8 @@
 
   # TODO: change require off of absolute
 
-  require '/Users/ryanstout/Sites/stoutlang/stoutlang'
+  STOUTLANG_PATH = '/Users/ryanstout/Sites/stoutlang/stoutlang'
+  require STOUTLANG_PATH
 
   class RubyLSPServer
     def initialize
