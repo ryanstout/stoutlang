@@ -92,11 +92,7 @@ describe StoutLangParser do
     end
 
     it 'should assign parent to method' do
-      code = <<-END
-      def some_method(arg1, arg2) {
-        print()
-      }
-      END
+      code = "def some_method(arg1, arg2) {\nprint()\n}"
       ast = Parser.new.parse(code.strip, wrap_root: false)
 
       expect(ast).to eq(

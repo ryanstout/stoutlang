@@ -33,9 +33,10 @@ module StoutLang
           arg.type_sig.codegen(mod, func, bb)
         end
         args = []
-        return_type = LLVM::Type.void
 
-        func = mod.functions.add(name, args, return_type) do |function|
+        return_type_ir = return_type.codegen(mod, func, bb)
+
+        func = mod.functions.add(name, args, return_type_ir) do |function|
           function.add_attribute :no_unwind_attribute
 
           bb, last_expr = block.codegen(mod, function, nil)

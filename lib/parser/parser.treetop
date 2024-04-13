@@ -11,11 +11,29 @@ grammar StoutLang
   include Defs
 
   rule program
-    space? program:(assign:assignment space?)* {
+    # Expressions should be separated by line breaks (which includes ; )
+    # We want to allow a program to be empty also `{ }`
+    space? line_break? pr1:(assign:assignment space?)? program:(line_break assign:assignment space?)* line_break? {
       def to_ast
-        Block.new(program.elements.map {|e| e.assign.to_ast }, self)
+        if pr1.respond_to?(:assign) && pr1.assign.respond_to?(:to_ast)
+          exprs = [pr1.assign.to_ast]
+        else
+          exprs = []
+        end
+
+        exprs += program.elements.map {|e| e.assign.to_ast }
+
+        Block.new(exprs, self)
       end
     }
+
+    #space? program:(assign:assignment space?)* {
+    #  def to_ast
+    #    exprs = program.elements.map {|e| e.assign.to_ast }
+#
+    #    Block.new(exprs, self)
+    #  end
+    #}
   end
 
   rule expression
@@ -150,7 +168,8 @@ grammar StoutLang
 
 
   rule space
-    ([\s\n\r] / comment)+
+    # Match spaces and tabs, but not new lines
+    ([ \t] / comment)+
   end
 
   rule nbsp
@@ -158,7 +177,16 @@ grammar StoutLang
   end
 
   rule line_break
-    [\n\r;]+
+    (space? ([\n\r;]) space?)+ {
+      def to_ast
+        "\n"
+      end
+    }
+  end
+
+  # A space or a line break
+  rule spbr
+    line_break / space
   end
 
   rule eof

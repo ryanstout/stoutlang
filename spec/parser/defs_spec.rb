@@ -67,6 +67,14 @@ describe StoutLangParser do
       )
     end
 
+    it 'should codegen functions' do
+      ast = Parser.new.parse("def ret_5(num: Int) -> Int { 5 }")
+
+      visitor = Visitor.new(ast)
+
+      # binding.pry
+    end
+
     it 'should use argumnt types' do
       ast = Parser.new.parse("def add_one(val: Int) -> Int { 1 }")
 
