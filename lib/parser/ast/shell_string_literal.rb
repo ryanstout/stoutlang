@@ -27,7 +27,7 @@ module StoutLang
       end
 
       def codegen(mod, func, bb)
-        if langauge == 'r'
+        if language == 'r'
           # ruby -- used for the compiler for now
 
           # We want to run the string in ruby now

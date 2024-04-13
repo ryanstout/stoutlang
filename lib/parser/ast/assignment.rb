@@ -10,7 +10,7 @@ module StoutLang
       def prepare
         expression.prepare
 
-        register_in_scope(identifier.name, self)
+        # register_in_scope(identifier.name, self)
       end
 
       def run
@@ -18,7 +18,9 @@ module StoutLang
       end
 
       def codegen(mod, func, bb)
-        expression.codegen(mod, func, bb)
+        var = expression.codegen(mod, func, bb)
+        register_in_scope(identifier.name, var)
+        var
       end
     end
   end

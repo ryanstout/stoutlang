@@ -32,3 +32,7 @@ sudo ln -s $(brew --prefix llvm@18)/lib /opt/local/lib
 
 ./bin/build examples/test2.sl test
 ```
+
+## Debugging
+
+lldb -- lli ./builds/test5.ll

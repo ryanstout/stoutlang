@@ -20,7 +20,7 @@ module StoutLang
           raise "Not a Stoutlang type: #{name} -- #{self.type.inspect}"
         end
 
-        self.type.new.codegen(mod, func, bb)
+        return self.type.new.codegen(mod, func, bb)
       end
     end
 

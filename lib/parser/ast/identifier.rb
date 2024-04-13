@@ -18,7 +18,7 @@ module StoutLang
         identified = lookup_identifier(name)
 
         if identified
-          identified.codegen(mod, func, bb)
+          identified#.codegen(mod, func, bb)
         else
           raise "Identifier #{name} not found"
         end

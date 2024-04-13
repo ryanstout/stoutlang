@@ -29,19 +29,19 @@ module StoutLang
       end
 
       def codegen(mod, func, bb)
-        func_types = args.map do |arg|
+        func_args = args.map do |arg|
           arg.type_sig.codegen(mod, func, bb)
         end
-        args = []
 
         return_type_ir = return_type.codegen(mod, func, bb)
 
-        func = mod.functions.add(name, args, return_type_ir) do |function|
+        func = mod.functions.add(name, func_args, return_type_ir) do |function|
           function.add_attribute :no_unwind_attribute
 
-          bb, last_expr = block.codegen(mod, function, nil)
-
-          bb.ret(last_expr)
+          # Create a block to do the codegen inside of
+          function.basic_blocks.append('entry').build do |bb|
+            bb, last_expr = block.codegen(mod, function, bb)
+          end
         end
 
         self.ir = func

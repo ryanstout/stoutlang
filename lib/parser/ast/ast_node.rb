@@ -27,6 +27,15 @@ module StoutLang
         []
       end
 
+      def assignment_name
+        # If the parent is an assignment, return the name of the assignment
+        if parent.is_a?(Assignment)
+          return parent.identifier.name
+        else
+          return nil
+        end
+      end
+
 
       def children
         instance_variables.reject { |k| [:@parse_node, :@parent].include?(k) }.map do |var|
