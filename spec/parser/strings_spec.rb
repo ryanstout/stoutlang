@@ -110,10 +110,10 @@ describe StoutLangParser do
     end
 
     it 'should support shell heredocs with a custom language' do
-      ast = Parser.new.parse('ruby```hello' + "\n" + 'world```', root: 'string', wrap_root: false)
+      ast = Parser.new.parse('r```hello' + "\n" + 'world```', root: 'string', wrap_root: false)
 
       expect(ast).to eq(
-        ShellStringLiteral.new(value=["hello\nworld"], language="ruby")
+        ShellStringLiteral.new(value=["hello\nworld"], language="r")
       )
     end
   end

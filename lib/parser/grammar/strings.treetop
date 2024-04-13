@@ -138,7 +138,9 @@ grammar Strings
   end
 
   rule shell_heredoc
-    language:[a-z]* '```' shell_heredoc_content:shell_heredoc_content '```' {
+    # Only allow 1 character for the language prefix, will keep it from doing
+    # too far of a look ahead.
+    language:[a-z]? '```' shell_heredoc_content:shell_heredoc_content '```' {
       def to_ast
         lang = language.text_value
         lang = nil if lang.empty?
