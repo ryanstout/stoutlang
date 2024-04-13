@@ -116,5 +116,24 @@ describe StoutLangParser do
         ShellStringLiteral.new(value=["hello\nworld"], language="r")
       )
     end
+
+    it 'should support a shell heredoc in a method' do
+      ast = Parser.new.parse("def say_hello() { r```puts 'hey'``` }", wrap_root: false)
+
+      expect(ast).to eq(
+        Block.new(
+          expressions=[
+            Def.new(
+              name="say_hello",
+              args=[],
+              return_type=nil,
+              block=Block.new(
+                expressions=[ShellStringLiteral.new(value=["puts 'hey'"], language="r")]
+              )
+            )
+          ]
+        )
+      )
+    end
   end
 end
