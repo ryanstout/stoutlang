@@ -9,8 +9,9 @@ require 'codegen/visitor'
 
 parser = StoutLang::Parser.new
 
-code = File.read(ARGV[0])
+input_file_path = ARGV[0]
+code = File.read(input_file_path)
 
 ast = parser.parse(code)
 
-Visitor.new(ast).generate(ARGV[1], ARGV[2] == '1')
+Visitor.new(ast, input_file_path).generate(ARGV[1], ARGV[2] == '1')

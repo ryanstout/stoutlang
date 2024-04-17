@@ -41,6 +41,6 @@ def to_s(a: Int) -> Str {
 
 a = 5 + 20
 b = a + 20
-# %> "Working?"
+%> "Working?"
 c = b.to_s()
 %> c
