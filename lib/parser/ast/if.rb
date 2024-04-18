@@ -28,7 +28,6 @@ module StoutLang
         end
         merge_bb = func.basic_blocks.append('if_merge')
 
-
         if_cond_val = condition.codegen(compile_jit, mod, func, bb)
         if_false_bb = elifs_bbs.first ? elifs_bbs.first[0] : else_bb
         bb.cond(if_cond_val, if_bb, if_false_bb)

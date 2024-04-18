@@ -51,7 +51,7 @@ module StoutLang
           arg.codegen(compile_jit, mod, func, bb)
         end
 
-        return bb.call method_call.ir, *args, assignment_name || 'temp'
+        return bb.call(method_call.ir, *args, assignment_name || 'temp')
       end
     end
   end

@@ -4,6 +4,9 @@ require 'llvm/execution_engine'
 require 'dibuilder/dibuilder'
 require 'benchmark'
 require 'pry'
+require 'llvm/linker'
+require 'codegen/mcjit'
+require 'codegen/llvm/module'
 
 def bm(name)
   start_time = Time.now
@@ -22,11 +25,12 @@ class Visitor
     LLVM.init_jit
     setup_compile_jit
 
+    # @context = LLVM::Context.new
+
     @ast = ast
     @ast.prepare
 
-    @root_mod = LLVM::Module.new('root')
-    @builder = LLVM::Builder.new
+    @root_mod = LLVM::Module.new('root')#, @context)
 
     # Make a dibuilder
     @dibuilder = DIBuilder.new(@root_mod)
@@ -35,7 +39,7 @@ class Visitor
     end
     @dibuilder.create_compile_unit(file_path)
 
-    print_mod = LLVM::Module.new('print_mod')
+    print_mod = LLVM::Module.new('print_mod')#, @context)
     cputs = print_mod.functions.add('puts', [LLVM.Pointer(LLVM::Int8)], LLVM::Int32) do |function, string|
       function.add_attribute :no_unwind_attribute
       string.add_attribute :no_capture_attribute
@@ -50,8 +54,9 @@ class Visitor
     cputs_func = ExternFunc.new(cputs)
     @ast.register_identifier('%>', cputs_func)
 
-    @compile_jit.modules << print_mod
+    @compile_jit << print_mod
 
+    # main_mod = LLVM::Module.new('main_mod')
     @main = @root_mod.functions.add('main', [], LLVM::Int32) do |function|
       function.basic_blocks.append('entry').build do |b|
 
@@ -63,36 +68,45 @@ class Visitor
       end
     end
 
-    @compile_jit.modules << @root_mod
+    @compile_jit << @root_mod
+
+    @compile_jit.run_function(@main)
+
+    # Link the other modules added to the jit to root_mod
+    @compile_jit.modules.reject {|mod| mod == @root_mod }.each do |mod|
+      # I'm not sure why we have to link these backwards?, segfault otherwise
+      failed, error = @root_mod.link_into(mod)
+      if failed
+        raise "Link Error: #{error}"
+      end
+      @root_mod = mod
+    end
 
     @root_mod.dump
     @root_mod.verify
 
-    @compile_jit.run_function(@main)
   end
 
   def setup_compile_jit
-    empty_mod = LLVM::Module.new('__empty__')
-    @compile_jit = LLVM::MCJITCompiler.new(empty_mod, :opt_level => 0)
+    @compile_jit = MCJit.new(0)
   end
 
   def generate(output_file_path, aot=false)
 
-    return
-    @root_mod.dump
-    @root_mod.verify
 
-    puts "-------------"
-
-    return
+    # return
     unless aot
-      engine = LLVM::MCJITCompiler.new(@mod)
-      engine.run_function(@main)
-      engine.dispose
+
+      return
+
+      # engine = LLVM::MCJITCompiler.new(@root_mod)
+      # engine.run_function(@main)
+      # engine.dispose
     else
 
       # Get the current machine's triple
       # triple = LLVM::C.get_default_target_triple
+
 
       bm('write llir') do
         @root_mod.write_ir!("#{output_file_path}.bc")

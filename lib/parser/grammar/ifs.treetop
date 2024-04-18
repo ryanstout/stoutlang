@@ -13,7 +13,6 @@ grammar Ifs
   rule elif_clause
     spbr? 'elif' spbr? condition:expression spbr? elif_block:block spbr? {
       def to_ast
-        puts "ELIF TO_AST"
         ElifClause.new(condition.to_ast, elif_block.to_ast, self)
       end
     }

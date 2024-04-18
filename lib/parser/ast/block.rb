@@ -26,7 +26,7 @@ module StoutLang
           exp.codegen(compile_jit, mod, func, bb)
         end.last
 
-        return bb, last_expr
+        return last_expr
     end
 
       def codegen(compile_jit, mod, func, bb)
