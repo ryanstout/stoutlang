@@ -7,7 +7,7 @@ module StoutLang
         value
       end
 
-      def codegen(mod, func, bb)
+      def codegen(compile_jit, mod, func, bb)
         LLVM::Int(value)
       end
     end

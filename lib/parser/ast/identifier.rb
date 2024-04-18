@@ -14,7 +14,7 @@ module StoutLang
         end
       end
 
-      def codegen(mod, func, bb)
+      def codegen(compile_jit, mod, func, bb)
         identified = lookup_identifier(name)
 
         if identified

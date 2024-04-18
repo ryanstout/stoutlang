@@ -1,9 +1,28 @@
 def +(a: Int, b: Int) -> Int {
   r```
-  temp = bb.add(func.params[0], func.params[1], 'temp')
+  temp = bb.add(func.params[0], func.params[1], 'add')
   bb.ret(temp)
   ```
 }
+
+def -(a: Int, b: Int) -> Int {
+  r```
+  temp = bb.sub(func.params[0], func.params[1], 'sub')
+  bb.ret(temp)
+  ```
+}
+
+def ==(a: Int, b: Int) -> Bool {
+  r```
+  temp = bb.icmp(:eq, func.params[0], func.params[1], 'eq')
+  bb.ret(temp)
+  ```
+}
+
+a = 5 + 20
+b = a + 20
+%> "Working?"
+
 
 def to_s(a: Int) -> Str {
   r```
@@ -39,8 +58,18 @@ def to_s(a: Int) -> Str {
   ```
 }
 
-a = 5 + 20
-b = a + 20
-%> "Working?"
+
 c = b.to_s()
 %> c
+
+d = b - 5
+
+if b == 46 {
+  %> "b == 46"
+} elif d == 40 {
+  %> "d == 40"
+} elif b == 30 {
+  %> "b == 30"
+} else {
+  %> "b != 45 && b != 25"
+}

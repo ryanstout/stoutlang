@@ -40,7 +40,7 @@ module StoutLang
         end
       end
 
-      def codegen(mod, func, bb)
+      def codegen(compile_jit, mod, func, bb)
         method_call = lookup_identifier(name)
 
         unless method_call
@@ -48,7 +48,7 @@ module StoutLang
         end
 
         args = self.args.map do |arg|
-          arg.codegen(mod, func, bb)
+          arg.codegen(compile_jit, mod, func, bb)
         end
 
         return bb.call method_call.ir, *args, assignment_name || 'temp'

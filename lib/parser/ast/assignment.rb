@@ -17,8 +17,8 @@ module StoutLang
         expression.run
       end
 
-      def codegen(mod, func, bb)
-        var = expression.codegen(mod, func, bb)
+      def codegen(compile_jit, mod, func, bb)
+        var = expression.codegen(compile_jit, mod, func, bb)
         register_in_scope(identifier.name, var)
         var
       end

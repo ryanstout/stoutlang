@@ -27,7 +27,6 @@ describe "Jit" do
     # ast = Parser.new.parse(code)
 
     # visitor = Visitor.new(ast)
-    # puts visitor.inspect
 
     mod = create_square_function_module
     @jit.add_module(mod)

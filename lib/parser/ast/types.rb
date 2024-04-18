@@ -8,7 +8,7 @@ module StoutLang
         self
       end
 
-      def codegen(mod, func, bb)
+      def codegen(compile_jit, mod, func, bb)
         # Lookup the type in the scope
         self.type = lookup_identifier(name)
 
@@ -20,7 +20,7 @@ module StoutLang
           raise "Not a Stoutlang type: #{name} -- #{self.type.inspect}"
         end
 
-        return self.type.new.codegen(mod, func, bb)
+        return self.type.new.codegen(compile_jit, mod, func, bb)
       end
     end
 
@@ -43,9 +43,9 @@ module StoutLang
         self
       end
 
-      def codegen(mod, func, bb)
+      def codegen(compile_jit, mod, func, bb)
         raise "Type Val is nil" if type_val.nil?
-        type_val.codegen(mod, func, bb)
+        type_val.codegen(compile_jit, mod, func, bb)
       end
     end
   end

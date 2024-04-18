@@ -2,7 +2,7 @@ require 'types/base_type'
 
 module StoutLang
   class Int < BaseType
-    def codegen(mod, func, bb)
+    def codegen(compile_jit, mod, func, bb)
       LLVM::Int
     end
   end

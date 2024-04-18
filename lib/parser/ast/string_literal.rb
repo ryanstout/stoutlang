@@ -26,7 +26,7 @@ module StoutLang
         return nil
       end
 
-      def codegen(mod, func, bb)
+      def codegen(compile_jit, mod, func, bb)
         str = self.run()
 
         # Get the variable name by walking up the parent chain until we find an assignment, stop if we get to a Scope

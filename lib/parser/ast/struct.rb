@@ -25,7 +25,7 @@ module StoutLang
         block.run
       end
 
-      def codegen(mod, func, bb)
+      def codegen(compile_jit, mod, func, bb)
         # Create the LLVM::Type in LLVM
 
         # Create the i32 tag
@@ -36,7 +36,7 @@ module StoutLang
 
         block.expressions.map do |exp|
           if exp.is_a?(Property)
-            types << exp.type_sig.codegen(mod, func, bb)
+            types << exp.type_sig.codegen(compile_jit, mod, func, bb)
           end
         end
 
@@ -49,7 +49,7 @@ module StoutLang
         self.ir = struct_type
 
         # Build the IR for the block
-        block.codegen(mod, func, bb)
+        block.codegen(compile_jit, mod, func, bb)
       end
     end
   end

@@ -7,7 +7,7 @@ module StoutLang
         type_sig.prepare
       end
 
-      def codegen(mod, func, bb)
+      def codegen(compile_jit, mod, func, bb)
         # This is handled at the struct level
       end
     end

@@ -26,7 +26,7 @@ module StoutLang
         return nil
       end
 
-      def codegen(mod, func, bb)
+      def codegen(compile_jit, mod, func, bb)
         if language == 'r'
           # ruby -- used for the compiler for now
 
