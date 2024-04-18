@@ -14,9 +14,7 @@ module StoutLang
         # We need to create the basic blocks in the order we want them in the IR, so
         # this will require two passes.
         if_bb = func.basic_blocks.append('if_block')
-        puts "IF BLOCK: #{self.inspect}"
         elifs_bbs = elifs_blocks.map do |elif_clause|
-          puts "ELIF CLAUSE: #{elif_clause.inspect}"
           [
             # This block checks the elif condition. Jumps to elif_block below if true or
             # the next elif or else block if false
@@ -36,9 +34,7 @@ module StoutLang
         bb.cond(if_cond_val, if_bb, if_false_bb)
 
         if_bb.build do |b|
-          puts "B: #{b.inspect}"
           if_block.codegen(compile_jit, mod, func, b)
-          puts "MERGE BB: #{merge_bb.inspect}"
           b.br(merge_bb)
         end
 

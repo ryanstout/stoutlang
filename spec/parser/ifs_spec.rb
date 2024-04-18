@@ -39,7 +39,12 @@ describe StoutLangParser do
             If.new(
               condition=TrueLiteral.new(),
               if_block=Block.new(expressions=[IntegerLiteral.new(value=10)]),
-              elifs_blocks=[],
+              elifs_blocks=[
+                ElifClause.new(
+                  condition=FalseLiteral.new(),
+                  block=Block.new(expressions=[IntegerLiteral.new(value=20)])
+                )
+              ],
               else_block=ElseClause.new(block=Block.new(expressions=[IntegerLiteral.new(value=30)]))
             )
           ]
