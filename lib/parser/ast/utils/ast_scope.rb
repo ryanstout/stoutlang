@@ -41,9 +41,4 @@ module AstScope
     nil
   end
 
-  def identifiers
-    local_scope = (scope || {})
-    return local_scope
-  end
-
 end

@@ -29,7 +29,6 @@ module StoutLang
       end
 
       def codegen(compile_jit, mod, func, bb)
-        func_mod = LLVM::Module.new(name)
         func_args = args.map do |arg|
           arg.type_sig.codegen(compile_jit, mod, func, bb)
         end
@@ -37,7 +36,7 @@ module StoutLang
         return_type_ir = return_type.codegen(compile_jit, mod, func, bb)
 
         last_expr = nil
-        func = func_mod.functions.add(name, func_args, return_type_ir) do |function|
+        func = mod.functions.add(name, func_args, return_type_ir) do |function|
           function.add_attribute :no_unwind_attribute
 
           args.each_with_index do |arg, i|
@@ -47,15 +46,12 @@ module StoutLang
 
           # Create a block to do the codegen inside of
           function.basic_blocks.append('entry').build do |bb|
-            last_expr = block.codegen(compile_jit, func_mod, function, bb)
+            last_expr = block.codegen(compile_jit, mod, function, bb)
 
             # Return the value of the last expression
             bb.ret(last_expr)
           end
         end
-
-        # Add the function to the compile jit
-        compile_jit << func_mod
 
         self.ir = func
 

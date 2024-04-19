@@ -16,7 +16,6 @@ end
 
 describe "Jit" do
   it 'should instantialize and let you add LLVM modules' do
-    @jit = MCJit.new
     code = <<-END
     def hello() -> Int {
       %> "Hello Jit World!"
@@ -29,7 +28,7 @@ describe "Jit" do
     # visitor = Visitor.new(ast)
 
     mod = create_square_function_module
-    @jit.add_module(mod)
+    @jit = MCJit.new(mod)
 
     result = @jit.run_function(mod.functions['square'], 5)
     expect(result.to_i).to eq(25)

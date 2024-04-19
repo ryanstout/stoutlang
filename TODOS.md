@@ -12,3 +12,9 @@
 - Demo of how hard stack traces are in rust
 - Maybe Any types show up in yellow in LSP?
 - Phi node for returning values from if blocks
+- mention how crazy this article is: https://jondot.medium.com/errors-in-rust-a-formula-1e3e9a37d207
+- thunked string interpolation that can write parts straight to buffers
+- Auto getter/setters?
+- the burned once never again cycle  - baby with the bath water
+- Write an article on how functional is better but not with regards to ergonomics
+- Marketing: why do different people prefer different languages, because different features are better for different tasks.
