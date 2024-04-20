@@ -53,7 +53,17 @@ module StoutLang
         import_call.register_in_scope(extern_function.name, ExternFunc.new(extern_function))
       end
 
-      original_module.link_into(mod)
+
+      # Don't link if we've already imported
+      @@imports ||= {}
+      if @@imports[path]
+        return
+      else
+        @@imports[path] = true
+
+        original_module.link_into(mod)
+      end
+
     end
 
   end

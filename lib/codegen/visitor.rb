@@ -8,6 +8,7 @@ require 'llvm/linker'
 require 'codegen/mcjit'
 require 'codegen/llvm/module'
 require 'parser/parser'
+require 'codegen/import'
 
 def bm(name)
   start_time = Time.now
@@ -34,7 +35,6 @@ class Visitor
     @ast = ast
     @ast.prepare
 
-
     # Make a dibuilder
     @dibuilder = DIBuilder.new(@root_mod)
     if file_path.nil?
@@ -48,6 +48,12 @@ class Visitor
     @ast.register_identifier("Bool", StoutLang::Bool)
     @ast.register_identifier('import', StoutLang::Import)
 
+    # Automatically import core/core
+    if file_path !~ /^core\//
+      add_core_import(ast)
+    end
+
+    puts "AST: #{@ast.inspect}"
 
     # main_mod = LLVM::Module.new('main_mod')
     if library
@@ -137,5 +143,17 @@ class Visitor
         end
       end
     end
+  end
+
+  def add_core_import(ast)
+    import_func_call = FunctionCall.new(
+      'import',
+      [StringLiteral.new(['core/core'])]
+    )
+    import_func_call.parent = ast
+
+    @ast.block.expressions.unshift(
+      import_func_call
+    )
   end
 end
