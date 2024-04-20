@@ -10,10 +10,11 @@ grammar Defs
   end
 
   rule macro_define
-    'macro ' method_name:method_name space? def_args:def_args? space? block:block {
+    'macro ' method_name:method_name space? def_args:def_args? space? def_return_type_sig:def_return_type_sig? space? block:block {
       def to_ast
         def_args_ast = def_args.respond_to?(:to_ast) ? def_args.to_ast : []
-        Macro.new(method_name.to_ast, def_args_ast, block.to_ast, self)
+        return_type = def_return_type_sig.respond_to?(:to_ast) ? def_return_type_sig.to_ast : nil
+        Macro.new(method_name.to_ast, def_args_ast, return_type, block.to_ast, self)
       end
     } / infix_chain
   end

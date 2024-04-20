@@ -21,7 +21,9 @@ end
 class Visitor
   attr_reader :mod, :main
 
-  def initialize(ast, file_path=nil)
+  def initialize(ast, file_path=nil, library=false)
+    @library = library
+
     # Init Jit for compiler's jit
     LLVM.init_jit
     @root_mod = LLVM::Module.new('root')
@@ -50,24 +52,33 @@ class Visitor
     @ast.register_identifier("Int", StoutLang::Int)
     @ast.register_identifier("Str", StoutLang::Str)
     @ast.register_identifier("Bool", StoutLang::Bool)
+    @ast.register_identifier('import', StoutLang::Import)
 
     # Register cputs as %> on root
     cputs_func = ExternFunc.new(cputs)
     @ast.register_identifier('%>', cputs_func)
 
 
-    # main_mod = LLVM::Module.new('main_mod')
-    @main = @root_mod.functions.add('main', [], LLVM::Int32) do |function|
-      function.basic_blocks.append('entry').build do |b|
-        # Codegen in place in the main ast
-        @ast.codegen(@compile_jit, @root_mod, function, b)
 
-        zero = LLVM.Int(0) # a LLVM Constant value
-        b.ret zero
+    # main_mod = LLVM::Module.new('main_mod')
+    if library
+      @ast.codegen(@compile_jit, @root_mod, nil, nil)
+    else
+      @main = @root_mod.functions.add('main', [], LLVM::Int32) do |function|
+        function.basic_blocks.append('entry').build do |b|
+          # Codegen in place in the main ast
+          @ast.codegen(@compile_jit, @root_mod, function, b)
+
+          zero = LLVM.Int(0) # a LLVM Constant value
+          b.ret zero
+        end
       end
+      # puts "RUN #{@main}"
+      puts "RUN: #{@root_mod}"
+
+      # @compile_jit.run_function(@main)
     end
 
-    @compile_jit.run_function(@main)
 
     # Link the other modules added to the jit to root_mod
     # @compile_jit.modules.reject {|mod| mod == @root_mod }.each do |mod|
@@ -107,8 +118,8 @@ class Visitor
 
 
       bm('write llir') do
-        @root_mod.write_ir!("#{output_file_path}.bc")
-        @root_mod.write_bitcode("#{output_file_path}.ll")
+        @root_mod.write_ir!("#{output_file_path}.ll")
+        @root_mod.write_bitcode("#{output_file_path}.bc")
       end
 
       opt_level = ''
@@ -116,13 +127,20 @@ class Visitor
 
       # Compile LLVM IR to machine code
       bm('llc') do
-        system("llc #{opt_level} #{output_file_path}.ll -o #{output_file_path}.s")
+        system("llc #{opt_level} #{output_file_path}.bc -o #{output_file_path}.s")
       end
 
-      # Link machine code to create an executable
-      bm('clang') do
-        #  -nostdlib (enable once we get musl)
-        system("clang #{opt_level} -flto #{output_file_path}.s -o #{output_file_path}")
+      if @library
+        # Build an object
+        bm('clang') do
+          system("clang #{opt_level} -c #{output_file_path}.s -o #{output_file_path}.o")
+        end
+      else
+        # Link machine code to create an executable
+        bm('clang') do
+          #  -nostdlib (enable once we get musl)
+          system("clang #{opt_level} -flto #{output_file_path}.s -o #{output_file_path}")
+        end
       end
     end
   end

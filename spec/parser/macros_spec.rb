@@ -11,6 +11,7 @@ describe StoutLangParser do
             Macro.new(
               name="awesome",
               args=[],
+              return_type=nil,
               block=Block.new(expressions=[IntegerLiteral.new(value=5)])
             )
           ]
@@ -29,6 +30,23 @@ describe StoutLangParser do
           DefArg.new(name=Identifier.new(name="a"), type_sig=nil),
           DefArg.new(name=Identifier.new(name="b"), type_sig=nil)
         ],
+        return_type=nil,
+        block=Block.new(expressions=[IntegerLiteral.new(value=5)])
+      )
+    )
+  end
+
+  it 'should let you define a macro with a return type' do
+    ast = Parser.new.parse("macro awesome(a, b) -> Int {\n  5\n}", root: 'macro_define', wrap_root: false)
+
+    expect(ast).to eq(
+      Macro.new(
+        name="awesome",
+        args=[
+          DefArg.new(name=Identifier.new(name="a"), type_sig=nil),
+          DefArg.new(name=Identifier.new(name="b"), type_sig=nil)
+        ],
+        return_type=Type.new(name="Int"),
         block=Block.new(expressions=[IntegerLiteral.new(value=5)])
       )
     )

@@ -1,12 +1,9 @@
+# Macro's and Def's are essentially the same except macro's are evaluated at compile time.
+require 'parser/ast/def'
+
 module StoutLang
   module Ast
-    class Macro < AstNode
-      setup :name, :args, :block
-
-      def prepare
-        args.each(&:prepare)
-        block.prepare
-      end
+    class Macro < Def
     end
   end
 end

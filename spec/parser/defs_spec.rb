@@ -67,6 +67,7 @@ describe StoutLangParser do
       )
     end
 
+
     it 'should codegen functions' do
       ast = Parser.new.parse("def ret_5(num: Int) -> Int { 5 }")
 

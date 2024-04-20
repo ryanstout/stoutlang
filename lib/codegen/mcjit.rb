@@ -11,11 +11,11 @@ class MCJit
   end
 
   def <<(module_ptr)
-    raise "Not implemented"
+    # raise "Not implemented"
     # # You can't do .each on engine.modules, so keep a 2nd list
-    # @modules << module_ptr
+    @modules << module_ptr
 
-    # @engine.modules << module_ptr
+    @engine.modules << module_ptr
   end
 
   def run_function(function, *args)

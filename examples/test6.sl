@@ -1,3 +1,7 @@
+import("builds/lib")
+
+ok()
+
 def add_one(a: Int) -> Int {
   2 + 1
 }

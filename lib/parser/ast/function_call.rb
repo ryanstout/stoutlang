@@ -1,3 +1,5 @@
+require 'codegen/import'
+
 module StoutLang
   module Ast
     class FunctionCall < AstNode
@@ -42,6 +44,11 @@ module StoutLang
 
       def codegen(compile_jit, mod, func, bb)
         method_call = lookup_identifier(name)
+
+        if method_call == StoutLang::Import
+          # TEMP: Special handler for imports to call into ruby to do imports
+          return method_call.new.codegen(compile_jit, mod, func, bb, self)
+        end
 
         unless method_call
           raise "Unable to find function #{name} in scope"
