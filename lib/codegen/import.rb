@@ -1,5 +1,12 @@
+require 'codegen/compiler'
+require 'xxhash'
+
 module StoutLang
   class Import
+    def hash_file_xxhash(filename)
+      return XXhash.xxh64_file(filename)
+    end
+
     # Import types and functions from a compile bitcode module. Compile it first
     # if it's not already compiled
     def codegen(compile_jit, mod, func, bb, import_call)
@@ -7,32 +14,46 @@ module StoutLang
       path = import_call.args[0].run
       puts "Import Path: #{path}"
 
-      original_module = LLVM::Module.parse_bitcode("#{path}.bc")
+      cache_path = "builds/cache/#{path}"
+      FileUtils.mkdir_p("builds/cache/#{File.dirname(path)}")
+
+      # Hash the file to see if it's changed
+      hash = hash_file_xxhash(path + ".sl") # TODO: this could be based off of the AST or something for more beefy speeds
+
+      cache_path += "_#{hash}"
+
+      unless File.exist?(cache_path)
+        # Remove any previously cached files for this path
+        Dir.glob("builds/cache/#{path}_*").each do |file|
+          File.delete(file)
+        end
+
+        # Compile the file
+        Compiler.compile(path + ".sl", cache_path, library=true, aot=true)
+      end
+
+      original_module = LLVM::Module.parse_bitcode(cache_path + ".bc")
 
       # compile_jit << original_module
       # Iterate over each function in the original module and create externs
+
       original_module.functions.each do |function|
-        # unless function.intrinsic? # Skip intrinsic functions, only focus on user-defined ones
-        # Duplicate the function type but mark it as an external (declare)
-        if function.name == 'main'
-          original_module.functions.delete(function)
-        end
+        # TODO: The function pointers get overwritten when iterating (I think), so for now we don't use this
+        # looked up function
 
-        next if ['main', '==', '+', '-'].include?(function.name)
+        function = original_module.functions.named(function.name)
         extern_function = mod.functions.add(
-          function.name,
-          function.params.map(&:type), # Map params to their types
-          function.type.return_type,
+          function.name.dup,
+          function.params.map(&:type).dup, # Map params to their types
+          function.type.return_type.dup,
           # function.type.vararg? # Preserve var_arg status
-          )
+        )
 
-          # Add the function to the scope
-          import_call.register_in_scope(function.name, ExternFunc.new(extern_function))
-
-          # end
+        # Add the function to the scope
+        import_call.register_in_scope(extern_function.name, ExternFunc.new(extern_function))
       end
 
-      # original_module.link_into(mod)
+      original_module.link_into(mod)
     end
 
   end

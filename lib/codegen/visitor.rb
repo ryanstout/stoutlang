@@ -25,7 +25,6 @@ class Visitor
     @library = library
 
     # Init Jit for compiler's jit
-    LLVM.init_jit
     @root_mod = LLVM::Module.new('root')
 
     setup_compile_jit(@root_mod)
@@ -43,21 +42,11 @@ class Visitor
     end
     @dibuilder.create_compile_unit(file_path)
 
-    cputs = @root_mod.functions.add('puts', [LLVM.Pointer(LLVM::Int8)], LLVM::Int32) do |function, string|
-      function.add_attribute :no_unwind_attribute
-      string.add_attribute :no_capture_attribute
-    end
-
     # Register the build in types
     @ast.register_identifier("Int", StoutLang::Int)
     @ast.register_identifier("Str", StoutLang::Str)
     @ast.register_identifier("Bool", StoutLang::Bool)
     @ast.register_identifier('import', StoutLang::Import)
-
-    # Register cputs as %> on root
-    cputs_func = ExternFunc.new(cputs)
-    @ast.register_identifier('%>', cputs_func)
-
 
 
     # main_mod = LLVM::Module.new('main_mod')
@@ -73,10 +62,10 @@ class Visitor
           b.ret zero
         end
       end
-      # puts "RUN #{@main}"
-      puts "RUN: #{@root_mod}"
 
-      # @compile_jit.run_function(@main)
+      puts "RUN main"
+      @compile_jit.run_function(@main)
+      puts "RAN main"
     end
 
 
@@ -100,7 +89,7 @@ class Visitor
     @compile_jit = MCJit.new(main_mod, 0)
   end
 
-  def generate(output_file_path, aot=false)
+  def generate(output_file_path, aot=false, wasm=false)
 
 
     # return
@@ -122,24 +111,29 @@ class Visitor
         @root_mod.write_bitcode("#{output_file_path}.bc")
       end
 
-      opt_level = ''
+      if wasm
+        system("llc -march=wasm32  #{output_file_path}.ll -o #{output_file_path}.wat")
+        system("wat2wasm #{output_file_path}.wat -o #{output_file_path}.wasm")
+      end
+
+      opt_level = ' -flto'
       # opt_level = ' -03 '
 
       # Compile LLVM IR to machine code
       bm('llc') do
-        system("llc #{opt_level} #{output_file_path}.bc -o #{output_file_path}.s")
+        system("llc #{output_file_path}.bc -o #{output_file_path}.s")
       end
 
       if @library
         # Build an object
         bm('clang') do
-          system("clang #{opt_level} -c #{output_file_path}.s -o #{output_file_path}.o")
+          system("clang -c #{output_file_path}.s #{opt_level} -o #{output_file_path}.o")
         end
       else
         # Link machine code to create an executable
         bm('clang') do
           #  -nostdlib (enable once we get musl)
-          system("clang #{opt_level} -flto #{output_file_path}.s -o #{output_file_path}")
+          system("clang #{output_file_path}.s #{opt_level} -o #{output_file_path}")
         end
       end
     end

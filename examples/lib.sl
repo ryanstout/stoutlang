@@ -1,6 +1,9 @@
-import("./builds/core")
+import("core/core")
 
 def ok() -> Int {
-  %> "Ok"
+  %> "Ok <----------------------"
   0
 }
+
+# %> "RUNNING LIB"
+# ok()

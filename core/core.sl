@@ -2,14 +2,23 @@
 # provides a lot of the core functionality of the language.
 
 r```
-cputs = @root_mod.functions.add('puts', [LLVM.Pointer(LLVM::Int8)], LLVM::Int32) do |function, string|
+# Export %> print
+cputs = mod.functions.add('puts', [LLVM.Pointer(LLVM::Int8)], LLVM::Int32) do |function, string|
   function.add_attribute :no_unwind_attribute
   string.add_attribute :no_capture_attribute
 end
+
+register_in_scope('puts', ExternFunc.new(cputs))
+
+# Export sprintf and malloc
+sprintf = mod.functions.add('sprintf', [LLVM::Pointer(LLVM::Int8), LLVM::Pointer(LLVM::Int8)], LLVM::Int, varargs: true)
+register_in_scope('sprintf', ExternFunc.new(sprintf))
+malloc = mod.functions.add('malloc', [LLVM::Int], LLVM::Pointer(LLVM::Int8))
+register_in_scope('malloc', ExternFunc.new(malloc))
 ```
 
 def %>(str: Str) -> Int {
-
+  puts(str)
 }
 
 def +(a: Int, b: Int) -> Int {
@@ -18,6 +27,7 @@ def +(a: Int, b: Int) -> Int {
   return temp
   ```
 }
+
 
 def -(a: Int, b: Int) -> Int {
   r```
@@ -44,9 +54,6 @@ def to_s(a: Int) -> Str {
     var.initializer = format_str_ptr
   end
 
-  sprintf = mod.functions.add('sprintf', [LLVM::Pointer(LLVM::Int8), LLVM::Pointer(LLVM::Int8)], LLVM::Int, varargs: true)
-  malloc = mod.functions.add('malloc', [LLVM::Int], LLVM::Pointer(LLVM::Int8))
-
   
   # Allocate 30 byte string
   temp_size = LLVM::Int(30)
@@ -57,9 +64,11 @@ def to_s(a: Int) -> Str {
   # temp_size = bb.add(temp_size_call, LLVM::Int(1))  # Properly add 1 to the result of the call
   
   # Allocate buffer based on the computed size
+  malloc = lookup_identifier('malloc').ir
   str_ptr = bb.call(malloc, temp_size)
 
   # Call sprintf again to actually print the integer
+  sprintf = lookup_identifier('sprintf').ir
   bb.call(sprintf, str_ptr, format_str, func.params[0])
   
 

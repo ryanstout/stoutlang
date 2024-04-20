@@ -1,4 +1,4 @@
-import("builds/lib")
+import("examples/lib")
 
 ok()
 
@@ -8,4 +8,5 @@ def add_one(a: Int) -> Int {
 
 %> "Hello, World!"
 %> add_one(5).to_s()
+
 

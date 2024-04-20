@@ -58,7 +58,13 @@ module StoutLang
           arg.codegen(compile_jit, mod, func, bb)
         end
 
-        return bb.call(method_call.ir, *args, assignment_name || 'temp')
+        # method_call_ir = method_call.ir
+
+        # TODO: Because of low level memory issues I think, we need to re-lookup the function in the current module
+        # NOTE: This means function names need to be unique
+        method_call_ir = mod.functions.named(name)
+
+        return bb.call(method_call_ir, *args, assignment_name || 'temp')
       end
     end
   end
