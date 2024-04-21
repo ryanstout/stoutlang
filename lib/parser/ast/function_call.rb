@@ -63,6 +63,16 @@ module StoutLang
         # TODO: Because of low level memory issues I think, we need to re-lookup the function in the current module
         # NOTE: This means function names need to be unique
         method_call_ir = mod.functions.named(name)
+        # method_call_ir = method_call.ir
+        puts "METHOD CALL: #{name} -- #{method_call_ir.inspect}"
+
+        if method_call_ir.nil?
+          puts mod
+          mod.functions.each do |f|
+            puts "FUNCTION: #{f.name}"
+
+          end
+        end
 
         return bb.call(method_call_ir, *args, assignment_name || 'temp')
       end

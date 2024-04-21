@@ -5,6 +5,7 @@ module StoutLang
   class Compiler
 
     def self.compile(input_file_path, output_file_path, aot=true, library=false)
+      puts "Compile library at #{input_file_path} to #{output_file_path}"
       ast = Parser.new.parse(File.read(input_file_path))
       Visitor.new(ast, input_file_path, library).generate(output_file_path, true)
     end

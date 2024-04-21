@@ -1,5 +1,3 @@
-import("core/core")
-
 def ok() -> Int {
   %> "Ok <----------------------"
   0

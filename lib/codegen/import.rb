@@ -22,7 +22,8 @@ module StoutLang
 
       cache_path += "_#{hash}"
 
-      unless File.exist?(cache_path)
+      if true || !File.exist?(cache_path+".bc")
+        puts "File didn't exist: #{cache_path}"
         # Remove any previously cached files for this path
         Dir.glob("builds/cache/#{path}_*").each do |file|
           File.delete(file)
@@ -40,17 +41,23 @@ module StoutLang
       original_module.functions.each do |function|
         # TODO: The function pointers get overwritten when iterating (I think), so for now we don't use this
         # looked up function
+        #
+        # Don't re-import
+        # TODO: janky
+        next if mod.functions.named(function.name)
 
         function = original_module.functions.named(function.name)
+        puts "Register func: #{function.name}"
         extern_function = mod.functions.add(
           function.name.dup,
           function.params.map(&:type).dup, # Map params to their types
           function.type.return_type.dup,
           # function.type.vararg? # Preserve var_arg status
         )
+        # extern_function = nil
 
         # Add the function to the scope
-        import_call.register_in_scope(extern_function.name, ExternFunc.new(extern_function))
+        import_call.register_in_scope(function.name.clone + "", ExternFunc.new(extern_function))
       end
 
 
@@ -61,6 +68,7 @@ module StoutLang
       else
         @@imports[path] = true
 
+        # Link the module into the root module
         original_module.link_into(mod)
       end
 

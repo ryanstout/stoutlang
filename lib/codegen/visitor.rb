@@ -16,7 +16,7 @@ def bm(name)
   end_time = Time.now
 
   execution_time = end_time - start_time
-  puts "#{name}: #{execution_time} seconds"
+  # puts "#{name}: #{execution_time} seconds"
 end
 
 class Visitor
@@ -53,9 +53,6 @@ class Visitor
       add_core_import(ast)
     end
 
-    puts "AST: #{@ast.inspect}"
-
-    # main_mod = LLVM::Module.new('main_mod')
     if library
       @ast.codegen(@compile_jit, @root_mod, nil, nil)
     else
@@ -69,26 +66,12 @@ class Visitor
         end
       end
 
-      puts "RUN main"
+      @root_mod.dump
+      @root_mod.verify
+      puts "----------------"
+
       @compile_jit.run_function(@main)
-      puts "RAN main"
     end
-
-
-    # Link the other modules added to the jit to root_mod
-    # @compile_jit.modules.reject {|mod| mod == @root_mod }.each do |mod|
-    #   # I'm not sure why we have to link these backwards?, segfault otherwise
-    #   failed, error = @root_mod.link_into(mod)
-    #   if failed
-    #     raise "Link Error: #{error}"
-    #   end
-    #   @root_mod = mod
-    # end
-
-    puts "----------------"
-    @root_mod.dump
-    @root_mod.verify
-
   end
 
   def setup_compile_jit(main_mod)

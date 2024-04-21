@@ -38,6 +38,7 @@ module StoutLang
         last_expr = nil
         func = mod.functions.add(name, func_args, return_type_ir) do |function|
           function.add_attribute :no_unwind_attribute
+          function.linkage = :external
 
           args.each_with_index do |arg, i|
             # Register the argument in the scope
