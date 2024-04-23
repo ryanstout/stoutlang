@@ -56,11 +56,11 @@ grammar StoutLang
     # Function calls without args parse as an identifier and we have to convert
     # them at compile time.
 
-    method_name space? args:method_call_args space? block:block? {
+    method_call_name args:method_call_args space? block:block? {
       # Doesn't return the AST node, just the parts we need to build in
       # method chain
       def to_ast
-        function_name = method_name.to_ast
+        function_name = method_call_name.to_ast
 
         # parens are required in function_call_with_args
         args_ast = args.respond_to?(:to_ast) ? args.to_ast : []

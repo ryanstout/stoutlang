@@ -12,6 +12,16 @@ grammar Methods
     }
   end
 
+  # method names (in def) can have infix operators, but the non-infix calls
+  # can not
+  rule method_call_name
+    [a-zA-Z] [a-zA-Z0-9_]* {
+      def to_ast
+        text_value
+      end
+    }
+  end
+
   # Methods can also be defined with operators for the method name
   rule method_name_operators
     '%>' / '..' / '...' / '||' / '&&' / '==' / '!=' / '<' / '<=' / '>' / '>=' / '|' / '^' / '&' / '<<' / '>>' / '+' / '-' / '*' / '/' / '%' / '^'
@@ -40,11 +50,11 @@ grammar Methods
 
 
   rule method_call
-    method_name space? args:method_call_args? space? block:block? {
+    method_call_name args:method_call_args? space? block:block? {
       # Doesn't return the AST node, just the parts we need to build in
       # method chain
       def to_ast
-        function_name = method_name.to_ast
+        function_name = method_call_name.to_ast
         # If there are no parens, args will be a SyntaxNode that doesn't respond
         # to :to_ast
         args_ast = args && args.respond_to?(:to_ast) ? args.to_ast : []
@@ -58,7 +68,7 @@ grammar Methods
   end
 
   rule method_call_args
-    '(' space? args_main:(first_arg:expression rest_args:(',' space? exp:expression)*)? space? ')' {
+    space? '(' space? args_main:(first_arg:expression rest_args:(',' space? exp:expression)*)? space? ')' {
       def to_ast
 
         if args_main && args_main.respond_to?(:first_arg)
@@ -68,6 +78,16 @@ grammar Methods
           return [first_arg] + rest_args
         else
           return []
+        end
+      end
+
+    # space is required for 1 arg methods
+    } / space args:expression {
+      def to_ast
+        if args.respond_to?(:to_ast)
+          [args.to_ast]
+        else
+          []
         end
       end
     }

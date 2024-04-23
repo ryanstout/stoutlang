@@ -73,7 +73,6 @@ describe StoutLangParser do
 
       visitor = Visitor.new(ast)
 
-      # binding.pry
     end
 
     it 'should use argumnt types' do
@@ -81,6 +80,71 @@ describe StoutLangParser do
 
       visitor = Visitor.new(ast)
 
+    end
+
+    it 'should let you call a function with 0 or 1 arg without parens' do
+      ast = Parser.new.parse("add_one 5", root: 'method_chain', wrap_root: false)
+
+      expect(ast).to eq(
+        FunctionCall.new(name="add_one", args=[IntegerLiteral.new(value=5)])
+      )
+
+      # When we have a method call with zero args, we have to parse it as an identifier, then
+      # during codegen we can look up the identifier and see if it's a function call or a local
+      ast = Parser.new.parse("c = zero_args ; 5", wrap_root: false)
+      expect(ast).to eq(
+        Block.new(
+          expressions=[
+            Assignment.new(
+              identifier=Identifier.new(name="c"),
+              expression=Identifier.new(name="zero_args"),
+              type_sig=nil
+            ),
+            IntegerLiteral.new(value=5)
+          ]
+        )
+      )
+    end
+
+    it 'should be able to call a zero arg function in an assignemnt' do
+      code = <<-END
+      def return_ten() -> Int {
+        10
+      }
+
+      c = return_ten
+      return(c)
+      END
+      ast = Parser.new.parse(code)
+
+      visitor = Visitor.new(ast)
+      ret_val = visitor.run
+
+      expect(ret_val).to eq(10)
+
+    end
+
+    it 'should be able to call a 1 arg function' do
+      code = <<-END
+      def return_arg(arg: Int) -> Int {
+        arg
+      }
+
+      c = return_arg 5
+      return(c)
+      END
+      ast = Parser.new.parse(code)
+
+      visitor = Visitor.new(ast)
+      ret_val = visitor.run
+
+      expect(ret_val).to eq(5)
+    end
+
+    it 'should not parse function calls with >1 args and no parens' do
+      expect {
+        ast = Parser.new.parse("add_one 5, 5")
+      }.to raise_error(StoutLang::ParseError)
     end
   end
 end

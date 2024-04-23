@@ -73,5 +73,14 @@ describe StoutLangParser do
         )
       )
     end
+
+    it 'should print an int64' do
+      code = "a: Int = 10 ; return(a)"
+
+      ast = Parser.new.parse(code)
+      visitor = Visitor.new(ast)
+
+      expect(visitor.run).to eq(10)
+    end
   end
 end

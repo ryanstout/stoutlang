@@ -43,6 +43,8 @@ module StoutLang
       end
 
       def codegen(compile_jit, mod, func, bb)
+        return codegen_return(compile_jit, mod, func, bb) if name == 'return'
+
         method_call = lookup_identifier(name)
 
         if method_call == StoutLang::Import
@@ -51,7 +53,7 @@ module StoutLang
         end
 
         unless method_call
-          raise "Unable to find function #{name} in scope"
+          raise "Unable to find function #{name} in scope for #{self.inspect}"
         end
 
         args = self.args.map do |arg|
@@ -64,17 +66,23 @@ module StoutLang
         # NOTE: This means function names need to be unique
         method_call_ir = mod.functions.named(name)
         # method_call_ir = method_call.ir
-        puts "METHOD CALL: #{name} -- #{method_call_ir.inspect}"
 
         if method_call_ir.nil?
-          puts mod
-          mod.functions.each do |f|
-            puts "FUNCTION: #{f.name}"
-
-          end
+          # puts mod
+          # mod.functions.each do |f|
+          #   puts "FUNCTION: #{f.name}"
+          # end
         end
 
         return bb.call(method_call_ir, *args, assignment_name || 'temp')
+      end
+    end
+
+    def codegen_return(compile_jit, mod, func, bb)
+      if args.empty?
+        bb.ret_void
+      else
+        bb.ret(args.first.codegen(compile_jit, mod, func, bb))
       end
     end
   end

@@ -35,8 +35,6 @@ module LLVM::OrcJit
 
 end
 
-# binding.pry
-
 class Jit
   def initialize
     LLVM.init_jit(true)

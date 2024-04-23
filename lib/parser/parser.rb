@@ -24,6 +24,9 @@ Treetop.load(File.expand_path(File.dirname(__FILE__)) + '/parser')
 include StoutLang::Ast
 
 module StoutLang
+  class ParseError < StandardError
+  end
+
   # include ParseNodes
   class Parser
     attr_reader :ast
@@ -37,8 +40,7 @@ module StoutLang
       ast = @parser.parse(code, options)
 
       if ast.nil?
-        puts @parser.failure_reason
-        raise @parser.failure_reason
+        raise ParseError.new(@parser.failure_reason)
       end
 
       root_ast = ast.to_ast

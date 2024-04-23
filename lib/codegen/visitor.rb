@@ -20,7 +20,7 @@ def bm(name)
 end
 
 class Visitor
-  attr_reader :mod, :main
+  attr_reader :root_mod, :main
 
   def initialize(ast, file_path=nil, library=false)
     @library = library
@@ -40,10 +40,14 @@ class Visitor
     if file_path.nil?
       file_path = "unknown.sl"
     end
-    @dibuilder.create_compile_unit(file_path)
+
+    # TODO: Not adding debug info atm because of version warning
+    # @dibuilder.create_compile_unit(file_path)
+    # @dibuilder.finalize
 
     # Register the build in types
     @ast.register_identifier("Int", StoutLang::Int)
+    @ast.register_identifier("Int64", StoutLang::Int64)
     @ast.register_identifier("Str", StoutLang::Str)
     @ast.register_identifier("Bool", StoutLang::Bool)
     @ast.register_identifier('import', StoutLang::Import)
@@ -61,17 +65,29 @@ class Visitor
           # Codegen in place in the main ast
           @ast.codegen(@compile_jit, @root_mod, function, b)
 
-          zero = LLVM.Int(0) # a LLVM Constant value
-          b.ret zero
+          # Check if main already has a return
+          # TODO: This check won't handle early returns with an unreachable block after
+          last_instruction = function.basic_blocks.last.instructions.last
+          if !last_instruction || last_instruction.opcode != :ret
+            zero = LLVM.Int(0) # a LLVM Constant value
+            b.ret zero
+          end
+
         end
       end
 
-      @root_mod.dump
+      # @root_mod.dump
       @root_mod.verify
-      puts "----------------"
+      # puts "----------------"
 
       @compile_jit.run_function(@main)
     end
+  end
+
+  def run
+    ret_val = @compile_jit.run_function(@main)
+
+    return ret_val.to_i
   end
 
   def setup_compile_jit(main_mod)

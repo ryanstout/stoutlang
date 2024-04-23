@@ -12,7 +12,6 @@ module StoutLang
     def codegen(compile_jit, mod, func, bb, import_call)
       # Read the path from the first argument
       path = import_call.args[0].run
-      puts "Import Path: #{path}"
 
       cache_path = "builds/cache/#{path}"
       FileUtils.mkdir_p("builds/cache/#{File.dirname(path)}")
@@ -22,8 +21,7 @@ module StoutLang
 
       cache_path += "_#{hash}"
 
-      if true || !File.exist?(cache_path+".bc")
-        puts "File didn't exist: #{cache_path}"
+      if !File.exist?(cache_path+".bc")
         # Remove any previously cached files for this path
         Dir.glob("builds/cache/#{path}_*").each do |file|
           File.delete(file)
@@ -47,7 +45,6 @@ module StoutLang
         next if mod.functions.named(function.name)
 
         function = original_module.functions.named(function.name)
-        puts "Register func: #{function.name}"
         extern_function = mod.functions.add(
           function.name.dup,
           function.params.map(&:type).dup, # Map params to their types

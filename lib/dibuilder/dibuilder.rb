@@ -47,14 +47,14 @@ class DIBuilder
   end
 
   def create_compile_unit(file_path)
-    lang = 0x0002 # Dwarf language code (C's for now)
+    lang = 0x0001 # Dwarf language code (C's for now)
     file_ref = create_file(file_path)
     producer = "StoutLang"
     producer_len = producer.length
     is_optimized = true
     flags = ""
     flags_len = flags.length
-    runtime_ver = 1
+    runtime_ver = 0
     split_name = ""
     split_name_len = split_name.length
     emission_kind = 1

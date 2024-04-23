@@ -28,25 +28,49 @@ module StoutLang
       def codegen(compile_jit, mod, func, bb)
         # Create the LLVM::Type in LLVM
 
-        # Create the i32 tag
-        tag = LLVM::Int32Ty
+        # Unions
+        # # Create the i32 tag
+        # tag = LLVM::Int32Ty
 
-        # Get the list of types from each property on the struct
+        # # Get the list of types from each property on the struct
         types = []
 
         block.expressions.map do |exp|
           if exp.is_a?(Property)
-            types << exp.type_sig.codegen(compile_jit, mod, func, bb)
+            type = exp.type_sig.codegen(compile_jit, mod, func, bb)
+            types << type
           end
         end
 
-        # Create the data type
-        data = LLVM::Type.struct(types, false)
+        # # Create the data type
+        # data = LLVM::Type.struct(types, false)
 
-        struct_type = LLVM::Type.struct([tag, data], false, name.name)
+        # struct_type = LLVM::Type.struct([tag, data], false, name.name)
 
-        # Add the struct to the identifier table
-        self.ir = struct_type
+        # # Add the struct to the identifier table
+        # self.ir = struct_type
+
+        struct = LLVM::Type.struct(types, false, name.name)
+
+        self.ir = struct
+
+        # Register the struct in its parent scope
+        if parent_scope
+          parent_scope.register_identifier(name.name, self)
+
+          # Define a size method that returns the size of LLVM::Int
+          size_method = mod.functions.add("i32_size", [], LLVM::Int64) do |function|
+            function.basic_blocks.append("entry").build do |builder|
+              builder.ret struct.size
+            end
+          end
+
+          parent_scope.register_identifier("i32_size", size_method)
+        end
+
+        # Create a new function, which mallocs the struct, then calls the init function
+
+
 
         # Build the IR for the block
         block.codegen(compile_jit, mod, func, bb)
