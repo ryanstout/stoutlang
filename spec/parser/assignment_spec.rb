@@ -12,7 +12,8 @@ describe StoutLangParser do
             expression=IntegerLiteral.new(value=10),
             type_sig=nil
           )
-        ]
+        ],
+        args=nil
       )
       expect(ast).to eq(match_ast)
     end
@@ -81,6 +82,8 @@ describe StoutLangParser do
       visitor = Visitor.new(ast)
 
       expect(visitor.run).to eq(10)
+
+      visitor.dispose
     end
   end
 end

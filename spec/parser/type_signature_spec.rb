@@ -45,7 +45,8 @@ describe StoutLangParser do
                 return_type=nil,
                 block=Block.new(expressions=[])
               )
-            ]
+            ],
+            args=nil
           )
         )
       )
@@ -75,7 +76,8 @@ describe StoutLangParser do
                 return_type=nil,
                 block=Block.new(expressions=[])
               )
-            ]
+            ],
+            args=nil
           )
         )
       )
@@ -104,7 +106,8 @@ describe StoutLangParser do
     #             ],
     #             block=Block.new(expressions=[])
     #           )
-    #         ]
+    #         ],
+    #         args=nil
     #       )
     #     )
     #   )

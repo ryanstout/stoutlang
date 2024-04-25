@@ -33,6 +33,10 @@ module StoutLang
           arg.type_sig.codegen(compile_jit, mod, func, bb)
         end
 
+        if return_type.nil?
+          # TODO:
+          raise "Return types are required right now"
+        end
         return_type_ir = return_type.codegen(compile_jit, mod, func, bb)
 
         last_expr = nil
@@ -47,7 +51,7 @@ module StoutLang
 
           # Create a block to do the codegen inside of
           function.basic_blocks.append('entry').build do |bb|
-            last_expr = block.codegen(compile_jit, mod, function, bb)
+            last_expr = block.codegen(compile_jit, mod, function, bb, true)
 
             # Return the value of the last expression
             bb.ret(last_expr)
