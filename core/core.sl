@@ -19,14 +19,16 @@ register_in_scope('malloc', ExternFunc.new(malloc))
 
 def %>(str: Str) -> Int {
   puts(str)
+  0
 }
 
-# def times(num: Int, block: Block) -> Int {
+
+# def times(num: Int, block: Int) -> Int {
 #   r```
 
 #   # Create a new basic block for the loop
-#   loop_block = func.append_basic_block('loop')
-#   after_block = func.append_basic_block('after')
+#   loop_block = func.basic_blocks.append('loop')
+#   after_block = func.basic_blocks.append('after')
 
 #   # Create an incrementer variable
 #   i = bb.alloca(LLVM::Int32, "__incrementer")
@@ -39,11 +41,14 @@ def %>(str: Str) -> Int {
 #     # Compare the incrementer to the number
 #     cmp = b.icmp(:slt, inc, func.params[0], 'cmp')
 
-#     # Codegen the 
+#     # Codegen the block
+#     block.codegen(compile_jit, mod, func, b)
 
 #     # Create a conditional branch
 #     b.cond(cmp, loop_block, after_block)
 #   end
+
+#   bb.position_at_end(after_block)
 
 #   ```
 # }
