@@ -5,5 +5,7 @@ describe "DIBuilder" do
     ast = Parser.new.parse("struct Test { }")
 
     visitor = Visitor.new(ast)
+
+    visitor.dispose
   end
 end

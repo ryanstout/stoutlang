@@ -21,4 +21,12 @@ class MCJit
   def run_function(function, *args)
     @engine.run_function(function, *args)
   end
+
+  def dispose
+    @modules.each do |mod|
+      @engine.remove_module(mod)
+    end
+
+    @engine.dispose
+  end
 end

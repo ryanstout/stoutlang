@@ -23,17 +23,10 @@ grammar StoutLang
 
         exprs += program.elements.map {|e| e.assign.to_ast }
 
-        Block.new(exprs, self)
+        Block.new(exprs, nil, self)
       end
     }
 
-    #space? program:(assign:assignment space?)* {
-    #  def to_ast
-    #    exprs = program.elements.map {|e| e.assign.to_ast }
-#
-    #    Block.new(exprs, self)
-    #  end
-    #}
   end
 
   rule expression
@@ -99,6 +92,17 @@ grammar StoutLang
   
 
   rule block
+    '|' space? args:method_call_args? space? '|' space? '{' program '}' {
+      def to_ast
+        block = program.to_ast
+        if args.respond_to?(:to_ast)
+          # Assign the args if this block take arguments
+          # We're doing this here so we can use the program rule without args
+          # in other places. 
+          block.args = args.to_ast
+        end
+      end
+    } / 
     '{' program '}' {
       def to_ast
         program.to_ast
