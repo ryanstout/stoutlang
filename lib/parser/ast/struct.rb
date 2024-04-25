@@ -29,6 +29,7 @@ module StoutLang
       def bytesize(compile_jit)
         raise "Struct codegen has not been run" unless self.ir
 
+        # TODO: Seems like there should be a better way to calculate this
         target_data = compile_jit.engine.data_layout
 
         # Get the size of the struct using target data

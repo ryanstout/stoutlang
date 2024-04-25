@@ -54,7 +54,7 @@ module StoutLang
         # extern_function = nil
 
         # Add the function to the scope
-        import_call.register_in_scope(function.name.clone + "", ExternFunc.new(extern_function))
+        import_call.register_in_scope(function.name.clone + "", ExternFunc.new(extern_function, nil))
       end
 
 

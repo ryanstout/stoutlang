@@ -4,7 +4,10 @@ module StoutLang
       setup :expressions, :args
 
       def prepare
+        args.each(&:prepare) if args
         expressions.each(&:prepare)
+
+        self.expressions = expressions.map(&:resolve)
       end
 
       def run
@@ -17,6 +20,10 @@ module StoutLang
 
       def add_expression(expression)
         expressions << expression
+      end
+
+      def resolve
+        self.expressions = expressions.map(&:resolve)
       end
 
       # The return type of the block

@@ -4,6 +4,7 @@ module StoutLang
       setup :name, :type_sig
 
       def prepare
+        self.type_sig = self.type_sig.resolve
         type_sig.prepare
       end
 

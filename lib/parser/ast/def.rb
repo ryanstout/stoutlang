@@ -9,8 +9,13 @@ module StoutLang
 
       def prepare
         super
-        args.each do |arg|
-          register_in_scope(arg.name.name, arg.type_sig)
+
+        self.args = args.map(&:resolve)
+        self.return_type = return_type.resolve if return_type
+
+        # Register the DefArg's in scope, we can't bind them yet because we don't have a function until codegen
+        args.map do |arg|
+          register_in_scope(arg.name.name, arg)
         end
         block.prepare
 
@@ -44,9 +49,9 @@ module StoutLang
           function.add_attribute :no_unwind_attribute
           function.linkage = :external
 
-          args.each_with_index do |arg, i|
+          self.args.each_with_index do |arg, i|
             # Register the argument in the scope
-            register_in_scope(arg.name.name, function.params[i])
+            arg.ir = function.params[i]
           end
 
           # Create a block to do the codegen inside of
@@ -67,6 +72,11 @@ module StoutLang
 
     class DefArg < AstNode
       setup :name, :type_sig
+      attr_accessor :ir
+
+      def codegen(compile_jit, mod, func, bb)
+        self.ir
+      end
     end
   end
 end

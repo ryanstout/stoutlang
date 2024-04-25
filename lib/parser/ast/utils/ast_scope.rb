@@ -21,10 +21,27 @@ module AstScope
   end
 
   def lookup_identifier(identifier)
-    return scope[identifier] if scope && scope.key?(identifier)
+    return scope[identifier].first if scope && scope.key?(identifier)
 
     if parent
       return parent.lookup_identifier(identifier)
+    end
+
+    nil
+  end
+
+  def lookup_function(identifier, arg_types=nil)
+    identifiers = lookup_identifier(identifier)
+    return identifiers
+
+    # Iterate through the identifiers and find if any match the arg_types
+    # TODO: there is a faster way to do this probably
+    identifiers.each do |ident|
+      # if ident.is_a?(Def) || ident.is_a?(ExternFunc)
+        # if ident.args.map(&:type_sig) == arg_types
+          return ident
+        # end
+      # end
     end
 
     nil

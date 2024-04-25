@@ -11,6 +11,7 @@ module StoutLang
       end
 
       def prepare
+        self.args = args.map(&:resolve)
       end
 
       def run
@@ -31,8 +32,7 @@ module StoutLang
           return [effect_type]
         else
           # Find the function in scope, and return its effects
-          function = lookup_identifier(name)
-
+          function = lookup_function(name)
 
           if function && function.is_a?(Def)
             function.effects.uniq
@@ -45,7 +45,7 @@ module StoutLang
       def codegen(compile_jit, mod, func, bb)
         return codegen_return(compile_jit, mod, func, bb) if name == 'return'
 
-        method_call = lookup_identifier(name)
+        method_call = lookup_function(name)
 
         if method_call == StoutLang::Import
           # TEMP: Special handler for imports to call into ruby to do imports
@@ -64,6 +64,7 @@ module StoutLang
 
         # TODO: Because of low level memory issues I think, we need to re-lookup the function in the current module
         # NOTE: This means function names need to be unique
+
         method_call_ir = mod.functions.named(name)
         # method_call_ir = method_call.ir
 

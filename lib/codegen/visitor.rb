@@ -140,7 +140,7 @@ class Visitor
         system("llc #{output_file_path}.bc -o #{output_file_path}.s")
       end
 
-      if @library
+      if @options[:lib]
         # Build an object
         bm('clang') do
           system("clang -c #{output_file_path}.s #{opt_level} -o #{output_file_path}.o")

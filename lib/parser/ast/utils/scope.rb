@@ -12,7 +12,13 @@ module StoutLang
       def register_identifier(identifier, node)
         name = self.name
         name = name.name if name.is_a?(StoutLang::Ast::Type)
-        scope[identifier] = node
+
+        scope[identifier] ||= []
+        if scope[identifier].size > 0
+          # TODO: temp until we migrate to full lookup
+          raise "Duplicate identifier #{identifier} (#{node.inspect}) in #{name}"
+        end
+        scope[identifier] << node
       end
     end
   end

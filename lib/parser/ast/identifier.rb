@@ -14,19 +14,25 @@ module StoutLang
         end
       end
 
-      # def prepare
-      #   # Look up the identifier, if it's a method call, swap this node to a method call with no args
-      #   identified = lookup_identifier(name)
+      def prepare
+      end
 
-      #   if identified.is_a?(StoutLang::Ast::Def)
-      #     # Create a FunctionCall and assign it to self
-      #     func_call = StoutLang::Ast::FunctionCall.new(name, [])
-      #     # Assign self as the parent scope
-      #     func_call.parent = self
-      #     # Assign the function call to self
-      #     @name = func_call
-      #   end
-      # end
+      # For identifiers that resolve to a Def, return a FunctionCall, for other identifiers,
+      # keep the identifier.
+      def resolve
+        identified = lookup_function(name)
+
+        if identified.is_a?(StoutLang::Ast::Def)
+          # Create a FunctionCall and assign it to self
+          func_call = StoutLang::Ast::FunctionCall.new(name, [])
+          # Assign self as the parent scope
+          func_call.parent = self
+          # Assign the function call to self
+          return func_call
+        else
+          return self
+        end
+      end
 
       def codegen(compile_jit, mod, func, bb)
         identified = lookup_identifier(name)
@@ -40,8 +46,11 @@ module StoutLang
           # Assign self as the parent scope
           func_call.parent = self
           return func_call.codegen(compile_jit, mod, func, bb)
+        elsif identified.is_a?(DefArg)
+          identified.codegen(compile_jit, mod, func, bb)
         elsif identified
-          identified#.codegen(mod, func, bb)
+          identified
+          # identified#.codegen(mod, func, bb)
         else
           raise "Identifier #{name} not found for #{inspect}"
         end

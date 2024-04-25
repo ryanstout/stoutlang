@@ -3,6 +3,12 @@ module StoutLang
     class ShellStringLiteral < AstNode
       setup :value, :language
 
+      def prepare
+        self.value.each do |val|
+          val.prepare if val.respond_to?(:prepare)
+        end
+      end
+
       def run
         value.map do |v|
           if v.is_a?(String)

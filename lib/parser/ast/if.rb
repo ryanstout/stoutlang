@@ -4,6 +4,9 @@ module StoutLang
       setup :condition, :if_block, :elifs_blocks, :else_block
 
       def prepare
+        # resolve the conditions, the rest should be blocks, which resolve when they are prepared
+        self.condition = condition.resolve
+
         condition.prepare
         if_block.prepare
         elifs_blocks.each(&:prepare)

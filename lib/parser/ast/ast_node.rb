@@ -14,7 +14,7 @@ module StoutLang
       def ==(other)
         return false unless other.is_a?(self.class)
 
-        (instance_variables - [:@parse_node, :@parent]).all? do |var|
+        (instance_variables.select {|k,v| self.class.ast_props.include?(k) }).all? do |var|
           instance_variable_get(var) == other.instance_variable_get(var)
         end
       end
@@ -34,6 +34,10 @@ module StoutLang
         else
           return nil
         end
+      end
+
+      def resolve
+        self # noop, overriden in identifier
       end
 
 
@@ -63,7 +67,10 @@ module StoutLang
       # Takes in a list of properties and creates an initializer for the AstNode. It also creates a property for
       # parse_node. It assigns parent to any AstNode or list of AstNode arguments.
       def self.setup(*properties)
-        attr_reader(*properties)
+        attr_accessor(*properties)
+
+        # Record properties in class variable
+        @ast_props = properties.map {|p| :"@#{p}" }
 
         define_method(:initialize) do |*args|
           index = 0
@@ -84,6 +91,10 @@ module StoutLang
 
       end
 
+      def self.ast_props
+        @ast_props || []
+      end
+
 
       def inspect_always_wrap?
         false
@@ -93,7 +104,8 @@ module StoutLang
       def dump_ast_internals(obj, total_chars, indent=0, max_width=120, indent_first_line=true, abort_on_overflow=false)
         is_array = obj.is_a?(Array)
 
-        map_over = is_array ? obj : obj.instance_variables.reject {|iv| [:@parse_node, :@parent].include?(iv) }
+        # map_over = is_array ? obj : obj.instance_variables.reject {|iv| [:@parse_node, :@parent, :@scope].include?(iv) }
+        map_over = is_array ? obj : obj.instance_variables.select {|iv| obj.class.ast_props.include?(iv) }
         char_overflow = false
 
         var_inspects = []
@@ -166,6 +178,5 @@ module StoutLang
         return dump_ast(self, indent, max_width)
       end
     end
-
   end
 end

@@ -4,6 +4,7 @@ module StoutLang
       setup :elements
 
       def prepare
+        self.elements = elements.map(&:resolve)
         elements.each(&:prepare)
       end
     end

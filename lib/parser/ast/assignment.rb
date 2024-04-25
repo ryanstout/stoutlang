@@ -9,8 +9,11 @@ module StoutLang
 
       def prepare
         expression.prepare
+        self.type_sig.prepare if self.type_sig
 
         # register_in_scope(identifier.name, self)
+
+        self.expression = self.expression.resolve
       end
 
       def run
