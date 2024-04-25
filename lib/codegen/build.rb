@@ -34,4 +34,4 @@ code = File.read(input_file_path)
 # For now, just inject core
 ast = parser.parse(code)
 
-Visitor.new(ast, input_file_path, options).generate(ARGV[1], ARGV[2] == '1')
+Visitor.new(ast, input_file_path, options).generate(ARGV[1])

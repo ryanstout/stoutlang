@@ -18,3 +18,11 @@
 - the burned once never again cycle  - baby with the bath water
 - Write an article on how functional is better but not with regards to ergonomics
 - Marketing: why do different people prefer different languages, because different features are better for different tasks.
+
+
+Todays:
++ identifiers should get converted to function calls in prepare
++ metadata writing
+- method dispatching based on types, name mangling
+- c bindings (ExternFunction and CFunction should inherit from Def?)
+- blocks

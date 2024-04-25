@@ -8,13 +8,13 @@ cputs = mod.functions.add('puts', [LLVM.Pointer(LLVM::Int8)], LLVM::Int32) do |f
   string.add_attribute :no_capture_attribute
 end
 
-register_in_scope('puts', ExternFunc.new(cputs))
+register_in_scope('puts', ExternFunc.new(cputs, nil))
 
 # Export sprintf and malloc
 sprintf = mod.functions.add('sprintf', [LLVM::Pointer(LLVM::Int8), LLVM::Pointer(LLVM::Int8)], LLVM::Int, varargs: true)
-register_in_scope('sprintf', ExternFunc.new(sprintf))
+register_in_scope('sprintf', ExternFunc.new(sprintf, nil))
 malloc = mod.functions.add('malloc', [LLVM::Int], LLVM::Pointer(LLVM::Int8))
-register_in_scope('malloc', ExternFunc.new(malloc))
+register_in_scope('malloc', ExternFunc.new(malloc, nil))
 ```
 
 def %>(str: Str) -> Int {
