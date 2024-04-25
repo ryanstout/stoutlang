@@ -6,6 +6,24 @@ end
 
 require 'stoutlang'
 require 'codegen/visitor'
+require 'optparse'
+
+options = {}
+OptionParser.new do |opts|
+  opts.banner = "Usage: example.rb [options]"
+
+  opts.on('--ir', 'Dump the LLVM IR') do |v|
+    options[:ir] = v
+  end
+
+  opts.on('--ast', 'Print the AST') do |v|
+    options[:ast] = v
+  end
+
+  opts.on('--lib', 'Create a library instead of an app') do |v|
+    options[:lib] = v
+  end
+end.parse!
 
 parser = StoutLang::Parser.new
 
@@ -16,4 +34,4 @@ code = File.read(input_file_path)
 # For now, just inject core
 ast = parser.parse(code)
 
-Visitor.new(ast, input_file_path, ARGV[3] == '1').generate(ARGV[1], ARGV[2] == '1')
+Visitor.new(ast, input_file_path, options).generate(ARGV[1], ARGV[2] == '1')
