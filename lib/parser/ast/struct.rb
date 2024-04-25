@@ -25,6 +25,18 @@ module StoutLang
         block.run
       end
 
+      # The size of the struct in bytes
+      def bytesize(compile_jit)
+        raise "Struct codegen has not been run" unless self.ir
+
+        target_data = compile_jit.engine.data_layout
+
+        # Get the size of the struct using target data
+        size_val = target_data.bit_size_of(self.ir).to_i
+
+        return size_val / 8
+      end
+
       def codegen(compile_jit, mod, func, bb)
         # Create the LLVM::Type in LLVM
 
@@ -59,13 +71,16 @@ module StoutLang
           parent_scope.register_identifier(name.name, self)
 
           # Define a size method that returns the size of LLVM::Int
-          size_method = mod.functions.add("i32_size", [], LLVM::Int64) do |function|
+          size_method = mod.functions.add("i32_size", [], LLVM::Int32) do |function|
             function.basic_blocks.append("entry").build do |builder|
-              builder.ret struct.size
+              size_const = LLVM::Int(self.bytesize(compile_jit))
+
+              builder.ret size_const
             end
           end
 
-          parent_scope.register_identifier("i32_size", size_method)
+          extern = Def.new(size_method, [], Int)
+          parent_scope.register_identifier("i32_size", extern)
         end
 
         # Create a new function, which mallocs the struct, then calls the init function
@@ -73,7 +88,7 @@ module StoutLang
 
 
         # Build the IR for the block
-        block.codegen(compile_jit, mod, func, bb)
+        block.codegen(compile_jit, mod, func, bb, true)
       end
     end
   end

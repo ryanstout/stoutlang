@@ -22,8 +22,8 @@ end
 class Visitor
   attr_reader :root_mod, :main
 
-  def initialize(ast, file_path=nil, library=false)
-    @library = library
+  def initialize(ast, file_path=nil, options={})
+    @options = options
 
     # Init Jit for compiler's jit
     @root_mod = LLVM::Module.new('root')
@@ -57,7 +57,7 @@ class Visitor
       add_core_import(ast)
     end
 
-    if library
+    if options[:lib]
       @ast.codegen(@compile_jit, @root_mod, nil, nil)
     else
       @main = @root_mod.functions.add('main', [], LLVM::Int32) do |function|
@@ -76,7 +76,13 @@ class Visitor
         end
       end
 
-      # @root_mod.dump
+      if options[:ir]
+        puts "----------------"
+        puts "LLVM IR:"
+        @root_mod.dump
+        puts "----------------"
+      end
+
       @root_mod.verify
       # puts "----------------"
 
@@ -92,6 +98,11 @@ class Visitor
 
   def setup_compile_jit(main_mod)
     @compile_jit = MCJit.new(main_mod, 0)
+  end
+
+  def dispose
+    # @compile_jit.dispose
+    # GC.start
   end
 
   def generate(output_file_path, aot=false, wasm=false)

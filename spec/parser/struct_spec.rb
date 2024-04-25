@@ -57,29 +57,25 @@ describe StoutLangParser do
     end
 
     it 'should codegen the properties into a llvm struct' do
-      # code = <<-END
-      # struct Person {
-      #   @age: Int
+      code = <<-END
+      struct Person {
+        @age: Int
 
-      #   # def init(self, age: Int) {
-      #   #   %> "Init"
-      #   # }
-      #   #
-      #   %> i32_size.to_s_i64()
-      # }
+        # def init(age: Int) -> Int {
+        #   %> "Init"
+        # }
+        #
+        # %> i32_size.to_s()
+      }
 
-      # END
-      # ast = Parser.new.parse(code)
+      END
+      ast = Parser.new.parse(code)
 
-      # visitor = Visitor.new(ast)
-      # mod = visitor.root_mod
+      visitor = Visitor.new(ast)
+      mod = visitor.root_mod
 
-      # struct = mod.structs['Person']
-      # expect(struct).to be_a(LLVM::Type)
-      # expect(struct.name).to eq('Person')
-      # expect(struct.elements.size).to eq(2)
-      # expect(struct.elements[0]).to eq(LLVM::Type.pointer(LLVM::Type::Int8))
-      # expect(struct.elements[1]).to eq(LLVM::Type::Int32)
+      visitor.dispose
+
     end
   end
 end
