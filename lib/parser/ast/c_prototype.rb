@@ -1,6 +1,6 @@
 module StoutLang
   module Ast
-    class ExternFunc < AstNode
+    class CPrototype < AstNode
       attr_accessor :name, :ir, :args
 
       def initialize(name, ir, args)

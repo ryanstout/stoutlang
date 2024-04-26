@@ -37,7 +37,7 @@ module AstScope
     # Iterate through the identifiers and find if any match the arg_types
     # TODO: there is a faster way to do this probably
     identifiers.each do |ident|
-      # if ident.is_a?(Def) || ident.is_a?(ExternFunc)
+      # if ident.is_a?(Def) || ident.is_a?(CPrototype)
         # if ident.args.map(&:type_sig) == arg_types
           return ident
         # end

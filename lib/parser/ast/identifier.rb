@@ -38,7 +38,7 @@ module StoutLang
         identified = lookup_identifier(name)
 
         if identified.is_a?(StoutLang::Ast::Def)
-          # TODO: Also handle ExternFunction
+          # TODO: Also handle CPrototype
 
           # Create a FunctionCall and codegen it
 

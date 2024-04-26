@@ -79,7 +79,7 @@ module StoutLang
           prototype = DefPrototype.new(func_name, args, return_type)
           prototype.ir = extern_function
         else
-          prototype = ExternFunc.new(func_name, extern_function, nil)
+          prototype = CPrototype.new(func_name, extern_function, nil)
         end
         import_call.register_in_scope(func_name, prototype)
       end

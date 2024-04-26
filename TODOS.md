@@ -28,7 +28,8 @@ Todays:
     - need ability to specify import path, flags, etc..
     - need ability to specify the function name in stoutlang and the C version (LLVM... - starts with capital)
     - c func names can be any string in llvm, add string named cfuncs
-- method dispatching based on types, name mangling
++ name mangling
+- method dispatching based on types
 - ability to return types
 - method matching based on instance of a type (essentially static dispatch):
     ```
