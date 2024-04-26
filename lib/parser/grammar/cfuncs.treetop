@@ -2,7 +2,7 @@ grammar CFuncs
   rule lib
     'lib ' name:type space? block {
       def to_ast
-        Lib.new(type.to_ast, block.to_ast, self)
+        StoutLang::Ast::Lib.new(name.to_ast, block.to_ast, self)
       end
     }
   end

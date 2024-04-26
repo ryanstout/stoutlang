@@ -7,6 +7,12 @@ module StoutLang
     end
   end
 
+  class Int32 < BaseType
+    def codegen(compile_jit, mod, func, bb)
+      LLVM::Int32
+    end
+  end
+
   class Int64 < BaseType
     def codegen(compile_jit, mod, func, bb)
       LLVM::Int64

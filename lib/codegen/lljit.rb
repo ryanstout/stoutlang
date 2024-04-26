@@ -56,7 +56,6 @@ class Jit
 
   def add_module(module_ptr)
     jd = LLVM::OrcJit::LLVMOrcLLJITGetMainJITDylib(@lljit_ptr.read_pointer)
-    puts "HERE1: #{module_ptr.inspect} -- JD: #{jd.inspect}"
     thread_safe_module = create_thread_safe_module(module_ptr)
     # puts "TSM: #{thread_safe_module.inspect}"
     LLVM::OrcJit::LLVMOrcLLJITAddLLVMIRModule(@lljit_ptr.read_pointer, jd, thread_safe_module)

@@ -47,6 +47,7 @@ class Visitor
 
     # Register the build in types
     @ast.register_identifier("Int", StoutLang::Int)
+    @ast.register_identifier("Int32", StoutLang::Int32)
     @ast.register_identifier("Int64", StoutLang::Int64)
     @ast.register_identifier("Str", StoutLang::Str)
     @ast.register_identifier("Bool", StoutLang::Bool)
@@ -110,7 +111,7 @@ class Visitor
 
 
     # return
-    if @options[:lib]
+    if !@options[:aot]
 
       return
 

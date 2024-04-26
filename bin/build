@@ -2,4 +2,4 @@
 
 # Run lib/codegen/build.rb and pass all args
 
-bundle exec ruby lib/codegen/build.rb $@ 1
+bundle exec ruby lib/codegen/build.rb $@ --aot

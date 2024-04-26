@@ -28,7 +28,7 @@ module StoutLang
         end
 
         # Compile the file
-        Compiler.compile(path + ".sl", cache_path, library=true, aot=true)
+        Compiler.compile(path + ".sl", cache_path, {lib: true, aot: true})
       end
 
       original_module = LLVM::Module.parse_bitcode(cache_path + ".bc")
@@ -52,6 +52,7 @@ module StoutLang
           # function.type.vararg? # Preserve var_arg status
         )
         # extern_function = nil
+        #
 
         # Add the function to the scope
         import_call.register_in_scope(function.name.clone + "", ExternFunc.new(extern_function, nil))

@@ -1,21 +1,12 @@
 # We implement as much core functionality in StoutLang as possible, core
 # provides a lot of the core functionality of the language.
 
-r```
-# Export %> print
-cputs = mod.functions.add('puts', [LLVM.Pointer(LLVM::Int8)], LLVM::Int32) do |function, string|
-  function.add_attribute :no_unwind_attribute
-  string.add_attribute :no_capture_attribute
-end
-
-register_in_scope('puts', ExternFunc.new(cputs, nil))
-
-# Export sprintf and malloc
-sprintf = mod.functions.add('sprintf', [LLVM::Pointer(LLVM::Int8), LLVM::Pointer(LLVM::Int8)], LLVM::Int, varargs: true)
-register_in_scope('sprintf', ExternFunc.new(sprintf, nil))
-malloc = mod.functions.add('malloc', [LLVM::Int], LLVM::Pointer(LLVM::Int8))
-register_in_scope('malloc', ExternFunc.new(malloc, nil))
-```
+lib LibC {
+  cfunc puts(str: Str) -> Int
+  cfunc sprintf(str: Str, format: Str, ...) -> Int
+  cfunc malloc(size: Int) -> Str
+  
+}
 
 def %>(str: Str) -> Int {
   puts(str)

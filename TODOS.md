@@ -28,3 +28,4 @@ Todays:
 - blocks
 
 - properties, methods, substructs, etc.. should not be allowed on lib's. cfunc's should not be allowed on structs
+- cfuncs need to set attributes (no_capture, etc..) on arguments

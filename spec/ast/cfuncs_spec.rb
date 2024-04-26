@@ -2,7 +2,12 @@ require 'spec_helper'
 
 describe CFunc do
   it 'should register a cfunc' do
-    ast = Parser.new.parse("cfunc sleep(i: Int) -> Int")
+    code = <<-END
+      lib LibC {
+        cfunc sleep(i: Int) -> Int
+      }
+    END
+    ast = Parser.new.parse(code)
 
     visitor = Visitor.new(ast)
 

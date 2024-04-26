@@ -23,6 +23,10 @@ OptionParser.new do |opts|
   opts.on('--lib', 'Create a library instead of an app') do |v|
     options[:lib] = v
   end
+
+  opts.on('--aot', 'Ahead of time compile the code') do |v|
+    options[:aot] = v
+  end
 end.parse!
 
 parser = StoutLang::Parser.new
