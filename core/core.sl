@@ -1,6 +1,7 @@
 # We implement as much core functionality in StoutLang as possible, core
 # provides a lot of the core functionality of the language.
 
+# Expose some LibC functions we need for now
 lib LibC {
   cfunc puts(str: Str) -> Int
   cfunc sprintf(str: Str, format: Str, ...) -> Int

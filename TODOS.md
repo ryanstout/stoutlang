@@ -17,15 +17,31 @@
 - the burned once never again cycle  - baby with the bath water
 - Write an article on how functional is better but not with regards to ergonomics
 - Marketing: why do different people prefer different languages, because different features are better for different tasks.
+- add a nomangle flag so functions can be exposed with C callable names
+- def's should be able to have the same name for arguments
 
 
 Todays:
 + identifiers should get converted to function calls in prepare
 + metadata writing
-- c bindings (ExternFunction and CFunction should inherit from Def?)
-- ability to return types
++ c bindings (ExternFunction and CFunction should inherit from Def?)
+    - need ability to specify import path, flags, etc..
+    - need ability to specify the function name in stoutlang and the C version (LLVM... - starts with capital)
+    - c func names can be any string in llvm, add string named cfuncs
 - method dispatching based on types, name mangling
+- ability to return types
+- method matching based on instance of a type (essentially static dispatch):
+    ```
+    struct Color {
+      def red(_: ^Color) { '#FF0000'}
+    }
+    ```
+
+    needs some syntax to say we're matching to this specific type (and subtypes), but not an instance of it.
+
+    One issue with ^ is that it't hard to catch. I like the idea of keeping the way dispatch works general. (only one type of dispatch)
 - blocks
 
 - properties, methods, substructs, etc.. should not be allowed on lib's. cfunc's should not be allowed on structs
 - cfuncs need to set attributes (no_capture, etc..) on arguments
+- function arguments should use the name in the IR
