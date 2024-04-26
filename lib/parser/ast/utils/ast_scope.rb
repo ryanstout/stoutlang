@@ -21,7 +21,7 @@ module AstScope
   end
 
   def lookup_identifier(identifier)
-    return scope[identifier].first if scope && scope.key?(identifier)
+    return scope[identifier].last if scope && scope.key?(identifier)
 
     if parent
       return parent.lookup_identifier(identifier)

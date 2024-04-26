@@ -14,7 +14,6 @@ describe "metadata" do
 
     # Check both are there
     expect(StoutLang::Metadata.read(mod, 'foo')).to eq(['bar', 'baz'])
-
-
   end
+
 end

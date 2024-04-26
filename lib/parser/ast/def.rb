@@ -1,4 +1,6 @@
 require 'parser/ast/utils/scope'
+require 'codegen/metadata'
+require 'base64'
 
 module StoutLang
   module Ast
@@ -6,6 +8,7 @@ module StoutLang
       include Scope
       setup :name, :args, :return_type, :block
       attr_accessor :ir
+      attr_reader :func_serialized
 
       def prepare
         super
@@ -18,6 +21,9 @@ module StoutLang
           register_in_scope(arg.name.name, arg)
         end
         block.prepare
+
+        func_serialized = {name: name, }
+        puts "Def: #{name} serialized: #{func_serialized.size}"
 
         # Def's should register themselves in the parent scope
         parent_scope.register_identifier(name, self)
@@ -37,6 +43,9 @@ module StoutLang
         func_args = args.map do |arg|
           arg.type_sig.codegen(compile_jit, mod, func, bb)
         end
+
+        # Add the function to the module's metadata
+        # Metadata.add(mod, 'sl.funcs', self.func_serialized)
 
         if return_type.nil?
           # TODO:
@@ -76,6 +85,10 @@ module StoutLang
 
       def codegen(compile_jit, mod, func, bb)
         self.ir
+      end
+
+      def to_h
+        {name: name, type: type_sig.to_h}
       end
     end
   end
