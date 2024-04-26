@@ -46,18 +46,42 @@ module StoutLang
         # TODO: janky
         next if mod.functions.named(function.name)
 
+        func_name, args, return_type = self.unmangle(function.name)
+
+
         function = original_module.functions.named(function.name)
+
+        # Don't import internal functions from the library we're importing
+        # next if function.linkage == :private
+
+        # Create a prototype for the function
         extern_function = mod.functions.add(
           function.name.dup,
           function.params.map(&:type).dup, # Map params to their types
           function.type.return_type.dup,
           # function.type.vararg? # Preserve var_arg status
         )
+        # extern_function.linkage = :private
         # extern_function = nil
-        #
+
+
 
         # Add the function to the scope
-        import_call.register_in_scope(function.name.clone + "", ExternFunc.new(extern_function, nil))
+        if args
+          # Conver the args into Arg's
+          args = args.map do |arg|
+            Arg.new('_', TypeSig.new(Type.new(arg)))
+          end
+
+          return_type = Type.new(return_type)
+
+          # We have a stoutlang Def, not a C func
+          prototype = DefPrototype.new(func_name, args, return_type)
+          prototype.ir = extern_function
+        else
+          prototype = ExternFunc.new(func_name, extern_function, nil)
+        end
+        import_call.register_in_scope(func_name, prototype)
       end
 
 
@@ -73,6 +97,5 @@ module StoutLang
       end
 
     end
-
   end
 end
