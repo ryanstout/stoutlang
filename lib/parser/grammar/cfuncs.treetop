@@ -1,0 +1,11 @@
+grammar CFuncs
+  rule cfunc_define
+    'cfunc ' method_name:method_name space? def_args:def_args? space? def_return_type_sig:def_return_type_sig? {
+      def to_ast
+        def_args_ast = def_args.respond_to?(:to_ast) ? def_args.to_ast : []
+        return_type = def_return_type_sig.respond_to?(:to_ast) ? def_return_type_sig.to_ast : nil
+        CFunc.new(method_name.to_ast, def_args_ast, return_type, self)
+      end
+    } / macro_define
+  end
+end

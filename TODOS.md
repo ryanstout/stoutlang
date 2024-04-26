@@ -22,7 +22,7 @@
 Todays:
 + identifiers should get converted to function calls in prepare
 + metadata writing
+- c bindings (ExternFunction and CFunction should inherit from Def?)
 - ability to return types
 - method dispatching based on types, name mangling
-- c bindings (ExternFunction and CFunction should inherit from Def?)
 - blocks

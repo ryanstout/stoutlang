@@ -9,6 +9,7 @@ grammar StoutLang
   include Lists
   include Structs
   include Defs
+  include CFuncs
 
   rule program
     # Expressions should be separated by line breaks (which includes ; )

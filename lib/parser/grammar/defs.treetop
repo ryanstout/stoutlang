@@ -6,7 +6,7 @@ grammar Defs
         return_type = def_return_type_sig.respond_to?(:to_ast) ? def_return_type_sig.to_ast : nil
         Def.new(method_name.to_ast, def_args_ast, return_type, block.to_ast, self)
       end
-    } / macro_define
+    } / cfunc_define
   end
 
   rule macro_define
