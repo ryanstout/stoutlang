@@ -51,6 +51,7 @@ class Visitor
     @ast.register_identifier("Str", StoutLang::Str)
     @ast.register_identifier("Bool", StoutLang::Bool)
     @ast.register_identifier('import', StoutLang::Import)
+    @ast.register_identifier('Type', StoutLang::TypeType)
 
     # Automatically import core/core
     if file_path !~ /^core\//
@@ -105,11 +106,11 @@ class Visitor
     # GC.start
   end
 
-  def generate(output_file_path, aot=false, wasm=false)
+  def generate(output_file_path, wasm=false)
 
 
     # return
-    unless aot
+    if @options[:lib]
 
       return
 

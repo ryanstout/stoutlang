@@ -4,6 +4,11 @@ module LLVM
 
     # LLVMNamedMDNodeRef 	LLVMGetOrInsertNamedMetadata (LLVMModuleRef M, const char *Name, size_t NameLen)
     attach_function :LLVMGetOrInsertNamedMetadata, [:pointer, :string, :size_t], :pointer
+
+
+    attach_function :add_alias2, :LLVMAddAlias2, [:pointer, :pointer, :uint, :pointer, :string], :pointer
+
+
   end
   class Module
     def initialize(name, context=nil)

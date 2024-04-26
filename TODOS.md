@@ -1,5 +1,4 @@
 
-- Can we have 1 argument function calls without params
 - method calls on self without the self
 - html syntax inline
 - figure out how to reorder logs so they come out in the right order
@@ -23,6 +22,7 @@
 Todays:
 + identifiers should get converted to function calls in prepare
 + metadata writing
+- ability to return types
 - method dispatching based on types, name mangling
 - c bindings (ExternFunction and CFunction should inherit from Def?)
 - blocks
