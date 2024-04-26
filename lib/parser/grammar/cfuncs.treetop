@@ -31,11 +31,11 @@ grammar CFuncs
         end
       end
     }
-    # / '(' space? '...' space? ')' {
-    #  # varargs only
-    #  def to_ast
-    #    return [], true
-    #  end
-    #}
+     / '(' space? '...' space? ')' {
+      # varargs only
+      def to_ast
+        return [], true
+      end
+    }
   end
 end

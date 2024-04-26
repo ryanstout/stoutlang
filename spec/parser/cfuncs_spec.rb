@@ -54,10 +54,10 @@ describe StoutLangParser do
       )
     end
 
-    it 'should parse libs' do
+    it 'should parse varargs as the only argument' do
       code = <<-END
         lib LibC {
-          cfunc puts(s: Str) -> Int
+          cfunc somefunc(...) -> Int
         }
       END
 
@@ -71,14 +71,9 @@ describe StoutLangParser do
               block=Block.new(
                 expressions=[
                   CFunc.new(
-                    name="puts",
-                    args=[
-                      Arg.new(
-                        name=Identifier.new(name="s"),
-                        type_sig=TypeSig.new(type_val=Type.new(name="Str"))
-                      )
-                    ],
-                    varargs_enabled=false,
+                    name="somefunc",
+                    args=[],
+                    varargs_enabled=true,
                     return_type=Type.new(name="Int")
                   )
                 ],
@@ -90,5 +85,7 @@ describe StoutLangParser do
         )
       )
     end
+
+
   end
 end
