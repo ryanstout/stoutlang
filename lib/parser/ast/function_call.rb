@@ -3,6 +3,7 @@ require 'codegen/import'
 module StoutLang
   module Ast
     class FunctionCall < AstNode
+
       OPERATORS = ['+', '-', '*', '/', '||', '&&', '|', '&']
       setup :name, :args
 
@@ -65,7 +66,11 @@ module StoutLang
         # TODO: Because of low level memory issues I think, we need to re-lookup the function in the current module
         # NOTE: This means function names need to be unique
 
-        method_call_ir = mod.functions.named(name)
+        method_call_ir = mod.functions.named(method_call.mangled_name)
+
+        if method_call_ir.nil?
+          puts mod
+        end
         # method_call_ir = method_call.ir
 
         if method_call_ir.nil?
@@ -73,6 +78,7 @@ module StoutLang
           # mod.functions.each do |f|
           #   puts "FUNCTION: #{f.name}"
           # end
+          raise "Could not find function #{name}"
         end
 
         return bb.call(method_call_ir, *args, assignment_name || 'temp')

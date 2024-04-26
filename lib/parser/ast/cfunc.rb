@@ -25,6 +25,10 @@ module StoutLang
         parent_lib.parent_scope.register_in_scope(name, self)
       end
 
+      def mangled_name
+        name
+      end
+
       def codegen(compile_jit, mod, func, bb)
         # sprintf = mod.functions.add('sprintf', [LLVM::Pointer(LLVM::Int8), LLVM::Pointer(LLVM::Int8)], LLVM::Int, varargs: true)
 
@@ -38,6 +42,7 @@ module StoutLang
 
         # Create the function
         func = mod.functions.add(name, arg_types, return_type, varargs: @varargs_enabled)
+        # func.linkage = :private
 
         self.ir = func
 

@@ -1,8 +1,10 @@
 require 'codegen/compiler'
 require 'xxhash'
+require 'codegen/name_mangle'
 
 module StoutLang
   class Import
+    include NameMangle
     def hash_file_xxhash(filename)
       return XXhash.xxh64_file(filename)
     end

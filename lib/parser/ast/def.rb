@@ -1,11 +1,13 @@
 require 'parser/ast/utils/scope'
 require 'codegen/metadata'
 require 'base64'
+require 'codegen/name_mangle'
 
 module StoutLang
   module Ast
     class Def < AstNode
       include Scope
+      include NameMangle
       setup :name, :args, :return_type, :block
       attr_accessor :ir
       attr_reader :func_serialized
@@ -23,7 +25,6 @@ module StoutLang
         block.prepare
 
         func_serialized = {name: name, }
-        puts "Def: #{name} serialized: #{func_serialized.size}"
 
         # Def's should register themselves in the parent scope
         parent_scope.register_identifier(name, self)
@@ -54,7 +55,7 @@ module StoutLang
         return_type_ir = return_type.codegen(compile_jit, mod, func, bb)
 
         last_expr = nil
-        func = mod.functions.add(name, func_args, return_type_ir) do |function|
+        func = mod.functions.add(mangled_name, func_args, return_type_ir) do |function|
           function.add_attribute :no_unwind_attribute
           function.linkage = :external
 

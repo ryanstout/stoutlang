@@ -92,5 +92,13 @@ describe StoutLangParser do
       visitor.dispose
     end
 
+    it 'should provide a mangled name' do
+      ast = Parser.new.parse("def add_one(val: Int) -> Int { 1 }")
+
+      def_node = ast.block.expressions[0]
+
+      expect(def_node.mangled_name).to eq("sl1.add_one(Int)->Int")
+    end
+
   end
 end

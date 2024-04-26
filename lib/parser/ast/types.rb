@@ -1,11 +1,21 @@
 module StoutLang
   module Ast
+
+    # A Type is like an Identifier for a base level type
     class Type < AstNode
       setup :name
       attr_accessor :type
 
+      def prepare
+
+      end
+
       def run
         self
+      end
+
+      def mangled_name
+        name
       end
 
       def codegen(compile_jit, mod, func, bb)
@@ -41,6 +51,10 @@ module StoutLang
 
       def run
         self
+      end
+
+      def mangled_name
+        type_val.mangled_name
       end
 
       def codegen(compile_jit, mod, func, bb)
