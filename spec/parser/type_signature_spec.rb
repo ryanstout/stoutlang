@@ -37,7 +37,7 @@ describe StoutLangParser do
               Def.new(
                 name="say_hi",
                 args=[
-                  DefArg.new(
+                  Arg.new(
                     name=Identifier.new(name="name"),
                     type_sig=TypeSig.new(type_val=Type.new(name="Str"))
                   )
@@ -63,7 +63,7 @@ describe StoutLangParser do
               Def.new(
                 name="say_hi",
                 args=[
-                  DefArg.new(
+                  Arg.new(
                     name=Identifier.new(name="name"),
                     type_sig=TypeSig.new(
                       type_val=FunctionCall.new(
@@ -94,7 +94,7 @@ describe StoutLangParser do
     #           Def.new(
     #             name="say_hi",
     #             args=[
-    #               DefArg.new(
+    #               Arg.new(
     #                 name=Identifier.new(name="name"),
     #                 type_sig=TypeSig.new(
     #                   type_val=FunctionCall.new(

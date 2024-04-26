@@ -16,7 +16,7 @@ module StoutLang
         self.args = args.map(&:resolve)
         self.return_type = return_type.resolve if return_type
 
-        # Register the DefArg's in scope, we can't bind them yet because we don't have a function until codegen
+        # Register the Arg's in scope, we can't bind them yet because we don't have a function until codegen
         args.map do |arg|
           register_in_scope(arg.name.name, arg)
         end
@@ -79,7 +79,7 @@ module StoutLang
       end
     end
 
-    class DefArg < AstNode
+    class Arg < AstNode
       setup :name, :type_sig
       attr_accessor :ir
 

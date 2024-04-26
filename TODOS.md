@@ -26,3 +26,5 @@ Todays:
 - ability to return types
 - method dispatching based on types, name mangling
 - blocks
+
+- properties, methods, substructs, etc.. should not be allowed on lib's. cfunc's should not be allowed on structs

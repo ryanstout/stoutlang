@@ -46,7 +46,7 @@ module StoutLang
           # Assign self as the parent scope
           func_call.parent = self
           return func_call.codegen(compile_jit, mod, func, bb)
-        elsif identified.is_a?(DefArg)
+        elsif identified.is_a?(Arg)
           identified.codegen(compile_jit, mod, func, bb)
         elsif identified
           identified

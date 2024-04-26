@@ -1,11 +1,41 @@
 grammar CFuncs
-  rule cfunc_define
-    'cfunc ' method_name:method_name space? def_args:def_args? space? def_return_type_sig:def_return_type_sig? {
+  rule lib
+    'lib ' name:type space? block {
       def to_ast
-        def_args_ast = def_args.respond_to?(:to_ast) ? def_args.to_ast : []
-        return_type = def_return_type_sig.respond_to?(:to_ast) ? def_return_type_sig.to_ast : nil
-        CFunc.new(method_name.to_ast, def_args_ast, return_type, self)
+        Lib.new(type.to_ast, block.to_ast, self)
+      end
+    }
+  end
+
+  rule cfunc_define
+    'cfunc ' method_name:method_name space? args:args_with_varargs_option? space? return_type_sig:return_type_sig? {
+      def to_ast
+        args_ast, varargs_enabled = args.respond_to?(:to_ast) ? args.to_ast : []
+        return_type = return_type_sig.respond_to?(:to_ast) ? return_type_sig.to_ast : nil
+        CFunc.new(method_name.to_ast, args_ast, varargs_enabled, return_type, self)
       end
     } / macro_define
+  end
+
+  rule args_with_varargs_option
+    '(' space? args_main:(first_arg:arg rest_args:(',' space? exp:arg)*)? space? varargs:(',' space? '...' space?)?  ')' {
+      def to_ast
+        varargs_enabled = !varargs.empty?
+        if args_main && args_main.respond_to?(:first_arg)
+          first_arg = args_main.first_arg.to_ast
+          rest_args = args_main.rest_args.elements.map {|e| e.exp.to_ast }
+
+          return [first_arg] + rest_args, varargs_enabled
+        else
+          return [], varargs_enabled
+        end
+      end
+    }
+    # / '(' space? '...' space? ')' {
+    #  # varargs only
+    #  def to_ast
+    #    return [], true
+    #  end
+    #}
   end
 end

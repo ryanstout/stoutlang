@@ -42,11 +42,11 @@ describe StoutLangParser do
               Def.new(
                 name="add",
                 args=[
-                  DefArg.new(
+                  Arg.new(
                     name=Identifier.new(name="a"),
                     type_sig=TypeSig.new(type_val=Type.new(name="Int"))
                   ),
-                  DefArg.new(
+                  Arg.new(
                     name=Identifier.new(name="b"),
                     type_sig=TypeSig.new(type_val=Type.new(name="Int"))
                   )

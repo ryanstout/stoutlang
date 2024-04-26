@@ -142,7 +142,7 @@ describe StoutLangParser do
     #           Def.new(
     #             name="one",
     #             args=[
-    #               DefArg.new(
+    #               Arg.new(
     #                 name=Identifier.new(name="a"),
     #                 type_sig=TypeSig.new(type_val=Type.new(name="Int") | Type.new(name="two"))
     #               )

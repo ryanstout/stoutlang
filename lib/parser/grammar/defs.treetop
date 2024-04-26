@@ -1,34 +1,34 @@
 grammar Defs
   rule define_method
-    'def ' method_name:method_name space? def_args:def_args? space? def_return_type_sig:def_return_type_sig? space? block:block {
+    'def ' method_name:method_name space? args:args? space? return_type_sig:return_type_sig? space? block:block {
       def to_ast
-        def_args_ast = def_args.respond_to?(:to_ast) ? def_args.to_ast : []
-        return_type = def_return_type_sig.respond_to?(:to_ast) ? def_return_type_sig.to_ast : nil
-        Def.new(method_name.to_ast, def_args_ast, return_type, block.to_ast, self)
+        args_ast = args.respond_to?(:to_ast) ? args.to_ast : []
+        return_type = return_type_sig.respond_to?(:to_ast) ? return_type_sig.to_ast : nil
+        Def.new(method_name.to_ast, args_ast, return_type, block.to_ast, self)
       end
     } / cfunc_define
   end
 
   rule macro_define
-    'macro ' method_name:method_name space? def_args:def_args? space? def_return_type_sig:def_return_type_sig? space? block:block {
+    'macro ' method_name:method_name space? args:args? space? return_type_sig:return_type_sig? space? block:block {
       def to_ast
-        def_args_ast = def_args.respond_to?(:to_ast) ? def_args.to_ast : []
-        return_type = def_return_type_sig.respond_to?(:to_ast) ? def_return_type_sig.to_ast : nil
-        Macro.new(method_name.to_ast, def_args_ast, return_type, block.to_ast, self)
+        args_ast = args.respond_to?(:to_ast) ? args.to_ast : []
+        return_type = return_type_sig.respond_to?(:to_ast) ? return_type_sig.to_ast : nil
+        Macro.new(method_name.to_ast, args_ast, return_type, block.to_ast, self)
       end
     } / infix_chain
   end
 
-  rule def_arg
+  rule arg
     identifier space? type_sig:type_sig? {
       def to_ast
         type_sig_ast = type_sig.respond_to?(:to_ast) ? type_sig.to_ast : nil
-        DefArg.new(identifier.to_ast, type_sig_ast, self)
+        Arg.new(identifier.to_ast, type_sig_ast, self)
       end
     }
   end
 
-  rule def_return_type_sig
+  rule return_type_sig
     '->' space? type_expression:type_expression {
       def to_ast
         type_expression.to_ast
@@ -37,8 +37,8 @@ grammar Defs
   end
 
 
-  rule def_args
-    '(' space? args_main:(first_arg:def_arg rest_args:(',' space? exp:def_arg)*)? space? ')' {
+  rule args
+    '(' space? args_main:(first_arg:arg rest_args:(',' space? exp:arg)*)? space? ')' {
       def to_ast
 
         if args_main && args_main.respond_to?(:first_arg)

@@ -63,8 +63,8 @@ describe StoutLangParser do
             Def.new(
               name="some_method",
               args=[
-                DefArg.new(name=Identifier.new(name="arg1"), type_sig=nil),
-                DefArg.new(name=Identifier.new(name="arg2"), type_sig=nil)
+                Arg.new(name=Identifier.new(name="arg1"), type_sig=nil),
+                Arg.new(name=Identifier.new(name="arg2"), type_sig=nil)
               ],
               return_type=nil,
               block=Block.new(expressions=[FunctionCall.new(name="print", args=[])])
@@ -84,8 +84,8 @@ describe StoutLangParser do
             Def.new(
               name="some_method",
               args=[
-                DefArg.new(name=Identifier.new(name="arg1"), type_sig=nil),
-                DefArg.new(name=Identifier.new(name="arg2"), type_sig=nil)
+                Arg.new(name=Identifier.new(name="arg1"), type_sig=nil),
+                Arg.new(name=Identifier.new(name="arg2"), type_sig=nil)
               ],
               return_type=nil,
               block=Block.new(expressions=[FunctionCall.new(name="print", args=[])])
@@ -114,11 +114,11 @@ describe StoutLangParser do
             Def.new(
               name="some_method",
               args=[
-                DefArg.new(
+                Arg.new(
                   name=Identifier.new(name="arg1"),
                   type_sig=TypeSig.new(type_val=Type.new(name="Int"))
                 ),
-                DefArg.new(
+                Arg.new(
                   name=Identifier.new(name="arg2"),
                   type_sig=TypeSig.new(type_val=Type.new(name="Str"))
                 )

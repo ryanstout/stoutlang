@@ -27,8 +27,8 @@ describe StoutLangParser do
       Macro.new(
         name="awesome",
         args=[
-          DefArg.new(name=Identifier.new(name="a"), type_sig=nil),
-          DefArg.new(name=Identifier.new(name="b"), type_sig=nil)
+          Arg.new(name=Identifier.new(name="a"), type_sig=nil),
+          Arg.new(name=Identifier.new(name="b"), type_sig=nil)
         ],
         return_type=nil,
         block=Block.new(expressions=[IntegerLiteral.new(value=5)])
@@ -43,8 +43,8 @@ describe StoutLangParser do
       Macro.new(
         name="awesome",
         args=[
-          DefArg.new(name=Identifier.new(name="a"), type_sig=nil),
-          DefArg.new(name=Identifier.new(name="b"), type_sig=nil)
+          Arg.new(name=Identifier.new(name="a"), type_sig=nil),
+          Arg.new(name=Identifier.new(name="b"), type_sig=nil)
         ],
         return_type=Type.new(name="Int"),
         block=Block.new(expressions=[IntegerLiteral.new(value=5)])
