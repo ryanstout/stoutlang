@@ -9,6 +9,10 @@ module StoutLang
       return XXhash.xxh64_file(filename)
     end
 
+    def self.args
+      [Arg.new('path', TypeSig.new(type_val=Type.new('Str')))]
+    end
+
     # Import types and functions from a compile bitcode module. Compile it first
     # if it's not already compiled
     def codegen(compile_jit, mod, func, bb, import_call)

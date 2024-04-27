@@ -42,5 +42,68 @@ describe StoutLangParser do
         )
       )
     end
+
+    it 'should dispatch based on argument types (function overloading)' do
+      code = <<-END
+      def return_type_name(val: Int) -> Str {
+        "Int"
+      }
+
+      def return_type_name(val: Str) -> Str {
+        "Str"
+      }
+
+      def check() -> Str {
+        return_type_name(5)
+      }
+      END
+
+      ast = Parser.new.parse(code)
+      visitor = Visitor.new(ast)
+
+      ret = visitor.run_function('check', [], 'Str')
+
+      expect(ret.to_value_ptr.read_string).to eq("Int")
+    end
+
+    it 'should handle resolution of function calls with mutliple args' do
+      code = <<-END
+      def ret_val(a: Int, b: Int) -> Int {
+        1
+      }
+
+      def ret_val(a: Int, b: Str) -> Int {
+        2
+      }
+
+      def ret_val(a: Str, b: Str) -> Int {
+        3
+      }
+
+      def check1() -> Int {
+        ret_val(1,1)
+      }
+
+      def check2() -> Int {
+        ret_val(1,"1")
+      }
+
+      def check3() -> Int {
+        ret_val("1","1")
+      }
+      END
+
+      ast = Parser.new.parse(code)
+      visitor = Visitor.new(ast)
+
+      ret = visitor.run_function('check1', [], 'Int')
+      expect(ret.to_i).to eq(1)
+
+      ret = visitor.run_function('check2', [], 'Int')
+      expect(ret.to_i).to eq(2)
+
+      ret = visitor.run_function('check3', [], 'Int')
+      expect(ret.to_i).to eq(3)
+    end
   end
 end

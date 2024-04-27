@@ -31,6 +31,11 @@ module StoutLang
       end
     end
 
+    # Lets you look up a function by string args and return type
+    def self.mangle_name(name, args, return_type)
+      "sl1.#{name}(#{args.join(',')})->#{return_type}"
+    end
+
     # Takes a mangled function call name and extracts
     def unmangle(mangled_name)
       if mangled_name[0..3] != 'sl1.'

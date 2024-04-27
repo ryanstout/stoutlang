@@ -3,6 +3,10 @@ module StoutLang
     class StringLiteral < AstNode
       setup :value
 
+      def type
+        Type.new("Str")
+      end
+
       def prepare
         self.value.each do |val|
           val.prepare if val.respond_to?(:prepare)

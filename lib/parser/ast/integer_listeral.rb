@@ -3,6 +3,10 @@ module StoutLang
     class IntegerLiteral < AstNode
       setup :value
 
+      def type
+        Type.new("Int")
+      end
+
       def run
         value
       end

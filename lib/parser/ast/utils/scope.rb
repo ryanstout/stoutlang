@@ -14,10 +14,10 @@ module StoutLang
         name = name.name if name.is_a?(StoutLang::Ast::Type)
 
         scope[identifier] ||= []
-        if scope[identifier].size > 0
-          # TODO: temp until we migrate to full lookup
-          raise "Duplicate identifier #{identifier} (#{node.inspect}) in #{name}"
-        end
+        # if scope[identifier].size > 0
+        #   # TODO: temp until we migrate to full lookup
+        #   raise "Duplicate identifier #{identifier} (#{node.inspect}) in #{name}"
+        # end
         scope[identifier] << node
       end
     end

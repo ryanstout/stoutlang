@@ -30,21 +30,41 @@ module AstScope
     nil
   end
 
+  # Similar to lookup_identifier, but walks up the parent scopes until it finds a matching function
+  # Matches based on the arguments also.
+  #
+  # NOTE: C functions are always matched (ignoring arguments)
   def lookup_function(identifier, arg_types=nil)
-    identifiers = lookup_identifier(identifier)
-    return identifiers
+    if scope && scope.key?(identifier)
+      ids = scope[identifier]
 
-    # Iterate through the identifiers and find if any match the arg_types
-    # TODO: there is a faster way to do this probably
-    identifiers.each do |ident|
-      # if ident.is_a?(Def) || ident.is_a?(CPrototype)
-        # if ident.args.map(&:type_sig) == arg_types
-          return ident
-        # end
-      # end
+      ids.reverse.each do |id|
+        if id.is_a?(CPrototype) || identifier == 'import'
+          # CPrototypes only match on name not arguments (atm)
+          return id
+        else
+          if id.is_a?(Def)
+            # Only match a Def/DefPrototype if the arguments match
+            id_arg_types = id.args.map {|i| i.type_sig.type_val }
+            if id_arg_types == arg_types
+              return id
+            end
+          else
+            if arg_types.size == 0
+              # We can match on non-def's if there's no arguments (see Identfiier#resolve)
+              return id
+            end
+          end
+        end
+      end
     end
 
-    nil
+    if parent
+      # Walk up the chain
+      return parent.lookup_function(identifier, arg_types)
+    end
+
+    return nil
   end
 
   def parent_scope

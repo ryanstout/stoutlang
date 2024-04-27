@@ -84,6 +84,10 @@ module StoutLang
       setup :name, :type_sig
       attr_accessor :ir
 
+      def type
+        type_sig.type_val
+      end
+
       def codegen(compile_jit, mod, func, bb)
         self.ir
       end

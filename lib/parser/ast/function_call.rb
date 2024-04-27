@@ -33,7 +33,7 @@ module StoutLang
           return [effect_type]
         else
           # Find the function in scope, and return its effects
-          function = lookup_function(name)
+          function = lookup_function(name, arg_types)
 
           if function && function.is_a?(Def)
             function.effects.uniq
@@ -43,10 +43,20 @@ module StoutLang
         end
       end
 
+      def arg_types
+        args.map(&:type)
+      end
+
+      def type
+        # The return type of the function
+        function = lookup_function(name, arg_types)
+        function.return_type
+      end
+
       def codegen(compile_jit, mod, func, bb)
         return codegen_return(compile_jit, mod, func, bb) if name == 'return'
 
-        method_call = lookup_function(name)
+        method_call = lookup_function(name, arg_types)
 
         if method_call == StoutLang::Import
           # TEMP: Special handler for imports to call into ruby to do imports

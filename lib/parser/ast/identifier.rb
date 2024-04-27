@@ -17,10 +17,21 @@ module StoutLang
       def prepare
       end
 
+      def type
+        identified = lookup_function(name, [])
+
+        if identified
+          identified.type
+        else
+          raise "Identifier #{name} not found"
+        end
+      end
+
       # For identifiers that resolve to a Def, return a FunctionCall, for other identifiers,
       # keep the identifier.
       def resolve
-        identified = lookup_function(name)
+        # This may not be a function, but will match either a zero arg function or something else
+        identified = lookup_function(name, [])
 
         if identified.is_a?(StoutLang::Ast::Def)
           # Create a FunctionCall and assign it to self
@@ -38,6 +49,7 @@ module StoutLang
         identified = lookup_identifier(name)
 
         if identified.is_a?(StoutLang::Ast::Def)
+          raise "The Identifier should have been replaced with a FunctionCall by now."
           # TODO: Also handle CPrototype
 
           # Create a FunctionCall and codegen it

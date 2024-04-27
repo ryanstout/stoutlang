@@ -19,6 +19,7 @@
 - Marketing: why do different people prefer different languages, because different features are better for different tasks.
 - add a nomangle flag so functions can be exposed with C callable names
 - def's should be able to have the same name for arguments
+- should CPrototypes be matched based on arguments in lookup_function
 
 
 Todays:

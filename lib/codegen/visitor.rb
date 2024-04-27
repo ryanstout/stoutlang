@@ -9,6 +9,8 @@ require 'codegen/mcjit'
 require 'codegen/llvm/module'
 require 'parser/parser'
 require 'codegen/import'
+require 'codegen/name_mangle'
+require 'codegen/llvm/llvm_string'
 
 def bm(name)
   start_time = Time.now
@@ -96,6 +98,16 @@ class Visitor
     ret_val = @compile_jit.run_function(@main)
 
     return ret_val.to_i
+  end
+
+  def run_function(name, arg_types, return_type, *call_args)
+    mangled_name = NameMangle.mangle_name(name, arg_types, return_type)
+    func = @root_mod.functions.named(mangled_name)
+
+    raise "Unable to find function #{mangled_name}" if func.nil?
+    mcjit_result = @compile_jit.run_function(func, *call_args)
+
+    return mcjit_result
   end
 
   def setup_compile_jit(main_mod)

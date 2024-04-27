@@ -6,6 +6,7 @@ lib LibC {
   cfunc puts(str: Str) -> Int
   cfunc sprintf(str: Str, format: Str, ...) -> Int
   cfunc malloc(size: Int) -> Str
+  cfunc strdup(str: Str) -> Str
   
 }
 
