@@ -8,9 +8,11 @@ require 'llvm/linker'
 require 'codegen/mcjit'
 require 'codegen/llvm/module'
 require 'parser/parser'
-require 'codegen/import'
+require 'codegen/constructs/import'
+require 'codegen/constructs/yield'
 require 'codegen/name_mangle'
 require 'codegen/llvm/llvm_string'
+require 'codegen/pass_manager'
 
 def bm(name)
   start_time = Time.now
@@ -53,8 +55,13 @@ class Visitor
     @ast.register_identifier("Int64", StoutLang::Int64)
     @ast.register_identifier("Str", StoutLang::Str)
     @ast.register_identifier("Bool", StoutLang::Bool)
-    @ast.register_identifier('import', StoutLang::Import)
     @ast.register_identifier('Type', StoutLang::TypeType)
+    @ast.register_identifier('->', StoutLang::BlockType)
+
+    # Register constructs
+    @ast.register_identifier('import', StoutLang::Import)
+    @ast.register_identifier('construct', StoutLang::Construct)
+
 
     # Automatically import core/core
     if file_path !~ /^core\//
@@ -89,6 +96,8 @@ class Visitor
 
       @root_mod.verify
       # puts "----------------"
+
+      PassManager.new.run(@root_mod)
 
       @compile_jit.run_function(@main)
     end

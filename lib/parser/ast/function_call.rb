@@ -1,4 +1,5 @@
-require 'codegen/import'
+require 'codegen/constructs/import'
+require 'codegen/constructs/construct'
 
 module StoutLang
   module Ast
@@ -58,7 +59,8 @@ module StoutLang
 
         method_call = lookup_function(name, arg_types)
 
-        if method_call == StoutLang::Import
+         # check if method call (which may be a construct Class) inherits from Construct
+        if method_call.is_a?(Class) && method_call < Construct
           # TEMP: Special handler for imports to call into ruby to do imports
           return method_call.new.codegen(compile_jit, mod, func, bb, self)
         end

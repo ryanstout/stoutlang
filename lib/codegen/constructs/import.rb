@@ -1,9 +1,10 @@
 require 'codegen/compiler'
 require 'xxhash'
 require 'codegen/name_mangle'
+require 'codegen/constructs/construct'
 
 module StoutLang
-  class Import
+  class Import < Construct
     include NameMangle
     def hash_file_xxhash(filename)
       return XXhash.xxh64_file(filename)
@@ -80,7 +81,10 @@ module StoutLang
           return_type = Type.new(return_type)
 
           # We have a stoutlang Def, not a C func
+
+          raise "Return type not available when importing" if return_type.nil?
           prototype = DefPrototype.new(func_name, args, return_type)
+          prototype.prepare
           prototype.ir = extern_function
         else
           prototype = CPrototype.new(func_name, extern_function, nil)
