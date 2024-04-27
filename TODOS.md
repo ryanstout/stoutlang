@@ -20,6 +20,9 @@
 - add a nomangle flag so functions can be exposed with C callable names
 - def's should be able to have the same name for arguments
 - should CPrototypes be matched based on arguments in lookup_function
+- a block should not be able to be passed to a function with 1 argument without parens (gets confusing imho, see this doc: https://crystal-lang.org/reference/1.12/syntax_and_semantics/blocks_and_procs.html#blocks-and-procs)
+- should we warn/error if the code redefines the same function in the same scope? (same args/block)
+- numerical upcasting (so lookup_function will work if the type is larger and there isn't one with a closer type)
 
 
 Todays:
@@ -30,7 +33,9 @@ Todays:
     - need ability to specify the function name in stoutlang and the C version (LLVM... - starts with capital)
     - c func names can be any string in llvm, add string named cfuncs
 + name mangling
-- method dispatching based on types
++ method dispatching based on types
+- #type should probably be #evaluated_type (for function types to make sense)
+- feels like prepare and identifier evaluation needs a bit of a rework. Should identfiier lookup happen in prepare and be cached?
 - ability to return types
 - method matching based on instance of a type (essentially static dispatch):
     ```
@@ -43,7 +48,16 @@ Todays:
 
     One issue with ^ is that it't hard to catch. I like the idea of keeping the way dispatch works general. (only one type of dispatch)
 - blocks
+  - blocks should have take a Union of each possible type they are called with
 
 - properties, methods, substructs, etc.. should not be allowed on lib's. cfunc's should not be allowed on structs
 - cfuncs need to set attributes (no_capture, etc..) on arguments
 - function arguments should use the name in the IR
+
+
+Saturday:
+-- prepare needs to register all functions
+  - but we need to register assignments in codegen, so we can't lookup a value before its created
+  - Probably the easiest way to do this is to have Identifier forward calls to the thing it identifies and we don't have a replacement step
+  - add specs to check that we can't reference assignments before they show up
+-- instead of having BaseType and registering those, the registered primitive types should be instances of Type (the AST node) and maybe take an argument for what they codegen to. We need to be able to == compare and Type.new("Int") should be the same as Type.new("Int", codegen_to: LLVM::Int)

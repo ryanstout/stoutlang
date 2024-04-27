@@ -1,5 +1,9 @@
 module StoutLang
   class BaseType
+    def type
+      Type.new(self.class.name.split('::').last)
+    end
+
     def mangled_name
       self.class.name.split('::').last
     end

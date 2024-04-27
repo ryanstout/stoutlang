@@ -9,11 +9,16 @@ module StoutLang
       setup :name, :args, :return_type # no block
 
       def prepare
-
+        self.args = args.map(&:resolve)
+        self.return_type = return_type.resolve if return_type
       end
 
       def effects
         raise "Not implemented"
+      end
+
+      def type
+        self.return_type
       end
 
       # For now we don't need to codegen, when created, we set the ir to the function we found when

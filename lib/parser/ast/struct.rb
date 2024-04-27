@@ -8,6 +8,9 @@ module StoutLang
       setup :name, :block
       attr_accessor :ir
 
+      SIZE_METHOD_NAME = "i32_size"
+
+
       def add_expression(expression)
         block.add_expression(expression)
       end
@@ -17,6 +20,12 @@ module StoutLang
         if parent_scope
           parent_scope.register_identifier(name.name, self)
         end
+
+
+        extern = DefPrototype.new(SIZE_METHOD_NAME, [], Type.new("Int"))
+        register_identifier(SIZE_METHOD_NAME, extern)
+        extern.prepare
+
 
         block.prepare
       end
@@ -69,18 +78,14 @@ module StoutLang
 
         # Register the struct's methods in its parent scope
         if parent_scope
-          size_method_name = "i32_size"
           # Define a size method that returns the size of LLVM::Int
-          size_method = mod.functions.add("sl1.#{size_method_name}()->Int", [], LLVM::Int32) do |function|
+          size_method = mod.functions.add("sl1.#{SIZE_METHOD_NAME}()->Int", [], LLVM::Int32) do |function|
             function.basic_blocks.append("entry").build do |builder|
               size_const = LLVM::Int(self.bytesize(compile_jit))
 
               builder.ret size_const
             end
           end
-
-          extern = DefPrototype.new(size_method_name, [], Int)
-          parent_scope.register_identifier(size_method_name, extern)
         end
 
         # Create a new function, which mallocs the struct, then calls the init function

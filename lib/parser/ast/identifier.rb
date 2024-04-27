@@ -49,7 +49,7 @@ module StoutLang
         identified = lookup_identifier(name)
 
         if identified.is_a?(StoutLang::Ast::Def)
-          raise "The Identifier should have been replaced with a FunctionCall by now."
+          # raise "The Identifier should have been replaced with a FunctionCall by now."
           # TODO: Also handle CPrototype
 
           # Create a FunctionCall and codegen it

@@ -2,8 +2,8 @@ import("examples/lib")
 
 ok()
 
-def add_one(a: Int) -> Int {
-  2 + 1
+def add_one(some_number: Int) -> Int {
+  some_number + 1
 }
 
 %> "Hello, World!"

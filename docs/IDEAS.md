@@ -154,3 +154,5 @@ programming language design is a multi dimensional optimization problem. Good la
 - Benchmark examples to show fast rust is complicated
 - Functional has too many trade offs. A world without trade offs
 - Good to show data points about how lines of rust shipped (or maybe effective lines)
+
+- Amazon style reviews on packages (surprised this isn't done)
