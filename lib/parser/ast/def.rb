@@ -61,7 +61,13 @@ module StoutLang
 
           self.args.each_with_index do |arg, i|
             # Register the argument in the scope
+
+            # Set the variable name
+            function.params[i].name = arg.name.name
+
+
             arg.ir = function.params[i]
+
           end
 
           # Create a block to do the codegen inside of
