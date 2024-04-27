@@ -55,8 +55,6 @@ module StoutLang
       end
 
       def codegen(compile_jit, mod, func, bb)
-        return codegen_return(compile_jit, mod, func, bb) if name == 'return'
-
         method_call = lookup_function(name, arg_types)
 
          # check if method call (which may be a construct Class) inherits from Construct
@@ -94,14 +92,6 @@ module StoutLang
         end
 
         return bb.call(method_call_ir, *args, assignment_name || 'temp')
-      end
-    end
-
-    def codegen_return(compile_jit, mod, func, bb)
-      if args.empty?
-        bb.ret_void
-      else
-        bb.ret(args.first.codegen(compile_jit, mod, func, bb))
       end
     end
   end

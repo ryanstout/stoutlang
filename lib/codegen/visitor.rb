@@ -8,11 +8,14 @@ require 'llvm/linker'
 require 'codegen/mcjit'
 require 'codegen/llvm/module'
 require 'parser/parser'
-require 'codegen/constructs/import'
-require 'codegen/constructs/yield'
 require 'codegen/name_mangle'
 require 'codegen/llvm/llvm_string'
 require 'codegen/pass_manager'
+
+# Import constructs
+require 'codegen/constructs/import'
+require 'codegen/constructs/return'
+require 'codegen/constructs/yield'
 
 def bm(name)
   start_time = Time.now
@@ -59,8 +62,9 @@ class Visitor
     @ast.register_identifier('->', StoutLang::BlockType)
 
     # Register constructs
+    @ast.register_identifier('return', StoutLang::Return)
     @ast.register_identifier('import', StoutLang::Import)
-    @ast.register_identifier('construct', StoutLang::Construct)
+    @ast.register_identifier('yield', StoutLang::Yield)
 
 
     # Automatically import core/core

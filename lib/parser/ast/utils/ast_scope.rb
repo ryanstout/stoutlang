@@ -1,3 +1,5 @@
+require 'codegen/constructs/construct'
+
 module AstScope
 
   def scope
@@ -39,7 +41,7 @@ module AstScope
       ids = scope[identifier]
 
       ids.reverse.each do |id|
-        if id.is_a?(CPrototype) || identifier == 'import'
+        if id.is_a?(CPrototype) || (id.is_a?(Class) && id < Construct)
           # CPrototypes only match on name not arguments (atm)
           return id
         else
