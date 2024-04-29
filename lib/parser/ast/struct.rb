@@ -1,5 +1,6 @@
 require 'parser/ast/utils/scope'
 require 'codegen/visitor'
+require 'codegen/expressions/struct_constructor'
 
 module StoutLang
   module Ast
@@ -15,6 +16,33 @@ module StoutLang
         block.add_expression(expression)
       end
 
+      def constructor_args
+        # Create an arg for each property in the block
+        args = []
+        block.expressions.each do |exp|
+          if exp.is_a?(Property)
+            arg = Arg.new(exp.name, exp.type_sig)
+            arg.parent = exp.parent
+
+            args << arg
+          end
+        end
+
+        args
+      end
+
+      def register_constructors
+        return
+        # Loop through the block and find all of the init functions
+        block.expressions.each do |exp|
+          if exp.is_a?(Def) && exp.name == "init"
+            # Create a constructor function for the struct
+            constructor = StructConstructor.new(self.ir, constructor_args)
+            parent_scope.register_identifier(name.name, constructor)
+          end
+        end
+      end
+
       def prepare
         # Add the struct to the parent scope
         if parent_scope
@@ -26,8 +54,10 @@ module StoutLang
         register_identifier(SIZE_METHOD_NAME, extern)
         extern.prepare
 
-
         block.prepare
+
+        # Find all of the init functions and make an associated constructor function
+        register_constructors
       end
 
       def run
@@ -48,6 +78,18 @@ module StoutLang
       end
 
       def codegen(compile_jit, mod, func, bb)
+        # After the first codegen, we just want a reference to the struct type
+        if self.ir
+          # pointer = bb.alloca(self.ir)
+
+          # call_func = mod.functions["sl1.init(Point,Int,Int)->Point"]
+          # call = bb.call(call_func, [pointer])
+
+          # return pointer
+          return self.ir.pointer
+        end
+
+
         # Create the LLVM::Type in LLVM
 
         # Unions
@@ -74,7 +116,11 @@ module StoutLang
 
         struct = LLVM::Type.struct(types, false, name.name)
 
+        # Save the struct ir reference, this allows us to call .codegen on the struct to get the reference
         self.ir = struct
+
+        # TODO: This probably isn't needed
+        # mod.globals.add(struct, name.name)
 
         # Register the struct's methods in its parent scope
         if parent_scope

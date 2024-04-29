@@ -26,11 +26,15 @@ module StoutLang
           raise "Type not found: #{name}"
         end
 
-        unless self.type < StoutLang::BaseType
-          raise "Not a Stoutlang type: #{name} -- #{self.type.inspect}"
+        if self.type.is_a?(Class) && self.type < StoutLang::BaseType
+          return self.type.new.codegen(compile_jit, mod, func, bb)
         end
 
-        return self.type.new.codegen(compile_jit, mod, func, bb)
+        if self.type.is_a?(StoutLang::Ast::Struct)
+          return self.type.codegen(compile_jit, mod, func, bb)
+        end
+
+        raise "Not a Stoutlang type: #{name} -- #{self.type.inspect}"
       end
     end
 
