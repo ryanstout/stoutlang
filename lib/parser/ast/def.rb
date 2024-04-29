@@ -56,8 +56,12 @@ module StoutLang
 
         last_expr = nil
         func = mod.functions.add(mangled_name, func_args, return_type_ir) do |function|
-          function.add_attribute :no_unwind_attribute
-          function.linkage = :external
+          # function.add_attribute :no_unwind_attribute
+          function.add_attribute :nounwind
+          function.add_attribute :willreturn
+          function.add_attribute :mustprogress
+          # function.add_attribute :alwaysinline
+          # function.linkage = :external
 
           self.args.each_with_index do |arg, i|
             # Register the argument in the scope
