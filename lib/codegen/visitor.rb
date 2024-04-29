@@ -91,6 +91,9 @@ class Visitor
         end
       end
 
+      PassManager.new(options).run(@root_mod, @compile_jit)
+
+
       if options[:ir]
         puts "----------------"
         puts "LLVM IR:"
@@ -101,7 +104,7 @@ class Visitor
       @root_mod.verify
       # puts "----------------"
 
-      PassManager.new.run(@root_mod)
+      # PassManager.new.run(@root_mod)
 
       @compile_jit.run_function(@main)
     end
@@ -160,7 +163,7 @@ class Visitor
       end
 
       opt_level = ' -flto'
-      # opt_level = ' -03 '
+      # opt_level = ' -03 -flto'
 
       # Compile LLVM IR to machine code
       bm('llc') do

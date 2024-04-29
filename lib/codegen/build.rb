@@ -27,6 +27,10 @@ OptionParser.new do |opts|
   opts.on('--aot', 'Ahead of time compile the code') do |v|
     options[:aot] = v
   end
+
+  opts.on('-O', '--optimization LEVEL', 'Set optimization level') do |v|
+    options[:o] = v
+  end
 end.parse!
 
 parser = StoutLang::Parser.new
