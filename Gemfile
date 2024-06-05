@@ -19,7 +19,7 @@ gem "pry", "~> 0.14.2"
 
 gem "readline", "~> 0.0.4"
 
-gem "ruby-llvm", "~> 17.0.0"
+gem "ruby-llvm", git: "https://github.com/ruby-llvm/ruby-llvm.git", ref: "bbd71dd93f6a676785eebe033927c8edf60079de"
 
 gem "xxhash", "~> 0.5.0"
 

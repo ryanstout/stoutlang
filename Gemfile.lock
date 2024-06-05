@@ -1,3 +1,12 @@
+GIT
+  remote: https://github.com/ruby-llvm/ruby-llvm.git
+  revision: bbd71dd93f6a676785eebe033927c8edf60079de
+  ref: bbd71dd93f6a676785eebe033927c8edf60079de
+  specs:
+    ruby-llvm (18.1.6)
+      ffi (~> 1.13)
+      rake (>= 12, < 14)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -33,9 +42,6 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.13.0)
     rspec-support (3.13.1)
-    ruby-llvm (17.0.0)
-      ffi (~> 1.13)
-      rake (>= 12, < 14)
     ruby-lsp (0.14.6)
       language_server-protocol (~> 3.17.0)
       prism (>= 0.22.0, < 0.25)
@@ -57,7 +63,7 @@ DEPENDENCIES
   pry (~> 0.14.2)
   readline (~> 0.0.4)
   rspec (~> 3.13)
-  ruby-llvm (~> 17.0.0)
+  ruby-llvm!
   ruby-lsp-rspec
   treetop (~> 1.6)
   xxhash (~> 0.5.0)
