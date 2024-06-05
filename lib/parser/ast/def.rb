@@ -12,9 +12,14 @@ module StoutLang
       attr_accessor :ir
       attr_reader :func_serialized
 
+      def type
+        return_type
+      end
+
       def prepare
         super
 
+        self.args.map(&:prepare)
         self.args = args.map(&:resolve)
         self.return_type = return_type.resolve if return_type
 
@@ -52,7 +57,7 @@ module StoutLang
           # TODO:
           raise "Return types are required right now"
         end
-        return_type_ir = return_type.codegen(compile_jit, mod, func, bb)
+        return_type_ir = return_type.new.codegen(compile_jit, mod, func, bb)
 
         last_expr = nil
         func = mod.functions.add(mangled_name, func_args, return_type_ir) do |function|

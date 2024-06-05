@@ -61,3 +61,11 @@ Saturday:
   - Probably the easiest way to do this is to have Identifier forward calls to the thing it identifies and we don't have a replacement step
   - add specs to check that we can't reference assignments before they show up
 -- instead of having BaseType and registering those, the registered primitive types should be instances of Type (the AST node) and maybe take an argument for what they codegen to. We need to be able to == compare and Type.new("Int") should be the same as Type.new("Int", codegen_to: LLVM::Int)
+
+
+- mention example of how a better language lets you keep more in your head, which is like cache levels. If you're oun the boundary, a 10% more memory use can push things out of L1, resulting in a 100x slowdown -- mention 20k line of code studieso
+
+- Why do I have to start a debugger session, could we build a stack frame parser that lets you jump into debugging at any point? (from a dev mode at least) and have a time traveling debugger
+
+
+- [Arg.new('path', TypeSig.new(type_val=Type.new('Str', self), self), self)] <- should assign parent chain correctly

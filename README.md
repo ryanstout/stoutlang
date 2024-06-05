@@ -10,7 +10,7 @@ New to StoutLang? [Start Here](https://github.com/ryanstout/stoutlang/blob/maste
 ## Install
 
 ```
-brew install llvm@17
+brew install llvm@18
 
 # ruby-ffi doesn't look at the right location
 sudo mkdir -p /opt/local/

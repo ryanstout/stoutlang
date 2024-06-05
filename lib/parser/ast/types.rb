@@ -7,11 +7,26 @@ module StoutLang
       attr_accessor :type
 
       def prepare
-
+        self.type = lookup_identifier(name)
+        # The type itself will have prepare called when it was constructed
       end
 
       def run
         self
+      end
+
+      def resolve
+        # This may not be a function, but will match either a zero arg function or something else
+        # inspect_scope
+        identified = lookup_identifier(name)
+
+        # binding.pry
+
+        unless identified
+          raise "Identifier #{name} not found"
+        end
+
+        return identified
       end
 
       def mangled_name
@@ -19,9 +34,6 @@ module StoutLang
       end
 
       def codegen(compile_jit, mod, func, bb)
-        # Lookup the type in the scope
-        self.type = lookup_identifier(name)
-
         unless self.type
           raise "Type not found: #{name}"
         end

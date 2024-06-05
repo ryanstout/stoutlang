@@ -7,6 +7,12 @@ require 'treetop'
 require 'parser/parser'
 require 'itree'
 
+# Import constructs
+require 'codegen/constructs/import'
+require 'codegen/constructs/return'
+require 'codegen/constructs/yield'
+
+
 # Treetop doesn't follow load path right sometimes
 Treetop.load(File.expand_path(File.dirname(__FILE__)) + '/grammar/infix')
 Treetop.load(File.expand_path(File.dirname(__FILE__)) + '/grammar/defs')
@@ -52,6 +58,21 @@ module StoutLang
         root_ast.parent = root_struct
         root_struct.parent = nil
         root_ast = root_struct
+
+        # Register the build in types
+        root_ast.register_identifier("Int", StoutLang::Int)
+        root_ast.register_identifier("Int32", StoutLang::Int32)
+        root_ast.register_identifier("Int64", StoutLang::Int64)
+        root_ast.register_identifier("Str", StoutLang::Str)
+        root_ast.register_identifier("Bool", StoutLang::Bool)
+        root_ast.register_identifier('Type', StoutLang::TypeType)
+        root_ast.register_identifier('->', StoutLang::BlockType)
+
+        # Register constructs
+        root_ast.register_identifier('return', StoutLang::Return)
+        root_ast.register_identifier('import', StoutLang::Import)
+        root_ast.register_identifier('yield', StoutLang::Yield)
+
       end
 
       # After we parse the root_ast, we build a range tree so we can quickly look up each node under a certain cursor
@@ -62,7 +83,6 @@ module StoutLang
       @ast = root_ast
 
       return root_ast
-
     end
 
     def build_range_tree(node)

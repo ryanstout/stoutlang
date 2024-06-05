@@ -23,6 +23,10 @@ module StoutLang
         end.join("")
       end
 
+      def resolve
+        assign_parent!(Type.new("Str", self))
+      end
+
       def find_parent_assignement
         parent = self.parent
         while parent

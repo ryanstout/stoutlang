@@ -77,5 +77,68 @@ describe StoutLangParser do
       visitor.dispose
 
     end
+
+    it 'should pass in an allocated struct instance when we call new' do
+      code = <<-END
+        struct Point {
+          @x: Int
+          @y: Int
+
+          def new(self: Point) {
+            return self
+          }
+        }
+
+        point = Point.new()
+      END
+
+      ast = Parser.new.parse(code, wrap_root: false)
+
+      expect(ast).to eq(
+        Block.new(
+            expressions=[
+              StoutLang::Ast::Struct.new(
+                name=Type.new(name="Point"),
+                block=Block.new(
+                  expressions=[
+                    Property.new(
+                      name=Identifier.new(name="x"),
+                      type_sig=TypeSig.new(type_val=Type.new(name="Int"))
+                    ),
+                    Property.new(
+                      name=Identifier.new(name="y"),
+                      type_sig=TypeSig.new(type_val=Type.new(name="Int"))
+                    ),
+                    Def.new(
+                      name="new",
+                      args=[
+                        Arg.new(
+                          name=Identifier.new(name="self"),
+                          type_sig=TypeSig.new(type_val=Type.new(name="Point"))
+                        )
+                      ],
+                      return_type=nil,
+                      block=Block.new(
+                        expressions=[
+                          FunctionCall.new(name="return", args=[Identifier.new(name="self")])
+                        ],
+                        args=nil
+                      )
+                    )
+                  ],
+                  args=nil
+                )
+              ),
+              Assignment.new(
+                identifier=Identifier.new(name="point"),
+                expression=FunctionCall.new(name="new", args=[Type.new(name="Point")]),
+                type_sig=nil
+              )
+            ],
+            args=nil
+          )
+      )
+
+    end
   end
 end

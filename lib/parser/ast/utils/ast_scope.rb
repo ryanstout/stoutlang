@@ -1,4 +1,4 @@
-require 'codegen/constructs/construct'
+# require 'codegen/constructs/construct'
 
 module AstScope
 
@@ -48,6 +48,7 @@ module AstScope
           if id.is_a?(Def)
             # Only match a Def/DefPrototype if the arguments match
             id_arg_types = id.args.map {|i| i.type_sig.type_val }
+            puts "Compare: #{id_arg_types.inspect} == #{arg_types.inspect}"
             if id_arg_types == arg_types
               return id
             end
@@ -78,6 +79,22 @@ module AstScope
     end
 
     nil
+  end
+
+  def inspect_scope(first=true)
+    if first
+      puts "--- Scope ---"
+    end
+    # Print each identifier in the current scope, then walk up the chain and do the same
+    if scope
+      scope.each do |k, v|
+        puts "#{k} => #{v}"
+      end
+    end
+
+    if parent
+      parent.inspect_scope(false)
+    end
   end
 
 end

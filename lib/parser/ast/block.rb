@@ -24,6 +24,7 @@ module StoutLang
 
       def resolve
         self.expressions = expressions.map(&:resolve)
+        self
       end
 
       # The return type of the block

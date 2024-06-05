@@ -55,13 +55,16 @@ module StoutLang
         end.flatten
       end
 
-      def assign_parent!(ast_node, parent)
+      def assign_parent!(ast_node, parent=nil)
+        parent ||= self # use self as the parent if not specified
         if ast_node.is_a?(AstNode)
           ast_node.parent = parent
         elsif ast_node.is_a?(Array)
           # Recursively assign
           ast_node.each { |e| assign_parent!(e, parent) }
         end
+
+        return self
       end
 
       # Takes in a list of properties and creates an initializer for the AstNode. It also creates a property for

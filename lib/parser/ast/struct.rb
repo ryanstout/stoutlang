@@ -1,6 +1,6 @@
 require 'parser/ast/utils/scope'
 require 'codegen/visitor'
-require 'codegen/expressions/struct_constructor'
+
 
 module StoutLang
   module Ast
@@ -14,6 +14,16 @@ module StoutLang
 
       def add_expression(expression)
         block.add_expression(expression)
+      end
+
+      def resolve
+        self
+      end
+
+      # The struct type's name doesn't mangle for now, but it has a caps.
+      # This gets called when generating def names
+      def mangled_name
+        name
       end
 
       def constructor_args
@@ -31,37 +41,29 @@ module StoutLang
         args
       end
 
-      def register_constructors
-        return
-        # Loop through the block and find all of the init functions
-        block.expressions.each do |exp|
-          if exp.is_a?(Def) && exp.name == "init"
-            # Create a constructor function for the struct
-            constructor = StructConstructor.new(self.ir, constructor_args)
-            parent_scope.register_identifier(name.name, constructor)
-          end
-        end
-      end
-
       def prepare
         # Add the struct to the parent scope
         if parent_scope
           parent_scope.register_identifier(name.name, self)
+        elsif name.name != "Root" # TODO, this should check for the specific Root instance, not just the name root
+          raise "No parent scope for #{name.name}"
         end
 
-
+        # Create a method to look up the size of the struct (.i32_size)
         extern = DefPrototype.new(SIZE_METHOD_NAME, [], Type.new("Int"))
+        assign_parent!(extern)
         register_identifier(SIZE_METHOD_NAME, extern)
         extern.prepare
 
         block.prepare
-
-        # Find all of the init functions and make an associated constructor function
-        register_constructors
       end
 
       def run
         block.run
+      end
+
+      def type
+        assign_parent!(Type.new(name.name))
       end
 
       # The size of the struct in bytes
@@ -123,23 +125,21 @@ module StoutLang
         # mod.globals.add(struct, name.name)
 
         # Register the struct's methods in its parent scope
-        if parent_scope
-          # Define a size method that returns the size of LLVM::Int
-          size_method = mod.functions.add("sl1.#{SIZE_METHOD_NAME}()->Int", [], LLVM::Int32) do |function|
-            function.basic_blocks.append("entry").build do |builder|
-              size_const = LLVM::Int(self.bytesize(compile_jit))
+        struct_size_const = LLVM::Int(self.bytesize(compile_jit))
 
-              builder.ret size_const
+        if parent_scope
+          # Define a size method that returns the size of LLVM::Int32
+          size_method = mod.functions.add("sl1.#{SIZE_METHOD_NAME}(#{name.name})->Int", [], LLVM::Int32) do |function|
+            function.basic_blocks.append("entry").build do |builder|
+              builder.ret struct_size_const
             end
           end
         end
 
-        # Create a new function, which mallocs the struct, then calls the init function
-
-
-
         # Build the IR for the block
-        block.codegen(compile_jit, mod, func, bb, true)
+        ir = block.codegen(compile_jit, mod, func, bb, true)
+
+        return ir
       end
     end
   end

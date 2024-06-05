@@ -12,11 +12,6 @@ require 'codegen/name_mangle'
 require 'codegen/llvm/llvm_string'
 require 'codegen/pass_manager'
 
-# Import constructs
-require 'codegen/constructs/import'
-require 'codegen/constructs/return'
-require 'codegen/constructs/yield'
-
 def bm(name)
   start_time = Time.now
   yield
@@ -40,6 +35,7 @@ class Visitor
     # @context = LLVM::Context.new
 
     @ast = ast
+
     @ast.prepare
 
     # Make a dibuilder
@@ -51,20 +47,6 @@ class Visitor
     # TODO: Not adding debug info atm because of version warning
     # @dibuilder.create_compile_unit(file_path)
     # @dibuilder.finalize
-
-    # Register the build in types
-    @ast.register_identifier("Int", StoutLang::Int)
-    @ast.register_identifier("Int32", StoutLang::Int32)
-    @ast.register_identifier("Int64", StoutLang::Int64)
-    @ast.register_identifier("Str", StoutLang::Str)
-    @ast.register_identifier("Bool", StoutLang::Bool)
-    @ast.register_identifier('Type', StoutLang::TypeType)
-    @ast.register_identifier('->', StoutLang::BlockType)
-
-    # Register constructs
-    @ast.register_identifier('return', StoutLang::Return)
-    @ast.register_identifier('import', StoutLang::Import)
-    @ast.register_identifier('yield', StoutLang::Yield)
 
 
     # Automatically import core/core
@@ -188,7 +170,7 @@ class Visitor
   def add_core_import(ast)
     import_func_call = FunctionCall.new(
       'import',
-      [StringLiteral.new(['core/core'])]
+      [StringLiteral.new(['core/core'])],
     )
     import_func_call.parent = ast
 

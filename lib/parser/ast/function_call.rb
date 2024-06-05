@@ -13,6 +13,7 @@ module StoutLang
       end
 
       def prepare
+        args.each(&:prepare)
         self.args = args.map(&:resolve)
       end
 
@@ -51,16 +52,23 @@ module StoutLang
       def type
         # The return type of the function
         function = lookup_function(name, arg_types)
+        unless function
+          raise "Unable to find function #{name} in scope for #{self.inspect}"
+        end
         function.return_type
       end
 
       def codegen(compile_jit, mod, func, bb)
+        # inspect_scope
         method_call = lookup_function(name, arg_types)
 
          # check if method call (which may be a construct Class) inherits from Construct
         if method_call.is_a?(Class) && method_call < Construct
           # TEMP: Special handler for imports to call into ruby to do imports
-          return method_call.new.codegen(compile_jit, mod, func, bb, self)
+          import = method_call.new
+          import.parent = self
+          import.codegen(compile_jit, mod, func, bb, self)
+          return nil
         end
 
         unless method_call
@@ -89,6 +97,29 @@ module StoutLang
           #   puts "FUNCTION: #{f.name}"
           # end
           raise "Could not find function #{name}"
+        end
+
+        if name == 'new'
+          # If we're calling new, allocate the memory for a struct of the first arguments type.
+          # Then pass that in as the first argument.
+          #
+          # NOTE: We do this at the call site because it's easier to elide the malloc if it doesn't leak out of the scope.
+
+          # Get the type of the first argument
+          struct_type = self.args[0].type
+
+          # Get the size of the struct
+          size = struct_type.resolve.bytesize(compile_jit)
+
+          # Allocate the memory for the struct
+          # malloc = mod.functions["malloc"]
+          malloc = lookup_identifier('malloc').ir
+          size = 8
+          struct_ptr = bb.call(malloc, LLVM::Int32.from_i(size), "struct_malloc")
+
+          # Pass the struct pointer as the first argument, replace the first
+          # argument with the pointer
+          args = [struct_ptr] + args[1..-1]
         end
 
         return bb.call(method_call_ir, *args, assignment_name || 'temp')

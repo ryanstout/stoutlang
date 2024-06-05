@@ -84,6 +84,7 @@ module StoutLang
 
           raise "Return type not available when importing" if return_type.nil?
           prototype = DefPrototype.new(func_name, args, return_type)
+          prototype.parent = self
           prototype.prepare
           prototype.ir = extern_function
         else
