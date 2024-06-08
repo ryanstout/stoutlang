@@ -15,6 +15,14 @@ module StoutLang
       def prepare
         args.each(&:prepare)
         self.args = args.map(&:resolve)
+
+        method_call = lookup_function(name, arg_types)
+
+        if method_call
+          args = []
+          args << self if method_call.is_a?(Import)
+          method_call.prepare(*args)
+        end
       end
 
       def run
@@ -68,11 +76,10 @@ module StoutLang
         method_call = lookup_function(name, arg_types)
 
          # check if method call (which may be a construct Class) inherits from Construct
-        if method_call.is_a?(Class) && method_call < Construct
+        if method_call.is_a?(Construct)
           # TEMP: Special handler for imports and return to call into ruby to do imports
-          import = method_call.new
-          import.parent = self
-          import.codegen(compile_jit, mod, func, bb, self)
+          method_call.parent = self
+          method_call.codegen(compile_jit, mod, func, bb, self)
           return nil
         end
 

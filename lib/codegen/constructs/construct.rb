@@ -9,5 +9,8 @@ module StoutLang
 
     attr_accessor :parent
 
+    def prepare(*args)
+      # noop, override
+    end
   end
 end

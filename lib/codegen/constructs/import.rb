@@ -14,43 +14,6 @@ module StoutLang
       [Arg.new('path', TypeSig.new(type_val=Type.new('Str')))]
     end
 
-    def prepare
-      # Read the path from the first argument
-      path = import_call.args[0].run
-
-      # Add the function to the scope
-      if args
-        # Conver the args into Arg's
-        args = args.map do |arg|
-          Arg.new('_', TypeSig.new(Type.new(arg)))
-        end
-
-        return_type = Type.new(return_type).assign_parent!(self)
-
-        # We have a stoutlang Def, not a C func
-
-        raise "Return type not available when importing" if return_type.nil?
-        prototype = DefPrototype.new(func_name, args, return_type)
-        prototype.parent = self
-        prototype.prepare
-        prototype.ir = extern_function
-      else
-        prototype = CPrototype.new(func_name, extern_function, nil)
-      end
-      import_call.register_in_scope(func_name, prototype)
-
-      # Don't link if we've already imported
-      @@imports ||= {}
-      if @@imports[path]
-        @already_imported = true
-        return
-      else
-        @@imports[path] = true
-        @already_imported = false
-      end
-
-    end
-
     # Import types and functions from a compile bitcode module. Compile it first
     # if it's not already compiled
     def codegen(compile_jit, mod, func, bb, import_call)
@@ -77,9 +40,7 @@ module StoutLang
 
       original_module = LLVM::Module.parse_bitcode(cache_path + ".bc")
 
-      # compile_jit << original_module
       # Iterate over each function in the original module and create externs
-
       original_module.functions.each do |function|
         # TODO: The function pointers get overwritten when iterating (I think), so for now we don't use this
         # looked up function
@@ -107,11 +68,37 @@ module StoutLang
         # extern_function = nil
 
 
+
+        # Add the function to the scope
+        if args
+          # Conver the args into Arg's
+          args = args.map do |arg|
+            Arg.new('_', TypeSig.new(Type.new(arg)))
+          end
+
+          return_type = Type.new(return_type)
+
+          # We have a stoutlang Def, not a C func
+
+          raise "Return type not available when importing" if return_type.nil?
+          prototype = DefPrototype.new(func_name, args, return_type)
+          prototype.parent = self
+          prototype.prepare
+          prototype.ir = extern_function
+        else
+          prototype = CPrototype.new(func_name, extern_function, nil)
+        end
+        import_call.register_in_scope(func_name, prototype)
       end
 
 
       # Don't link if we've already imported
-      unless @already_imported
+      @@imports ||= {}
+      if @@imports[path]
+        return
+      else
+        @@imports[path] = true
+
         # Link the module into the root module
         original_module.link_into(mod)
       end
