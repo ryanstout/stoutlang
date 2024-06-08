@@ -4,10 +4,13 @@ struct Point {
     @y: Int32
 }
 
-def new(self: Point) -> Int {
+def new(self: Point) -> Point {
     %> "Init Point"
-    %> i32_size.to_s
-    0
+    %> self.i32_size.to_s
+    return(self)
 }
 
-Point.new()
+puts "BEFORE POINT"
+p = Point.new()
+%> "After point"
+p
