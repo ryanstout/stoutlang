@@ -15,11 +15,11 @@ module StoutLang
         expression.prepare
         self.type_sig.prepare if self.type_sig
 
-        var = LocalVar.new(@identifier.name, self.expression.type)
-        make_children!(var)
-        register_in_scope(identifier.name, var)
+        @var = LocalVar.new(@identifier.name, self.expression.type)
+        make_children!(@var)
 
         self.expression = self.expression.resolve
+        register_in_scope(identifier.name, @var)
       end
 
       def run
@@ -27,14 +27,12 @@ module StoutLang
       end
 
       def codegen(compile_jit, mod, func, bb)
+        # Assign the expression's codegen to the ir for the LocalVar.
+        # Any time you use this reference, the LLVM will reference the original
+        # variable
         var_ir = expression.codegen(compile_jit, mod, func, bb)
 
-        # Lookup the local
-        var = lookup_identifier(identifier.name)
-
-        var.ir = var_ir
-        # register_in_scope(identifier.name, var)
-        var.codegen(compile_jit, mod, func, bb)
+        @var.ir = var_ir
       end
     end
   end
