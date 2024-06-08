@@ -27,7 +27,7 @@ grammar Types
           op, right = op_and_right.elements.map(&:to_ast)
           args = [left, right]
 
-          left = FunctionCall.new(op, args, op_and_right.type_infix_op, self).assign_parent!(args)
+          left = FunctionCall.new(op, args, op_and_right.type_infix_op, self).make_children!(args)
         end
 
         return left

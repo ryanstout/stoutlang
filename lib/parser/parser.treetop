@@ -62,7 +62,7 @@ grammar StoutLang
         # If a block was passed, add it to the args
         args_ast << block.to_ast if block && block.respond_to?(:to_ast)
 
-        FunctionCall.new(function_name, args_ast, self).assign_parent!(args_ast)
+        FunctionCall.new(function_name, args_ast, self).make_children!(args_ast)
       end
     }
   end

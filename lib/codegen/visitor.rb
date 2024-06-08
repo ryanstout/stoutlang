@@ -36,6 +36,13 @@ class Visitor
 
     @ast = ast
 
+
+
+    # Automatically import core/core
+    if file_path !~ /^core\//
+      add_core_import(ast)
+    end
+
     @ast.prepare
 
     # Make a dibuilder
@@ -47,12 +54,6 @@ class Visitor
     # TODO: Not adding debug info atm because of version warning
     # @dibuilder.create_compile_unit(file_path)
     # @dibuilder.finalize
-
-
-    # Automatically import core/core
-    if file_path !~ /^core\//
-      add_core_import(ast)
-    end
 
     if options[:lib]
       @ast.codegen(@compile_jit, @root_mod, nil, nil)

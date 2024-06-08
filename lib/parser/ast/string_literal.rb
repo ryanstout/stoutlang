@@ -4,7 +4,7 @@ module StoutLang
       setup :value
 
       def type
-        Type.new("Str")
+        Type.new("Str").assign_parent!(self)
       end
 
       def prepare
@@ -24,7 +24,7 @@ module StoutLang
       end
 
       def resolve
-        assign_parent!(Type.new("Str", self))
+        self
       end
 
       def find_parent_assignement

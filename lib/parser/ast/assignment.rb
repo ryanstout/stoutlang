@@ -7,11 +7,17 @@ module StoutLang
         "#{@identifier.name} = #{@expression.inspect(indent)}"
       end
 
+      def type
+        expression.type
+      end
+
       def prepare
         expression.prepare
         self.type_sig.prepare if self.type_sig
 
-        # register_in_scope(identifier.name, self)
+        var = LocalVar.new(@identifier.name, self.expression.type)
+        make_children!(var)
+        register_in_scope(identifier.name, var)
 
         self.expression = self.expression.resolve
       end
@@ -21,9 +27,14 @@ module StoutLang
       end
 
       def codegen(compile_jit, mod, func, bb)
-        var = expression.codegen(compile_jit, mod, func, bb)
-        register_in_scope(identifier.name, var)
-        var
+        var_ir = expression.codegen(compile_jit, mod, func, bb)
+
+        # Lookup the local
+        var = lookup_identifier(identifier.name)
+
+        var.ir = var_ir
+        # register_in_scope(identifier.name, var)
+        var.codegen(compile_jit, mod, func, bb)
       end
     end
   end

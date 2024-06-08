@@ -18,13 +18,9 @@ module StoutLang
       end
 
       def type
-        identified = lookup_function(name, [])
-
-        if identified
-          identified.type
-        else
-          raise "Identifier #{name} not found"
-        end
+        resolved = self.resolve
+        puts "RESOLVED: #{resolved.inspect}"
+        resolved.type
       end
 
       # For identifiers that resolve to a Def, return a FunctionCall, for other identifiers,
@@ -32,6 +28,10 @@ module StoutLang
       def resolve
         # This may not be a function, but will match either a zero arg function or something else
         identified = lookup_function(name, [])
+
+        unless identified
+          raise "Identifier #{name} not found"
+        end
 
         if identified.is_a?(StoutLang::Ast::Def)
           # Create a FunctionCall and assign it to self
@@ -41,7 +41,7 @@ module StoutLang
           # Assign the function call to self
           return func_call
         else
-          return self
+          return identified
         end
       end
 

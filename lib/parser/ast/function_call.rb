@@ -49,13 +49,18 @@ module StoutLang
         args.map(&:type)
       end
 
+      def resolve
+        self
+      end
+
+      # What does this function give you when it's evaluated
       def type
-        # The return type of the function
         function = lookup_function(name, arg_types)
         unless function
-          raise "Unable to find function #{name} in scope for #{self.inspect}"
+          raise "Unable to find function #{name}(#{arg_types.inspect}) in scope for #{self.inspect}"
         end
-        function.return_type
+
+        return function.return_type
       end
 
       def codegen(compile_jit, mod, func, bb)
@@ -64,7 +69,7 @@ module StoutLang
 
          # check if method call (which may be a construct Class) inherits from Construct
         if method_call.is_a?(Class) && method_call < Construct
-          # TEMP: Special handler for imports to call into ruby to do imports
+          # TEMP: Special handler for imports and return to call into ruby to do imports
           import = method_call.new
           import.parent = self
           import.codegen(compile_jit, mod, func, bb, self)
@@ -86,9 +91,9 @@ module StoutLang
 
         method_call_ir = mod.functions.named(method_call.mangled_name)
 
-        if method_call_ir.nil?
-          puts mod
-        end
+        # if method_call_ir.nil?
+        #   puts mod
+        # end
         # method_call_ir = method_call.ir
 
         if method_call_ir.nil?
@@ -106,13 +111,14 @@ module StoutLang
           # NOTE: We do this at the call site because it's easier to elide the malloc if it doesn't leak out of the scope.
 
           # Get the type of the first argument
-          struct_type = self.args[0].type
+          struct_type = self.args[0].resolve
 
           # Get the size of the struct
-          size = struct_type.resolve.bytesize(compile_jit)
+          size = struct_type.bytesize(compile_jit)
 
           # Allocate the memory for the struct
           # malloc = mod.functions["malloc"]
+          # binding.pry
           malloc = lookup_identifier('malloc').ir
           size = 8
           struct_ptr = bb.call(malloc, LLVM::Int32.from_i(size), "struct_malloc")

@@ -140,5 +140,32 @@ describe StoutLangParser do
       )
 
     end
+
+    it 'should let you get the size of the struct' do
+      code = <<-END
+        struct Point {
+          @x: Int
+          @y: Int
+        }
+
+        def new(self: Point) -> Point {
+          self
+        }
+
+        point = Point.new()
+
+        return(point.i32_size)
+      END
+
+      ast = Parser.new.parse(code)
+
+      visitor = Visitor.new(ast)
+      ret_val = visitor.run
+
+      expect(ret_val).to eq(8)
+
+      visitor.dispose
+
+    end
   end
 end

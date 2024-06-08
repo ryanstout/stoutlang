@@ -48,7 +48,7 @@ module AstScope
           if id.is_a?(Def)
             # Only match a Def/DefPrototype if the arguments match
             id_arg_types = id.args.map {|i| i.type_sig.type_val }
-            puts "Compare: #{id_arg_types.inspect} == #{arg_types.inspect}"
+            # puts "Compare: #{identifier} - #{id_arg_types.inspect} == #{arg_types.inspect}"
             if id_arg_types == arg_types
               return id
             end

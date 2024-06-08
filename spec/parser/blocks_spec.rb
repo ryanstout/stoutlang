@@ -60,7 +60,6 @@ describe StoutLangParser do
         one
       END
       ast = Parser.new.parse(code)
-      # binding.pry
       ast.prepare
 
       expect(ast).to eq(

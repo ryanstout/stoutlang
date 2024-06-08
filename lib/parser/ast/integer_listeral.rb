@@ -4,7 +4,11 @@ module StoutLang
       setup :value
 
       def type
-        Type.new("Int")
+        Type.new("Int").assign_parent!(self)
+      end
+
+      def resolve
+        self
       end
 
       def run

@@ -5,7 +5,9 @@ module StoutLang
     end
 
     def type
-      assign_parent!(Type.new(self.class.name.split('::').last))
+      type = Type.new(self.class.name.split('::').last)
+      type.parent = self
+      type
     end
 
     def mangled_name

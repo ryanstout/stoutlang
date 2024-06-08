@@ -49,11 +49,13 @@ module StoutLang
           raise "No parent scope for #{name.name}"
         end
 
-        # Create a method to look up the size of the struct (.i32_size)
-        extern = DefPrototype.new(SIZE_METHOD_NAME, [], Type.new("Int"))
-        assign_parent!(extern)
-        register_identifier(SIZE_METHOD_NAME, extern)
-        extern.prepare
+        if name.name != "Root"
+          # Create a method to look up the size of the struct (.i32_size)
+          extern = DefPrototype.new(SIZE_METHOD_NAME, [Arg.new('self', TypeSig.new(Type.new(name.name)))], Type.new("Int"))
+          make_children!(extern)
+          parent_scope.register_identifier(SIZE_METHOD_NAME, extern)
+          extern.prepare
+        end
 
         block.prepare
       end
@@ -63,7 +65,7 @@ module StoutLang
       end
 
       def type
-        assign_parent!(Type.new(name.name))
+        Type.new(name.name).assign_parent!(self)
       end
 
       # The size of the struct in bytes

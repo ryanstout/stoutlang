@@ -60,13 +60,13 @@ module StoutLang
         root_ast = root_struct
 
         # Register the build in types
-        root_ast.register_identifier("Int", StoutLang::Int)
-        root_ast.register_identifier("Int32", StoutLang::Int32)
-        root_ast.register_identifier("Int64", StoutLang::Int64)
-        root_ast.register_identifier("Str", StoutLang::Str)
-        root_ast.register_identifier("Bool", StoutLang::Bool)
-        root_ast.register_identifier('Type', StoutLang::TypeType)
-        root_ast.register_identifier('->', StoutLang::BlockType)
+        root_ast.register_identifier("Int", StoutLang::Int.new)
+        root_ast.register_identifier("Int32", StoutLang::Int32.new)
+        root_ast.register_identifier("Int64", StoutLang::Int64.new)
+        root_ast.register_identifier("Str", StoutLang::Str.new)
+        root_ast.register_identifier("Bool", StoutLang::Bool.new)
+        root_ast.register_identifier('Type', StoutLang::TypeType.new)
+        root_ast.register_identifier('->', StoutLang::BlockType.new)
 
         # Register constructs
         root_ast.register_identifier('return', StoutLang::Return)

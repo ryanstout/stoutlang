@@ -7,7 +7,7 @@ module InfixChainAst
     elements[1].elements.each do |op_and_right|
       op, right = op_and_right.elements.map(&:to_ast)
       args = [left, right]
-      left = StoutLang::Ast::FunctionCall.new(op, args, op_and_right.op).assign_parent!(args)
+      left = StoutLang::Ast::FunctionCall.new(op, args, op_and_right.op).make_children!(args)
     end
 
     return left
@@ -17,7 +17,7 @@ end
 module InfixUnaryChainAst
   def to_ast
     args = [expression.to_ast]
-    StoutLang::Ast::FunctionCall.new(op.to_ast, args, op).assign_parent!(args)
+    StoutLang::Ast::FunctionCall.new(op.to_ast, args, op).make_children!(args)
   end
 end
 

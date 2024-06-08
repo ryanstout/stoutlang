@@ -10,7 +10,7 @@ module StoutLang
 
       def prepare
         self.args = args.map(&:resolve)
-        self.return_type = return_type.resolve if return_type
+        self.return_type = return_type if return_type
       end
 
       def effects

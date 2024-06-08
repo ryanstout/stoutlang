@@ -4,11 +4,12 @@ module StoutLang
     # A Type is like an Identifier for a base level type
     class Type < AstNode
       setup :name
-      attr_accessor :type
+
+      def type
+        raise "Can not call .type on a Type"
+      end
 
       def prepare
-        self.type = lookup_identifier(name)
-        # The type itself will have prepare called when it was constructed
       end
 
       def run
@@ -18,15 +19,13 @@ module StoutLang
       def resolve
         # This may not be a function, but will match either a zero arg function or something else
         # inspect_scope
-        identified = lookup_identifier(name)
+        @resolved = lookup_identifier(name)
 
-        # binding.pry
-
-        unless identified
+        unless @resolved
           raise "Identifier #{name} not found"
         end
 
-        return identified
+        return @resolved
       end
 
       def mangled_name
@@ -34,19 +33,21 @@ module StoutLang
       end
 
       def codegen(compile_jit, mod, func, bb)
-        unless self.type
+        resolved = self.resolve
+
+        unless resolved
           raise "Type not found: #{name}"
         end
 
-        if self.type.is_a?(Class) && self.type < StoutLang::BaseType
-          return self.type.new.codegen(compile_jit, mod, func, bb)
+        if resolved.is_a?(StoutLang::BaseType)
+          return resolved.codegen(compile_jit, mod, func, bb)
         end
 
-        if self.type.is_a?(StoutLang::Ast::Struct)
-          return self.type.codegen(compile_jit, mod, func, bb)
+        if resolved.is_a?(StoutLang::Ast::Struct)
+          return resolved.codegen(compile_jit, mod, func, bb)
         end
 
-        raise "Not a Stoutlang type: #{name} -- #{self.type.inspect}"
+        raise "Not a Stoutlang type: #{name} -- #{resolved.inspect}"
       end
     end
 

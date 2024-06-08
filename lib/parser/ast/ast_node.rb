@@ -55,15 +55,22 @@ module StoutLang
         end.flatten
       end
 
-      def assign_parent!(ast_node, parent=nil)
+      # Takes in an ast node or list of ads nodes and assigns self as the parent
+      def make_children!(ast_node, parent=nil)
         parent ||= self # use self as the parent if not specified
         if ast_node.is_a?(AstNode)
           ast_node.parent = parent
         elsif ast_node.is_a?(Array)
           # Recursively assign
-          ast_node.each { |e| assign_parent!(e, parent) }
+          ast_node.each { |e| make_children!(e, parent) }
         end
 
+        return self
+      end
+
+      # Takes in a parent ast node and sets the parent on self, returning self
+      def assign_parent!(parent)
+        self.parent = parent
         return self
       end
 
@@ -81,7 +88,7 @@ module StoutLang
             ast_node = args[index]
 
             # Assign the parent on any passed in ast nodes
-            assign_parent!(ast_node, self)
+            make_children!(ast_node, self)
 
             instance_variable_set("@#{prop}", ast_node)
             index += 1
