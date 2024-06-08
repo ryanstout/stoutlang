@@ -127,7 +127,6 @@ module StoutLang
           # malloc = mod.functions["malloc"]
           # binding.pry
           malloc = lookup_identifier('malloc').ir
-          size = 8
           struct_ptr = bb.call(malloc, LLVM::Int32.from_i(size), "struct_malloc")
 
           # Pass the struct pointer as the first argument, replace the first

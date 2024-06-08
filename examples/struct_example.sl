@@ -6,11 +6,11 @@ struct Point {
 
 def new(self: Point) -> Point {
     %> "Init Point"
-    %> self.i32_size.to_s
     return(self)
 }
 
 puts "BEFORE POINT"
 p = Point.new()
 %> "After point"
-p
+p2 = Point.new()
+%> "After 2"

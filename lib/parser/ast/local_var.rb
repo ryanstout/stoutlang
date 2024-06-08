@@ -9,6 +9,8 @@ module StoutLang
 
       def codegen(compile_jit, mod, func, bb)
         unless ir
+          # This would mean we reached codegen before the assignment ran, it shouldn't ever
+          # happen.
           raise "Local variable not yet evaluated"
         end
 
