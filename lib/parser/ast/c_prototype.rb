@@ -1,13 +1,15 @@
 module StoutLang
   module Ast
     class CPrototype < AstNode
-      attr_accessor :name, :ir, :args
+      attr_accessor :name, :args
+      attr_accessor :ir
 
-      def initialize(name, ir, args)
+      def initialize(name, args)
         @name = name
-        @ir = ir
         @args = args
       end
+
+
 
       def mangled_name
         name
