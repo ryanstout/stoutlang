@@ -7,10 +7,6 @@ module StoutLang
       setup :name, :type_sig
       attr_accessor :ir
 
-      def prepare
-        type_sig.prepare
-      end
-
       def type
         type_sig.type_val
       end
