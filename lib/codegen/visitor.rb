@@ -36,7 +36,9 @@ class Visitor
 
     @ast = ast
 
-
+    if options[:ast]
+      puts @ast.inspect
+    end
 
     # Automatically import core/core
     if file_path !~ /^core\//
