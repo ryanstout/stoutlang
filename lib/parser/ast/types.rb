@@ -66,6 +66,10 @@ module StoutLang
         type_val.prepare
       end
 
+      def resolve
+        type_val.resolve
+      end
+
       def run
         self
       end

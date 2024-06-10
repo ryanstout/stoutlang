@@ -38,15 +38,14 @@ module StoutLang
         # variable
 
         var_ir = expression.codegen(compile_jit, mod, func, bb)
-        if identifier.is_a?(InstanceVar)
+        if identifier.is_ivar?
           # Lookup self, should be a struct
           self_local = lookup_identifier('self')
           struct_type = self_local.type.resolve
 
-          property_pointer = identifier.codegen_get_pointer(compile_jit, mod, func, bb)
+          property_pointer = identifier.resolve.codegen_get_pointer(compile_jit, mod, func, bb)
 
           bb.store(var_ir, property_pointer)
-
         else
 
           @var.ir = var_ir

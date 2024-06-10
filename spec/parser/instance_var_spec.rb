@@ -19,12 +19,7 @@ describe StoutLangParser do
               args=[],
               return_type=nil,
               block=Block.new(
-                expressions=[
-                  FunctionCall.new(
-                    name="%>",
-                    args=[InstanceVar.new(name="name")]
-                  )
-                ],
+                expressions=[FunctionCall.new(name="%>", args=[Identifier.new(name="@name")])],
                 args=nil
               )
             )
@@ -36,7 +31,7 @@ describe StoutLangParser do
 
     it 'should be able to look up instance variables' do
       code = <<-END
-        stuct Point {
+        struct Point {
           @x: Int
           @y: Int
         }
@@ -53,7 +48,72 @@ describe StoutLangParser do
       END
       ast = Parser.new.parse(code, wrap_root: false)
 
-      expect(ast.block.expressions[0].block.expressions[0].args[0].name).to eq("name")
+      expect(ast).to eq(
+        Block.new(
+          expressions=[
+            StoutLang::Ast::Struct.new(
+              name=Type.new(name="Point"),
+              block=Block.new(
+                expressions=[
+                  Property.new(
+                    name=Identifier.new(name="x"),
+                    type_sig=TypeSig.new(type_val=Type.new(name="Int"))
+                  ),
+                  Property.new(
+                    name=Identifier.new(name="y"),
+                    type_sig=TypeSig.new(type_val=Type.new(name="Int"))
+                  )
+                ],
+                args=nil
+              )
+            ),
+            Def.new(
+              name="new",
+              args=[
+                Arg.new(
+                  name=Identifier.new(name="self"),
+                  type_sig=TypeSig.new(type_val=Type.new(name="Point"))
+                )
+              ],
+              return_type=nil,
+              block=Block.new(
+                expressions=[
+                  FunctionCall.new(name="return", args=[Identifier.new(name="self")])
+                ],
+                args=nil
+              )
+            ),
+            Def.new(
+              name="print_x",
+              args=[
+                Arg.new(
+                  name=Identifier.new(name="self"),
+                  type_sig=TypeSig.new(type_val=Type.new(name="Point"))
+                )
+              ],
+              return_type=nil,
+              block=Block.new(
+                expressions=[
+                  FunctionCall.new(
+                    name="%>",
+                    args=[
+                      FunctionCall.new(name="to_s", args=[Identifier.new(name="@x")])
+                    ]
+                  )
+                ],
+                args=nil
+              )
+            ),
+            Assignment.new(
+              identifier=Identifier.new(name="point"),
+              expression=FunctionCall.new(name="new", args=[Type.new(name="Point")]),
+              type_sig=nil
+            ),
+            FunctionCall.new(name="print_x", args=[Identifier.new(name="point")])
+          ],
+          args=nil
+        )
+      )
     end
   end
 end

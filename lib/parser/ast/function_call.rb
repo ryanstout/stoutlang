@@ -13,8 +13,8 @@ module StoutLang
       end
 
       def prepare
-        args.each(&:prepare)
-        self.args = args.map(&:resolve)
+        # Don't call prepare from function calls, it's handled in the Def
+        @args = args.map(&:resolve)
 
         method_call = lookup_function(name, arg_types)
 

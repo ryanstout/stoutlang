@@ -167,5 +167,9 @@ describe StoutLangParser do
       visitor.dispose
 
     end
+
+    it 'should assign properties inside of methods' do
+
+    end
   end
 end

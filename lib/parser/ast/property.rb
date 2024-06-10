@@ -3,9 +3,15 @@ module StoutLang
     class Property < AstNode
       setup :name, :type_sig
 
+      def type
+        type_sig.type_val
+      end
+
       def prepare
-        self.type_sig = self.type_sig.resolve
         type_sig.prepare
+
+        # Register this property with the struct
+        parent_scope.register_in_scope("@#{name.name}", self)
       end
 
       def codegen(compile_jit, mod, func, bb)
