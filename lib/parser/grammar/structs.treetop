@@ -9,7 +9,7 @@ grammar Structs
 
 
   rule property
-    '@' identifier space? type_sig:type_sig? {
+    '@' identifier space? type_sig:type_sig &line_break {
       def to_ast
         type_sig_ast = type_sig.respond_to?(:to_ast) ? type_sig.to_ast : nil
         Property.new(identifier.to_ast, type_sig_ast, self)
