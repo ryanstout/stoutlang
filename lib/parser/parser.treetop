@@ -8,6 +8,7 @@ grammar StoutLang
   include Ifs
   include Lists
   include Structs
+  include InstanceVars
   include Defs
   include CFuncs
 
@@ -183,8 +184,9 @@ grammar StoutLang
     [\s]+
   end
 
+  # TODO: this may be slow, especially with EOF
   rule line_break
-    (space? ([\n\r;]) space?)+ {
+    ((space? ([\n\r;]) space?)+ / ((space / [\n\r;])* eof)) {
       def to_ast
         "\n"
       end

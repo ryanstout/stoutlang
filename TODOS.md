@@ -69,3 +69,5 @@ Saturday:
 
 
 - [Arg.new('path', TypeSig.new(type_val=Type.new('Str', self), self), self)] <- should assign parent chain correctly
+
+- add support for Any type in properties (ivars)

@@ -24,6 +24,7 @@ Treetop.load(File.expand_path(File.dirname(__FILE__)) + '/grammar/strings')
 Treetop.load(File.expand_path(File.dirname(__FILE__)) + '/grammar/ifs')
 Treetop.load(File.expand_path(File.dirname(__FILE__)) + '/grammar/lists')
 Treetop.load(File.expand_path(File.dirname(__FILE__)) + '/grammar/structs')
+Treetop.load(File.expand_path(File.dirname(__FILE__)) + '/grammar/instance_vars')
 Treetop.load(File.expand_path(File.dirname(__FILE__)) + '/parser')
 
 

@@ -13,6 +13,12 @@ module StoutLang
 
       def prepare
         expression.prepare
+
+        if identifier.is_a?(InstanceVar)
+          self_local = lookup_identifier('self')
+          self.type_sig = TypeSig.new(type_val=self_local.type)
+        end
+
         self.type_sig.prepare if self.type_sig
 
         @var = LocalVar.new(@identifier.name, self.expression.type)
@@ -30,9 +36,21 @@ module StoutLang
         # Assign the expression's codegen to the ir for the LocalVar.
         # Any time you use this reference, the LLVM will reference the original
         # variable
-        var_ir = expression.codegen(compile_jit, mod, func, bb)
 
-        @var.ir = var_ir
+        var_ir = expression.codegen(compile_jit, mod, func, bb)
+        if identifier.is_a?(InstanceVar)
+          # Lookup self, should be a struct
+          self_local = lookup_identifier('self')
+          struct_type = self_local.type.resolve
+
+          property_pointer = identifier.codegen_get_pointer(compile_jit, mod, func, bb)
+
+          bb.store(var_ir, property_pointer)
+
+        else
+
+          @var.ir = var_ir
+        end
       end
     end
   end

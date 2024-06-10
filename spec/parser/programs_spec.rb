@@ -53,5 +53,9 @@ describe StoutLangParser do
   it 'shoudl match a line break' do
     ast = Parser.new.parse("\n", root: 'line_break', wrap_root: false)
     expect(ast).to eq("\n")
+
+    ast = Parser.new.parse("\n\n", root: 'line_break', wrap_root: false)
+    expect(ast).to eq("\n") # multiple breaks come back as a single
+
   end
 end

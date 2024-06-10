@@ -1,0 +1,17 @@
+grammar InstanceVars
+  rule instance_var
+    '@' identifier {
+      def to_ast
+        InstanceVar.new(identifier.to_ast.name, self)
+      end
+    }
+  end
+
+  rule instance_var_assignment
+    instance_var space? '=' space? expression {
+      def to_ast
+        Assignment.new(instance_var.to_ast, expression.to_ast, self)
+      end
+    }
+  end
+end
