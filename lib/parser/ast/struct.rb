@@ -8,6 +8,7 @@ module StoutLang
       include Scope
       setup :name, :block
       attr_accessor :ir
+      attr_reader :properties
 
       SIZE_METHOD_NAME = "i32_size"
 
@@ -102,22 +103,17 @@ module StoutLang
 
         # # Get the list of types from each property on the struct
         types = []
+        @properties = {} # an ordered hash
 
         block.expressions.map do |exp|
           if exp.is_a?(Property)
             type = exp.type_sig.codegen(compile_jit, mod, func, bb)
             types << type
+            @properties[exp.name.name] = type
           end
         end
 
         # # Create the data type
-        # data = LLVM::Type.struct(types, false)
-
-        # struct_type = LLVM::Type.struct([tag, data], false, name.name)
-
-        # # Add the struct to the identifier table
-        # self.ir = struct_type
-
         struct = LLVM::Type.struct(types, false, name.name)
 
         # Save the struct ir reference, this allows us to call .codegen on the struct to get the reference
