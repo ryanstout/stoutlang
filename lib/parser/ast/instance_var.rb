@@ -13,7 +13,7 @@ module StoutLang
 
       def get_self_struct_and_index
         # Lookup self, should be a struct
-        self_local = lookup_identifier('self')
+        self_local = lookup_identifier('@')
 
         # Resolve to the Struct type (not Type.new, but {StructName}.new)
         struct_type = self_local.type.resolve

@@ -84,8 +84,8 @@ describe StoutLangParser do
           @x: Int
           @y: Int
 
-          def new(self: Point) {
-            return self
+          def new(@: Point) {
+            return @
           }
         }
 
@@ -113,14 +113,14 @@ describe StoutLangParser do
                       name="new",
                       args=[
                         Arg.new(
-                          name=Identifier.new(name="self"),
+                          name=Identifier.new(name="@"),
                           type_sig=TypeSig.new(type_val=Type.new(name="Point"))
                         )
                       ],
                       return_type=nil,
                       block=Block.new(
                         expressions=[
-                          FunctionCall.new(name="return", args=[Identifier.new(name="self")])
+                          FunctionCall.new(name="return", args=[Identifier.new(name="@")])
                         ],
                         args=nil
                       )
@@ -168,13 +168,17 @@ describe StoutLangParser do
 
     end
 
-    # it 'should assign properties inside of methods' do
-    #   code = <<-END
-    #     struct Point {
-    #       @x: Int
-    #       @y: Int
+    it 'should assign properties inside of methods' do
+      code = <<-END
+        struct Point {
+          @x: Int
+          @y: Int
+        }
 
-    #   END
-    # end
+        def set_x(@: Point, x: Int) {
+          @x = x
+        }
+      END
+    end
   end
 end

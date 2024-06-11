@@ -35,11 +35,11 @@ describe StoutLangParser do
           @x: Int
           @y: Int
         }
-        def new(self: Point) {
-          return self
+        def new(@: Point) {
+          return @
         }
 
-        def print_x(self: Point) {
+        def print_x(@: Point) {
           %> @x.to_s
         }
 
@@ -71,14 +71,14 @@ describe StoutLangParser do
               name="new",
               args=[
                 Arg.new(
-                  name=Identifier.new(name="self"),
+                  name=Identifier.new(name="@"),
                   type_sig=TypeSig.new(type_val=Type.new(name="Point"))
                 )
               ],
               return_type=nil,
               block=Block.new(
                 expressions=[
-                  FunctionCall.new(name="return", args=[Identifier.new(name="self")])
+                  FunctionCall.new(name="return", args=[Identifier.new(name="@")])
                 ],
                 args=nil
               )
@@ -87,7 +87,7 @@ describe StoutLangParser do
               name="print_x",
               args=[
                 Arg.new(
-                  name=Identifier.new(name="self"),
+                  name=Identifier.new(name="@"),
                   type_sig=TypeSig.new(type_val=Type.new(name="Point"))
                 )
               ],

@@ -4,12 +4,12 @@ struct Point {
 
 }
 
-def set_x(self: Point) -> Int {
+def set_x(@: Point) -> Int {
     @x = 10
     return 0
 }
 
-def print_x(self: Point) -> Int {
+def print_x(@: Point) -> Int {
     %> @x.to_s
     %> @y.to_s
     0

@@ -15,7 +15,7 @@ module StoutLang
         expression.prepare
 
         if identifier.is_a?(InstanceVar)
-          self_local = lookup_identifier('self')
+          self_local = lookup_identifier('@')
           self.type_sig = TypeSig.new(type_val=self_local.type)
         end
 
@@ -40,7 +40,7 @@ module StoutLang
         var_ir = expression.codegen(compile_jit, mod, func, bb)
         if identifier.is_ivar?
           # Lookup self, should be a struct
-          self_local = lookup_identifier('self')
+          self_local = lookup_identifier('@')
           struct_type = self_local.type.resolve
 
           property_pointer = identifier.resolve.codegen_get_pointer(compile_jit, mod, func, bb)

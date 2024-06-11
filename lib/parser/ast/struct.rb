@@ -55,7 +55,7 @@ module StoutLang
       # We create a default constructor, which may be overridden later.
       def create_new_constructor
         # Create a default new constructor and insert it into the top of the AST for the Struct
-        args_str = ["self: #{name.name}"]
+        args_str = ["@: #{name.name}"]
         assignments = []
 
         properties_hash.each do |name, type|
@@ -66,7 +66,7 @@ module StoutLang
         code = <<-END
           def new(#{args_str.join(', ')}) -> #{name.name} {
             #{assignments.join("\n")}
-            return self
+            return @
           }
         END
 
@@ -89,7 +89,7 @@ module StoutLang
 
         if name.name != "Root"
           # Create a method to look up the size of the struct (.i32_size)
-          extern = DefPrototype.new(SIZE_METHOD_NAME, [Arg.new('self', TypeSig.new(Type.new(name.name)))], Type.new("Int"))
+          extern = DefPrototype.new(SIZE_METHOD_NAME, [Arg.new('@', TypeSig.new(Type.new(name.name)))], Type.new("Int"))
           make_children!(extern)
           parent_scope.register_identifier(SIZE_METHOD_NAME, extern)
           extern.prepare

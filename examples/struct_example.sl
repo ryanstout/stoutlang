@@ -4,9 +4,9 @@ struct Point {
     @y: Int32
 }
 
-def new(self: Point) -> Point {
+def new(@: Point) -> Point {
     %> "Init Point"
-    return(self)
+    return(@)
 }
 
 puts "BEFORE POINT"

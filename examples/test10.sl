@@ -2,10 +2,10 @@ struct Point {
     @x: Int
     @y: Int
 
-    def init(self: Point) -> Point {
+    def init(@: Point) -> Point {
     #   %> x.to_s()
       %> "Run init"
-      self
+      @
     }
 }
 
