@@ -79,8 +79,7 @@ module StoutLang
         if method_call.is_a?(Construct)
           # TEMP: Special handler for imports and return to call into ruby to do imports
           method_call.parent = self
-          method_call.codegen(compile_jit, mod, func, bb, self)
-          return nil
+          return method_call.codegen(compile_jit, mod, func, bb, self)
         end
 
         unless method_call
@@ -91,23 +90,12 @@ module StoutLang
           arg.codegen(compile_jit, mod, func, bb)
         end
 
-        # method_call_ir = method_call.ir
-
         # TODO: Because of low level memory issues I think, we need to re-lookup the function in the current module
         # NOTE: This means function names need to be unique
 
         method_call_ir = mod.functions.named(method_call.mangled_name)
 
-        # if method_call_ir.nil?
-        #   puts mod
-        # end
-        # method_call_ir = method_call.ir
-
         if method_call_ir.nil?
-          # puts mod
-          # mod.functions.each do |f|
-          #   puts "FUNCTION: #{f.name}"
-          # end
           raise "Could not find function #{name}"
         end
 
@@ -125,7 +113,6 @@ module StoutLang
 
           # Allocate the memory for the struct
           # malloc = mod.functions["malloc"]
-          # binding.pry
           malloc = lookup_identifier('malloc').ir
           struct_ptr = bb.call(malloc, LLVM::Int32.from_i(size), "struct_malloc")
 

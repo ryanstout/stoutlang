@@ -45,7 +45,6 @@ class Visitor
       add_core_import(ast)
     end
 
-    # binding.pry
     @ast.prepare
 
     # Make a dibuilder

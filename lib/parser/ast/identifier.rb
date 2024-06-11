@@ -26,6 +26,7 @@ module StoutLang
         resolved.type
       end
 
+      # Instance variables need to be looked up on self
       def lookup_ivar_or_identifier(name)
         if is_ivar?
           _self = lookup_identifier('self').type.resolve

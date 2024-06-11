@@ -55,7 +55,7 @@ module StoutLang
                 return build_block(compile_jit, mod, func, bb)
               end
             else
-              # No parent function, don't createa a basic block, just build.
+              # No parent function, don't create a basic block, just build.
               # We're assuming all blocks are functions (we're in a lib)
               return build_block(compile_jit, mod, func, bb)
             end

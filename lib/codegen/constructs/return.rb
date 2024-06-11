@@ -9,6 +9,8 @@ module StoutLang
         # TODO: Multiple arg returns
         bb.ret(return_call.args.first.codegen(compile_jit, mod, func, bb))
       end
+
+      return self
     end
   end
 end
