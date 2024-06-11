@@ -4,10 +4,7 @@
 require 'parser/ast/utils/ast_scope'
 
 module StoutLang
-  class Construct
-    include AstScope
-
-    attr_accessor :parent
+  class Construct < StoutLang::Ast::AstNode
 
     def prepare(*args)
       # noop, override

@@ -9,15 +9,38 @@ grammar Types
   end
 
   rule type_expression
-    type_infix_chain
+    type_arrow / type_infix_chain
+  end
+
+  rule type_arrow
+    space? type_primary:type_infix_chain space? '->' space? type_expression:type_expression space? {
+      def to_ast
+        args = [type_primary.to_ast, type_expression.to_ast]
+        FunctionCall.new('->', args, self)
+      end
+    }
   end
 
   rule type_primary
-    type_variable / type
+    type_variable / type / type_parens
+    # / type_parens
+  end
+
+  rule type_parens
+    '(' space? type_expression space? ')' {
+      def to_ast
+       #rest_types:(',' space? type_expesssion space?)*
+        #if rest_types.respond_to?(:to_ast)
+        #  return [type_expression.to_ast, *rest_types.elements.map(&:type_expression).map(&:to_ast)]
+        #else
+          return type_expression.to_ast
+        #end
+      end
+    }
   end
 
   rule type_infix_chain
-    type_primary:type_primary (type_infix_op type_expression)* {
+    type_primary:type_primary (type_infix_op type_infix_chain)* {
       def to_ast
         # Consume left to right
         # Start with the leftmost primary
@@ -25,6 +48,17 @@ grammar Types
 
         elements[1].elements.each do |op_and_right|
           op, right = op_and_right.elements.map(&:to_ast)
+
+          if op == ','
+            # Instead of creating a FunctionCall, we merge these into a list
+
+            if left.is_a?(Array)
+              return left + [right]
+            else
+              return [left, right]
+            end
+          end
+
           args = [left, right]
 
           left = FunctionCall.new(op, args, op_and_right.type_infix_op, self).make_children!(args)
@@ -56,7 +90,7 @@ grammar Types
 
   rule type_infix_op
     # We want to process lower precedence operators first
-    space? operator:('||' / '&&' / '|' / '&' / '<') space? {
+    space? operator:('||' / '&&' / '|' / '&' / '<' / ',') space? {
       def to_ast
         operator.text_value
       end

@@ -156,5 +156,45 @@ describe StoutLangParser do
     #   )
     # end
 
+    it 'should parse the block type in def\'s that yield' do
+      code = "Str, Str -> Int, Int"
+      ast = Parser.new.parse(code, root: 'type_expression', wrap_root: false)
+
+      expect(ast).to eq(
+        FunctionCall.new(
+          name="->",
+          args=[
+            [Type.new(name="Str"), Type.new(name="Str")],
+            [Type.new(name="Int"), Type.new(name="Int")]
+          ]
+        )
+      )
+
+      code = "(Str, Str) -> Int, Int"
+      ast = Parser.new.parse(code, root: 'type_expression', wrap_root: false)
+
+      expect(ast).to eq(
+        FunctionCall.new(
+          name="->",
+          args=[
+            [Type.new(name="Str"), Type.new(name="Str")],
+            [Type.new(name="Int"), Type.new(name="Int")]
+          ]
+        )
+      )
+    end
+
+    it 'should parse type expressions with ,\'s between them on the type_infix_chain rule' do
+      code = "Str, Int"
+      ast = Parser.new.parse(code, root: 'type_infix_chain', wrap_root: false)
+      # ast.prepare
+
+      expect(ast).to eq([Type.new(name="Str"), Type.new(name="Int")])
+    end
+
+    it 'should let you override yield' do
+      # TODO
+    end
+
   end
 end

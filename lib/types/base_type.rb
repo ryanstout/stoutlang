@@ -1,5 +1,5 @@
 module StoutLang
-  class BaseType
+  class BaseType < StoutLang::Ast::AstNode
     def self.prepare
       # noop
     end

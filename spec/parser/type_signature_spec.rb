@@ -83,6 +83,27 @@ describe StoutLangParser do
       )
     end
 
+    it 'should join multiple type sigs with a comma' do
+      ast = Parser.new.parse('def say_hi() -> Int, Int {  }')
+
+      expect(ast).to eq(
+        StoutLang::Ast::Struct.new(
+          name=Type.new(name="Root"),
+          block=Block.new(
+            expressions=[
+              Def.new(
+                name="say_hi",
+                args=[],
+                return_type=[Type.new(name="Int"), Type.new(name="Int")],
+                block=Block.new(expressions=[], args=nil)
+              )
+            ],
+            args=nil
+          )
+        )
+      )
+    end
+
     # it 'should allow < to show a type variable must extend another type' do
     #   ast = Parser.new.parse("def add(a: 'T < Number, b: 'T < Number) { }")
 

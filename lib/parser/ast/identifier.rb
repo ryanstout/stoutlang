@@ -56,7 +56,9 @@ module StoutLang
           ivar = InstanceVar.new(name)
           ivar.parent = self
           ivar
-        elsif identified.is_a?(StoutLang::Ast::Def)
+        elsif identified.is_a?(StoutLang::Ast::Def) || identified.is_a?(StoutLang::Construct)
+          # Constructs still get treated like function calls and the FunctionCall does the lookup.
+
           # Create a FunctionCall and assign it to self
           func_call = StoutLang::Ast::FunctionCall.new(name, [])
           # Assign self as the parent scope
