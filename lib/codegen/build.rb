@@ -36,10 +36,16 @@ end.parse!
 parser = StoutLang::Parser.new
 
 input_file_path = ARGV[0]
+output_file_path = ARGV[1]
+
+if !input_file_path || !output_file_path
+  puts "Usage: ./run/build <input_file> <output_file>"
+  exit
+end
 
 code = File.read(input_file_path)
 
 # For now, just inject core
 ast = parser.parse(code)
 
-Visitor.new(ast, input_file_path, options).generate(ARGV[1])
+Visitor.new(ast, input_file_path, options).generate(output_file_path)
