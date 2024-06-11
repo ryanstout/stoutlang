@@ -31,8 +31,13 @@ module StoutLang
 
         func_serialized = {name: name, }
 
-        # Def's should register themselves in the parent scope
-        parent_scope.register_identifier(name, self)
+        # Def's created inside of a struct should register themselves in the parent struct.
+        scope = parent_scope
+        if scope.is_a?(StoutLang::Ast::Struct) && scope.name.name != "Root"
+          # Move up one more so the internal struct functions are avaible from the parent
+          scope = scope.parent_scope
+        end
+        scope.register_identifier(name, self)
       end
 
       def effects
@@ -84,7 +89,9 @@ module StoutLang
             last_expr = block.codegen(compile_jit, mod, function, bb, true)
 
             # Return the value of the last expression
-            bb.ret(last_expr)
+            unless last_expr.is_a?(Return)
+              bb.ret(last_expr)
+            end
           end
         end
 

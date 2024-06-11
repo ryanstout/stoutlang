@@ -8,7 +8,7 @@ module StoutLang
       include Scope
       setup :name, :block
       attr_accessor :ir
-      attr_reader :properties
+      attr_reader :properties_hash
 
       SIZE_METHOD_NAME = "i32_size"
 
@@ -42,7 +42,44 @@ module StoutLang
         args
       end
 
+      def build_properties_hash
+        @properties_hash = {}
+        block.expressions.each do |exp|
+          if exp.is_a?(Property)
+            @properties_hash[exp.name.name] = exp.type_sig.type_val
+          end
+        end
+      end
+
+
+      # We create a default constructor, which may be overridden later.
+      def create_new_constructor
+        # Create a default new constructor and insert it into the top of the AST for the Struct
+        args_str = ["self: #{name.name}"]
+        assignments = []
+
+        properties_hash.each do |name, type|
+          args_str << "#{name}: #{type.name}"
+          assignments << "@#{name} = #{name}"
+        end
+
+        code = <<-END
+          def new(#{args_str.join(', ')}) -> #{name.name} {
+            #{assignments.join("\n")}
+            return self
+          }
+        END
+
+        new_constructor = Parser.new.parse(code, wrap_root: false)
+        new_constructor_def = new_constructor.expressions[0]
+        make_children!(new_constructor_def)
+        block.expressions.unshift(new_constructor_def)
+
+      end
+
       def prepare
+        build_properties_hash
+
         # Add the struct to the parent scope
         if parent_scope
           parent_scope.register_identifier(name.name, self)
@@ -56,6 +93,8 @@ module StoutLang
           make_children!(extern)
           parent_scope.register_identifier(SIZE_METHOD_NAME, extern)
           extern.prepare
+
+          create_new_constructor
         end
 
         block.prepare
@@ -103,13 +142,11 @@ module StoutLang
 
         # # Get the list of types from each property on the struct
         types = []
-        @properties = {} # an ordered hash
 
         block.expressions.map do |exp|
           if exp.is_a?(Property)
-            type = exp.type_sig.codegen(compile_jit, mod, func, bb)
-            types << type
-            @properties[exp.name.name] = type
+            type_llvm_value = exp.type_sig.codegen(compile_jit, mod, func, bb)
+            types << type_llvm_value
           end
         end
 

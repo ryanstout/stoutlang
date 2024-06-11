@@ -4,13 +4,6 @@ struct Point {
 
 }
 
-
-def new(self: Point) -> Point {
-    @x = 15
-    @y = 20
-    return self
-}
-
 def set_x(self: Point) -> Int {
     @x = 10
     return 0
@@ -23,7 +16,7 @@ def print_x(self: Point) -> Int {
 }
 
 
-point = Point.new()
+point = Point.new(12, 14)
 
 point.print_x()
 point.set_x()

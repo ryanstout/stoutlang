@@ -148,11 +148,7 @@ describe StoutLangParser do
           @y: Int
         }
 
-        def new(self: Point) -> Point {
-          self
-        }
-
-        point = Point.new()
+        point = Point.new(0, 0)
 
         return(point.i32_size)
       END
@@ -168,8 +164,17 @@ describe StoutLangParser do
 
     end
 
-    it 'should assign properties inside of methods' do
+    it 'should auto-create a new method' do
 
     end
+
+    # it 'should assign properties inside of methods' do
+    #   code = <<-END
+    #     struct Point {
+    #       @x: Int
+    #       @y: Int
+
+    #   END
+    # end
   end
 end
