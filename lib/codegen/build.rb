@@ -38,7 +38,7 @@ parser = StoutLang::Parser.new
 input_file_path = ARGV[0]
 output_file_path = ARGV[1]
 
-if !input_file_path || !output_file_path
+if !input_file_path || (options[:aot] && !output_file_path)
   puts "Usage: ./run/build <input_file> <output_file>"
   exit
 end
