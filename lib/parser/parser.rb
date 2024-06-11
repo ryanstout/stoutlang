@@ -22,6 +22,7 @@ Treetop.load(File.expand_path(File.dirname(__FILE__)) + '/grammar/functions')
 Treetop.load(File.expand_path(File.dirname(__FILE__)) + '/grammar/types')
 Treetop.load(File.expand_path(File.dirname(__FILE__)) + '/grammar/strings')
 Treetop.load(File.expand_path(File.dirname(__FILE__)) + '/grammar/ifs')
+Treetop.load(File.expand_path(File.dirname(__FILE__)) + '/grammar/blocks')
 Treetop.load(File.expand_path(File.dirname(__FILE__)) + '/grammar/lists')
 Treetop.load(File.expand_path(File.dirname(__FILE__)) + '/grammar/structs')
 Treetop.load(File.expand_path(File.dirname(__FILE__)) + '/grammar/instance_vars')
@@ -67,12 +68,13 @@ module StoutLang
         root_ast.register_identifier("Str", StoutLang::Str.new)
         root_ast.register_identifier("Bool", StoutLang::Bool.new)
         root_ast.register_identifier('Type', StoutLang::TypeType.new)
-        root_ast.register_identifier('->', StoutLang::BlockType.new)
+        # root_ast.register_identifier('->', StoutLang::BlockType.new)
 
-        # Register constructs
+        # Register constructs that get parsed/treated like function calls
         root_ast.register_identifier('return', StoutLang::Return.new)
         root_ast.register_identifier('import', StoutLang::Import.new)
         root_ast.register_identifier('yield', StoutLang::Yield.new)
+        # root_ast.register_identifier('(,)', StoutLang::Tuple.new) # The tuple constructor
 
       end
 

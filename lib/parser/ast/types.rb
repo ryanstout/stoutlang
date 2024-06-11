@@ -3,7 +3,19 @@ module StoutLang
 
     # A Type is like an Identifier for a base level type
     class Type < AstNode
-      setup :name
+      # Args lets us create parametric types
+      setup :name, :args
+
+      # Override the init created in setup
+      def initialize(name, *others)
+        @name = name
+        make_children!(@name, self)
+
+        @parse_node = others.last.is_a?(Treetop::Runtime::SyntaxNode) ? others.pop : nil
+        @args = others[0]
+
+        make_children!(@args, self)
+      end
 
       def type
         raise "Can not call .type on a Type"

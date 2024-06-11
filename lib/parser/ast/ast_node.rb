@@ -85,7 +85,7 @@ module StoutLang
         define_method(:initialize) do |*args|
           index = 0
           properties.each do |prop|
-            ast_node = args[index]
+            ast_node = args[index] # Nil's get assigned if we don't specify enough args
 
             # Assign the parent on any passed in ast nodes
             make_children!(ast_node, self)
@@ -115,7 +115,12 @@ module StoutLang
         is_array = obj.is_a?(Array)
 
         # map_over = is_array ? obj : obj.instance_variables.reject {|iv| [:@parse_node, :@parent, :@scope].include?(iv) }
-        map_over = is_array ? obj : obj.instance_variables.select {|iv| obj.class.ast_props.include?(iv) }
+        map_over = is_array ? obj : obj.instance_variables.select do |iv|
+          # Treat @args special, don't include it if its nil
+          # Keep everything cleaner, especially for small types.
+          # TODO: Probably want to get rid of this at some point, but nice for now.
+          obj.class.ast_props.include?(iv)# && (iv != :@args || !obj.instance_variable_get(:@args).nil?)
+        end
         char_overflow = false
 
         var_inspects = []
