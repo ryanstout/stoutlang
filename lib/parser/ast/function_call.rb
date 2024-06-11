@@ -112,9 +112,8 @@ module StoutLang
           size = struct_type.bytesize(compile_jit)
 
           # Allocate the memory for the struct
-          # malloc = mod.functions["malloc"]
           malloc = lookup_identifier('malloc').ir
-          struct_ptr = bb.call(malloc, LLVM::Int32.from_i(size), "struct_malloc")
+          struct_ptr = bb.call(malloc, LLVM::Int32.from_i(size), assignment_name || "struct_malloc")
 
           # Pass the struct pointer as the first argument, replace the first
           # argument with the pointer
