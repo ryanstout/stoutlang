@@ -196,7 +196,88 @@ describe StoutLangParser do
       # TODO
     end
 
+    it 'should parse block args' do
+      code = "arg1, arg2"
+      ast = Parser.new.parse(code, wrap_root: false, root: 'block_args')
+
+      expect(ast).to eq([
+        Arg.new(name=Identifier.new(name="arg1"), type_sig=nil),
+        Arg.new(name=Identifier.new(name="arg2"), type_sig=nil)
+      ])
+    end
+
     it 'should parse block arguments' do
+      code = <<-END
+        call_block(1) |arg1, arg2| {
+          %> "hey"
+        }
+      END
+      ast = Parser.new.parse(code)
+      # ast.prepare
+
+      expect(ast).to eq(
+        StoutLang::Ast::Struct.new(
+          name=Type.new(name="Root", args=nil),
+          block=Block.new(
+            expressions=[
+              FunctionCall.new(
+                name="call_block",
+                args=[
+                  IntegerLiteral.new(value=1),
+                  Block.new(
+                    expressions=[
+                      FunctionCall.new(name="%>", args=[StringLiteral.new(value=["hey"])])
+                    ],
+                    args=[
+                      Arg.new(name=Identifier.new(name="arg1"), type_sig=nil),
+                      Arg.new(name=Identifier.new(name="arg2"), type_sig=nil)
+                    ]
+                  )
+                ]
+              )
+            ],
+            args=nil
+          )
+        )
+      )
+    end
+
+    it 'should parse block arguments on a function call with no arguments' do
+      code = <<-END
+        call_block() |arg1, arg2| {
+          %> "hey"
+        }
+      END
+      ast = Parser.new.parse(code)
+      # ast.prepare
+
+      expect(ast).to eq(
+        StoutLang::Ast::Struct.new(
+          name=Type.new(name="Root", args=nil),
+          block=Block.new(
+            expressions=[
+              FunctionCall.new(
+                name="call_block",
+                args=[
+                  Block.new(
+                    expressions=[
+                      FunctionCall.new(name="%>", args=[StringLiteral.new(value=["hey"])])
+                    ],
+                    args=[
+                      Arg.new(name=Identifier.new(name="arg1"), type_sig=nil),
+                      Arg.new(name=Identifier.new(name="arg2"), type_sig=nil)
+                    ]
+                  )
+                ]
+              )
+            ],
+            args=nil
+          )
+        )
+      )
+    end
+
+    it 'should parse block arguments on a function call with no arguments and no parens' do
       code = <<-END
         call_block |arg1, arg2| {
           %> "hey"
@@ -206,6 +287,28 @@ describe StoutLangParser do
       # ast.prepare
 
       expect(ast).to eq(
+        StoutLang::Ast::Struct.new(
+          name=Type.new(name="Root", args=nil),
+          block=Block.new(
+            expressions=[
+              FunctionCall.new(
+                name="call_block",
+                args=[
+                  Block.new(
+                    expressions=[
+                      FunctionCall.new(name="%>", args=[StringLiteral.new(value=["hey"])])
+                    ],
+                    args=[
+                      Arg.new(name=Identifier.new(name="arg1"), type_sig=nil),
+                      Arg.new(name=Identifier.new(name="arg2"), type_sig=nil)
+                    ]
+                  )
+                ]
+              )
+            ],
+            args=nil
+          )
+        )
       )
     end
 

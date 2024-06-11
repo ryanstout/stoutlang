@@ -69,6 +69,22 @@ grammar StoutLang
     }
   end
 
+  rule function_call_with_no_args_and_block
+    # If a method call name is followed by a block, assume it's a function call
+    # not an identifier.
+
+    method_call_name space? block:block {
+      def to_ast
+        function_name = method_call_name.to_ast
+
+        # If a block was passed, add it to the args
+        args_ast = [block.to_ast]
+
+        FunctionCall.new(function_name, args_ast, self).make_children!(args_ast)
+      end
+    }
+  end
+
   rule boolean_literal
     lit:(true_literal / false_literal) {
       def to_ast
@@ -94,7 +110,7 @@ grammar StoutLang
   end
 
   rule primary
-    comment / struct / lib / if_expression / list / boolean_literal / function_call_with_args / property / identifier / type / float / integer / string / parens
+    comment / struct / lib / if_expression / list / boolean_literal / function_call_with_args / function_call_with_no_args_and_block / property / identifier / type / float / integer / string / parens
   end
 
 
@@ -141,7 +157,7 @@ grammar StoutLang
   end
 
   rule ivar_identifier
-    '@' [a-zA-Z0-9_]+ {
+    '@' [a-zA-Z0-9_]* {
       def to_ast
         Identifier.new(text_value, self)
       end

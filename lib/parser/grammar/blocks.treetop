@@ -1,6 +1,6 @@
 grammar Blocks
   rule block
-    '|' space? args:method_call_args? space? '|' space? '{' program '}' {
+    '|' space? args:block_args? space? '|' space? '{' program '}' {
       def to_ast
         block = program.to_ast
         if args.respond_to?(:to_ast)
@@ -9,6 +9,7 @@ grammar Blocks
           # in other places. 
           block.args = args.to_ast
         end
+        block
       end
     } / 
     '{' program '}' {
@@ -18,14 +19,12 @@ grammar Blocks
     }
   end
 
-  #rule block_args
-  #end
-#
-  #rule block_arg
-  #  space? arg:identifier space? {
-  #    def to_ast
-  #      arg.to_ast
-  #    end
-  #  }
-  #end
+  rule block_args
+    first:arg space? rest:(',' space? arg:arg)* {
+      def to_ast
+        [first.to_ast] + rest.elements.map { |r| r.arg.to_ast }
+      end
+    }
+  end
+
 end
