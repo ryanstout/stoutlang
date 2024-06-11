@@ -137,9 +137,21 @@ grammar StoutLang
 
   # Variable names
   rule identifier
+    ivar_identifier / call_or_local_identifier
+  end
+
+  rule ivar_identifier
+    '@' [a-zA-Z0-9_]+ {
+      def to_ast
+        Identifier.new(text_value, self)
+      end
+    }
+  end
+
+  rule call_or_local_identifier
     # We make sure the first character isn't followed by a ` in order to support
     # shell heredoc language specification
-    [@a-z] !'`' [a-zA-Z0-9_]* {
+    [a-z] !'`' [a-zA-Z0-9_]* {
       def to_ast
         Identifier.new(text_value, self)
       end

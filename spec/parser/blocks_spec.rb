@@ -196,5 +196,18 @@ describe StoutLangParser do
       # TODO
     end
 
+    it 'should parse block arguments' do
+      code = <<-END
+        call_block |arg1, arg2| {
+          %> "hey"
+        }
+      END
+      ast = Parser.new.parse(code)
+      # ast.prepare
+
+      expect(ast).to eq(
+      )
+    end
+
   end
 end

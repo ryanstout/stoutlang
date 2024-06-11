@@ -18,43 +18,14 @@ grammar Blocks
     }
   end
 
-  rule block_type
-    block_args:block_args space? '->' space? block_return_type:type_infix_chain {
-      def to_ast
-        StoutLang::Ast::BlockType.new(block_args.to_ast, block_return_type.to_ast)
-      end
-    }
-  end
-
-  rule block_args
-    '(' space? block_arg (space? ',' space? block_arg)* space? ')' {
-      def to_ast
-        args = [block_arg.to_ast]
-        if respond_to?(:block_arg)
-          args += block_arg.map(&:to_ast)
-        end
-        args
-      end
-    } /
-    block_arg:block_arg {
-      def to_ast
-        [block_arg.to_ast]
-      end
-    } /
-    '(' space? ')' {
-      def to_ast
-        []
-      end
-    }
-  end
-
-  rule block_arg
-    type_infix_chain:type_infix_chain {
-      def to_ast
-        type_infix_chain.to_ast
-      end
-    }
-  end
-
-
+  #rule block_args
+  #end
+#
+  #rule block_arg
+  #  space? arg:identifier space? {
+  #    def to_ast
+  #      arg.to_ast
+  #    end
+  #  }
+  #end
 end
