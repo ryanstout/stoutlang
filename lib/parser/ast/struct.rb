@@ -6,7 +6,7 @@ module StoutLang
   module Ast
     class Struct < AstNode
       include Scope
-      setup :name, :block
+      setup :name, :body
       attr_accessor :ir
       attr_reader :properties_hash
 
@@ -14,7 +14,7 @@ module StoutLang
 
 
       def add_expression(expression)
-        block.add_expression(expression)
+        body.add_expression(expression)
       end
 
       def resolve
@@ -28,9 +28,9 @@ module StoutLang
       end
 
       def constructor_args
-        # Create an arg for each property in the block
+        # Create an arg for each property in the body
         args = []
-        block.expressions.each do |exp|
+        body.expressions.each do |exp|
           if exp.is_a?(Property)
             arg = Arg.new(exp.name, exp.type_sig)
             arg.parent = exp.parent
@@ -44,7 +44,7 @@ module StoutLang
 
       def build_properties_hash
         @properties_hash = {}
-        block.expressions.each do |exp|
+        body.expressions.each do |exp|
           if exp.is_a?(Property)
             @properties_hash[exp.name.name] = exp.type_sig.type_val
           end
@@ -73,7 +73,7 @@ module StoutLang
         new_constructor = Parser.new.parse(code, wrap_root: false)
         new_constructor_def = new_constructor.expressions[0]
         make_children!(new_constructor_def)
-        block.expressions.unshift(new_constructor_def)
+        body.expressions.unshift(new_constructor_def)
 
       end
 
@@ -97,11 +97,11 @@ module StoutLang
           create_new_constructor
         end
 
-        block.prepare
+        body.prepare
       end
 
       def run
-        block.run
+        body.run
       end
 
       def type
@@ -143,7 +143,7 @@ module StoutLang
         # # Get the list of types from each property on the struct
         types = []
 
-        block.expressions.map do |exp|
+        body.expressions.map do |exp|
           if exp.is_a?(Property)
             type_llvm_value = exp.type_sig.codegen(compile_jit, mod, func, bb)
             types << type_llvm_value
@@ -171,8 +171,8 @@ module StoutLang
           end
         end
 
-        # Build the IR for the block
-        ir = block.codegen(compile_jit, mod, func, bb, true)
+        # Build the IR for the body
+        ir = body.codegen(compile_jit, mod, func, bb)
 
         return ir
       end

@@ -71,9 +71,9 @@ module StoutLang
         # root_ast.register_identifier('->', StoutLang::BlockType.new)
 
         # Register constructs that get parsed/treated like function calls
-        root_ast.register_identifier('return', StoutLang::Return.new)
-        root_ast.register_identifier('import', StoutLang::Import.new)
-        root_ast.register_identifier('yield', StoutLang::Yield.new)
+        root_ast.register_identifier('return', StoutLang::Return)
+        root_ast.register_identifier('import', StoutLang::Import)
+        root_ast.register_identifier('yield', StoutLang::Yield)
         # root_ast.register_identifier('(,)', StoutLang::Tuple.new) # The tuple constructor
 
       end

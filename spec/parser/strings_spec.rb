@@ -24,9 +24,7 @@ describe StoutLangParser do
         StringLiteral.new(
           value=[
             "hello ",
-            StringInterpolation.new(
-              block=Block.new(expressions=[Identifier.new(name="world")])
-            )
+            StringInterpolation.new(block=Exps.new([Identifier.new(name="world")]))
           ]
         )
       )
@@ -52,12 +50,11 @@ describe StoutLangParser do
         StringLiteral.new(
           value=[
             "hello ",
-            StringInterpolation.new(
-              block=Block.new(expressions=[Identifier.new(name="world")])
-            ),
+            StringInterpolation.new(block=Exps.new([Identifier.new(name="world")])),
             "\nworld"
           ]
         )
+
       )
     end
 
@@ -76,9 +73,7 @@ describe StoutLangParser do
         ShellStringLiteral.new(
           value=[
             "echo ",
-            StringInterpolation.new(
-              block=Block.new(expressions=[Identifier.new(name="world")])
-            )
+            StringInterpolation.new(block=Exps.new([Identifier.new(name="world")]))
           ],
           language=nil
         )
@@ -100,11 +95,10 @@ describe StoutLangParser do
         ShellStringLiteral.new(
           value=[
             "hello ",
-            StringInterpolation.new(
-              block=Block.new(expressions=[Identifier.new(name="world")])
-            ),
+            StringInterpolation.new(block=Exps.new([Identifier.new(name="world")])),
             "\nworld"
-          ]
+          ],
+          language=nil
         )
       )
     end
@@ -121,15 +115,13 @@ describe StoutLangParser do
       ast = Parser.new.parse("def say_hello() { r```puts 'hey'``` }", wrap_root: false)
 
       expect(ast).to eq(
-        Block.new(
-          expressions=[
+        Exps.new(
+          [
             Def.new(
               name="say_hello",
               args=[],
               return_type=nil,
-              block=Block.new(
-                expressions=[ShellStringLiteral.new(value=["puts 'hey'"], language="r")]
-              )
+              body=Exps.new([ShellStringLiteral.new(value=["puts 'hey'"], language="r")])
             )
           ]
         )

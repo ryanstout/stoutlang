@@ -1,27 +1,27 @@
 grammar Ifs
  rule if_expression
-    'if' spbr condition:expression spbr? if_block:block elifs:elif_clause* else_block:else_clause? {
+    'if' spbr condition:expression spbr? if_exps:exps elifs:elif_clause* else_exps:else_clause? {
       def to_ast
         elif_clauses = elifs && elifs.elements[0].respond_to?(:to_ast) && elifs.elements.map(&:to_ast) || []
-        else_clause = else_block.respond_to?(:to_ast) && else_block&.to_ast || nil
+        else_clause = else_exps.respond_to?(:to_ast) && else_exps&.to_ast || nil
 
-        If.new(condition.to_ast, if_block.to_ast, elif_clauses, else_clause, self)
+        If.new(condition.to_ast, if_exps.to_ast, elif_clauses, else_clause, self)
       end
     }
   end
 
   rule elif_clause
-    spbr? 'elif' spbr? condition:expression spbr? elif_block:block spbr? {
+    spbr? 'elif' spbr? condition:expression spbr? elif_exps:exps spbr? {
       def to_ast
-        ElifClause.new(condition.to_ast, elif_block.to_ast, self)
+        ElifClause.new(condition.to_ast, elif_exps.to_ast, self)
       end
     }
   end
 
   rule else_clause
-    spbr? 'else' spbr? block:block {
+    spbr? 'else' spbr? exps:exps {
       def to_ast
-        ElseClause.new(block.to_ast, self)
+        ElseClause.new(exps.to_ast, self)
       end
     }
   end

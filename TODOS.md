@@ -72,3 +72,24 @@ Saturday:
 
 - add support for Any type in properties (ivars)
 - should identifiers not allow capital letters at all?
+
+- it should raise if you double define a def in the same scope (with the same args)
+
+- Stoutlang: maybe you should be able to do () on a value (all values can be treated like functions, so you can swap them for functions later)
+- Handle malloc's failing (returning null)
+
+### add a resolve_identifiers step that replaces identifiers with the resolved nodes
+
+- run after prepare, before codegen
+- LocalVar, InstanceVar, FunctionCall
+- should Type's be resolved? Parametric types create new types
+  - Types will need to be parameterized. How would literal types and generic structs be represented?
+  - When will type expressions get evaluated, do we need a recursive evaluation process?
+  - We probably want a way to store the original AstNodes as we replace them, and a way to pass on the start/end character positions from the source
+  - Maybe a walker class that handles the replacement and re-evaluation
+  - Def's and properties need to register first, but assignment needs to register when evaluated
+  
+  --- blocks need a scope when passed (call them a BlockArg maybe?)
+
+  - We need an Exp's ("list of expressions") type that Block and Def both include (or inherit from?)
+    - if's need Exps (or argument-less blocks)

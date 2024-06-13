@@ -31,22 +31,21 @@ describe StoutLangParser do
 
       expect(ast).to eq(
         StoutLang::Ast::Struct.new(
-          name=Type.new("Root"),
-          block=Block.new(
-            expressions=[
+          name=Type.new(name="Root", args=nil),
+          body=Exps.new(
+            [
               Def.new(
                 name="say_hi",
                 args=[
                   Arg.new(
                     name=Identifier.new(name="name"),
-                    type_sig=TypeSig.new(type_val=Type.new(name="Str"))
+                    type_sig=TypeSig.new(type_val=Type.new(name="Str", args=nil))
                   )
                 ],
                 return_type=nil,
-                block=Block.new(expressions=[])
+                body=Exps.new([])
               )
-            ],
-            args=nil
+            ]
           )
         )
       )
@@ -57,9 +56,9 @@ describe StoutLangParser do
 
       expect(ast).to eq(
         StoutLang::Ast::Struct.new(
-          name=Type.new("Root"),
-          block=Block.new(
-            expressions=[
+          name=Type.new(name="Root", args=nil),
+          body=Exps.new(
+            [
               Def.new(
                 name="say_hi",
                 args=[
@@ -68,16 +67,18 @@ describe StoutLangParser do
                     type_sig=TypeSig.new(
                       type_val=FunctionCall.new(
                         name="|",
-                        args=[Type.new(name="Str"), Type.new(name="Int")]
+                        args=[
+                          Type.new(name="Str", args=nil),
+                          Type.new(name="Int", args=nil)
+                        ]
                       )
                     )
                   )
                 ],
                 return_type=nil,
-                block=Block.new(expressions=[])
+                body=Exps.new([])
               )
-            ],
-            args=nil
+            ]
           )
         )
       )
@@ -88,17 +89,16 @@ describe StoutLangParser do
 
       expect(ast).to eq(
         StoutLang::Ast::Struct.new(
-          name=Type.new(name="Root"),
-          block=Block.new(
-            expressions=[
+          name=Type.new(name="Root", args=nil),
+          body=Exps.new(
+            [
               Def.new(
                 name="say_hi",
                 args=[],
-                return_type=[Type.new(name="Int"), Type.new(name="Int")],
-                block=Block.new(expressions=[], args=nil)
+                return_type=[Type.new(name="Int", args=nil), Type.new(name="Int", args=nil)],
+                body=Exps.new([])
               )
-            ],
-            args=nil
+            ]
           )
         )
       )

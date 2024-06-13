@@ -6,13 +6,13 @@ describe StoutLangParser do
       ast = Parser.new.parse("macro awesome {\n  5\n}", wrap_root: false)
 
       expect(ast).to eq(
-        Block.new(
-          expressions=[
+        Exps.new(
+          [
             Macro.new(
               name="awesome",
               args=[],
               return_type=nil,
-              block=Block.new(expressions=[IntegerLiteral.new(value=5)])
+              body=Exps.new([IntegerLiteral.new(value=5)])
             )
           ]
         )
@@ -31,7 +31,7 @@ describe StoutLangParser do
           Arg.new(name=Identifier.new(name="b"), type_sig=nil)
         ],
         return_type=nil,
-        block=Block.new(expressions=[IntegerLiteral.new(value=5)])
+        body=Exps.new([IntegerLiteral.new(value=5)])
       )
     )
   end
@@ -46,8 +46,8 @@ describe StoutLangParser do
           Arg.new(name=Identifier.new(name="a"), type_sig=nil),
           Arg.new(name=Identifier.new(name="b"), type_sig=nil)
         ],
-        return_type=Type.new(name="Int"),
-        block=Block.new(expressions=[IntegerLiteral.new(value=5)])
+        return_type=Type.new(name="Int", args=nil),
+        body=Exps.new([IntegerLiteral.new(value=5)])
       )
     )
   end

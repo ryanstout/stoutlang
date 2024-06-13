@@ -13,10 +13,11 @@ grammar Types
   end
 
   rule type_arrow
-    space? type_primary:type_infix_chain space? '->' space? type_expression:type_expression space? {
+    space? arg_types_exp:type_infix_chain space? '->' space? return_type_exp:type_expression space? {
       def to_ast
-        args = [type_primary.to_ast, type_expression.to_ast]
-        FunctionCall.new('->', args, self)
+        arg_types = arg_types_exp.to_ast
+        return_type = return_type_exp.to_ast
+        BlockType.new([arg_types].flatten, return_type, self)
       end
     }
   end

@@ -12,10 +12,10 @@ describe StoutLangParser do
 
       END
       ast = Parser.new.parse(code)
-      expect(ast.block.expressions[2].args[0]).to eq(Identifier.new(name="get_hey"))
+      expect(ast.body.expressions[2].args[0]).to eq(Identifier.new(name="get_hey"))
 
       ast.prepare
-      expect(ast.block.expressions[2].args[0]).to eq(FunctionCall.new(name="get_hey", args=[]))
+      expect(ast.body.expressions[2].args[0]).to eq(FunctionCall.new(name="get_hey", args=[]))
     end
   end
 end

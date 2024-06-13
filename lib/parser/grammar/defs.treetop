@@ -1,20 +1,20 @@
 grammar Defs
   rule define_method
-    'def ' method_name:method_name space? args:args? space? return_type_sig:return_type_sig? space? block:block {
+    'def ' method_name:method_name space? args:args? space? return_type_sig:return_type_sig? space? exps:exps {
       def to_ast
         args_ast = args.respond_to?(:to_ast) ? args.to_ast : []
         return_type = return_type_sig.respond_to?(:to_ast) ? return_type_sig.to_ast : nil
-        Def.new(method_name.to_ast, args_ast, return_type, block.to_ast, self)
+        Def.new(method_name.to_ast, args_ast, return_type, exps.to_ast, self)
       end
     } / cfunc_define
   end
 
   rule macro_define
-    'macro ' method_name:method_name space? args:args? space? return_type_sig:return_type_sig? space? block:block {
+    'macro ' method_name:method_name space? args:args? space? return_type_sig:return_type_sig? space? exps:exps {
       def to_ast
         args_ast = args.respond_to?(:to_ast) ? args.to_ast : []
         return_type = return_type_sig.respond_to?(:to_ast) ? return_type_sig.to_ast : nil
-        Macro.new(method_name.to_ast, args_ast, return_type, block.to_ast, self)
+        Macro.new(method_name.to_ast, args_ast, return_type, exps.to_ast, self)
       end
     } / infix_chain
   end

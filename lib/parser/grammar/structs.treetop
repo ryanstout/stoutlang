@@ -1,8 +1,8 @@
 grammar Structs
   rule struct
-    'struct ' type space? block {
+    'struct ' type space? exps {
       def to_ast
-        StoutLang::Ast::Struct.new(type.to_ast, block.to_ast, self)
+        StoutLang::Ast::Struct.new(type.to_ast, exps.to_ast, self)
       end
     }
   end

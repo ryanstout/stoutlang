@@ -16,7 +16,7 @@ describe StoutLangParser do
 
     it 'should allow function calls from the root' do
       ast = Parser.new.parse('print()', wrap_root: false)
-      expect(ast).to eq(Block.new(expressions=[FunctionCall.new(name="print", args=[])]))
+      expect(ast).to eq(Exps.new(expressions=[FunctionCall.new(name="print", args=[])]))
 
     end
 
@@ -24,7 +24,7 @@ describe StoutLangParser do
       ast = Parser.new.parse("a = 5\n5.name()\nprint(\"Hello\").to_i()", wrap_root: false)
 
       expect(ast).to eq(
-        Block.new(
+        Exps.new(
           expressions=[
             Assignment.new(
               identifier=Identifier.new(name="a"),

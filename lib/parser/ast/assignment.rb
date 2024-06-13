@@ -25,6 +25,7 @@ module StoutLang
         make_children!(@var)
 
         self.expression = self.expression.resolve
+
         register_in_scope(identifier.name, @var)
       end
 
@@ -49,6 +50,8 @@ module StoutLang
         else
 
           @var.ir = var_ir
+
+          var_ir
         end
       end
     end

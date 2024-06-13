@@ -5,47 +5,52 @@ describe StoutLangParser do
     it 'should parse a struct' do
       ast = Parser.new.parse("struct Person {\n  5\n}", root: 'struct', wrap_root: false)
 
-      expect(ast).to eq(StoutLang::Ast::Struct.new(
-          name=Type.new(name="Person"),
-          block=Block.new(expressions=[IntegerLiteral.new(value=5)])
-        ))
+      expect(ast).to eq(
+        StoutLang::Ast::Struct.new(
+          name=Type.new(name="Person", args=nil),
+          body=Exps.new([IntegerLiteral.new(value=5)])
+        )
+      )
     end
 
     it 'should parse a struct, then an expression' do
       ast = Parser.new.parse("struct Person {\n  5\n}\n10", wrap_root: false)
 
-      expect(ast).to eq(Block.new(
-        expressions=[
-          StoutLang::Ast::Struct.new(
-            name=Type.new(name="Person"),
-            block=Block.new(expressions=[IntegerLiteral.new(value=5)])
-          ),
-          IntegerLiteral.new(value=10)
-        ]
-      ))
+      expect(ast).to eq(
+        Exps.new(
+          [
+            StoutLang::Ast::Struct.new(
+              name=Type.new(name="Person", args=nil),
+              body=Exps.new([IntegerLiteral.new(value=5)])
+            ),
+            IntegerLiteral.new(value=10)
+          ]
+        )
+      )
     end
 
     it 'should parse defs in structs' do
       ast = Parser.new.parse("struct Ok { \n def initialize(name: Str) { \n5\n } \n }")
+
       expect(ast).to eq(
         StoutLang::Ast::Struct.new(
-          name=Type.new("Root"),
-          block=Block.new(
-            expressions=[
+          name=Type.new(name="Root", args=nil),
+          body=Exps.new(
+            [
               StoutLang::Ast::Struct.new(
-                name=Type.new(name="Ok"),
-                block=Block.new(
-                  expressions=[
+                name=Type.new(name="Ok", args=nil),
+                body=Exps.new(
+                  [
                     Def.new(
                       name="initialize",
                       args=[
                         Arg.new(
                           name=Identifier.new(name="name"),
-                          type_sig=TypeSig.new(type_val=Type.new(name="Str"))
+                          type_sig=TypeSig.new(type_val=Type.new(name="Str", args=nil))
                         )
                       ],
                       return_type=nil,
-                      block=Block.new(expressions=[IntegerLiteral.new(value=5)])
+                      body=Exps.new([IntegerLiteral.new(value=5)])
                     )
                   ]
                 )
@@ -95,48 +100,45 @@ describe StoutLangParser do
       ast = Parser.new.parse(code, wrap_root: false)
 
       expect(ast).to eq(
-        Block.new(
-            expressions=[
-              StoutLang::Ast::Struct.new(
-                name=Type.new(name="Point"),
-                block=Block.new(
-                  expressions=[
-                    Property.new(
-                      name=Identifier.new(name="x"),
-                      type_sig=TypeSig.new(type_val=Type.new(name="Int"))
-                    ),
-                    Property.new(
-                      name=Identifier.new(name="y"),
-                      type_sig=TypeSig.new(type_val=Type.new(name="Int"))
-                    ),
-                    Def.new(
-                      name="new",
-                      args=[
-                        Arg.new(
-                          name=Identifier.new(name="@"),
-                          type_sig=TypeSig.new(type_val=Type.new(name="Point"))
-                        )
-                      ],
-                      return_type=nil,
-                      block=Block.new(
-                        expressions=[
-                          FunctionCall.new(name="return", args=[Identifier.new(name="@")])
-                        ],
-                        args=nil
+        Exps.new(
+          [
+            StoutLang::Ast::Struct.new(
+              name=Type.new(name="Point", args=nil),
+              body=Exps.new(
+                [
+                  Property.new(
+                    name=Identifier.new(name="x"),
+                    type_sig=TypeSig.new(type_val=Type.new(name="Int", args=nil))
+                  ),
+                  Property.new(
+                    name=Identifier.new(name="y"),
+                    type_sig=TypeSig.new(type_val=Type.new(name="Int", args=nil))
+                  ),
+                  Def.new(
+                    name="new",
+                    args=[
+                      Arg.new(
+                        name=Identifier.new(name="@"),
+                        type_sig=TypeSig.new(type_val=Type.new(name="Point", args=nil))
                       )
+                    ],
+                    return_type=nil,
+                    body=Exps.new(
+                      [
+                        FunctionCall.new(name="return", args=[Identifier.new(name="@")])
+                      ]
                     )
-                  ],
-                  args=nil
-                )
-              ),
-              Assignment.new(
-                identifier=Identifier.new(name="point"),
-                expression=FunctionCall.new(name="new", args=[Type.new(name="Point")]),
-                type_sig=nil
+                  )
+                ]
               )
-            ],
-            args=nil
-          )
+            ),
+            Assignment.new(
+              identifier=Identifier.new(name="point"),
+              expression=FunctionCall.new(name="new", args=[Type.new(name="Point", args=nil)]),
+              type_sig=nil
+            )
+          ]
+        )
       )
 
     end

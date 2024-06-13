@@ -6,12 +6,11 @@ require 'codegen/constructs/construct'
 module StoutLang
   class Import < Construct
     include NameMangle
+
+    setup :args
+
     def hash_file_xxhash(filename)
       return XXhash.xxh64_file(filename)
-    end
-
-    def self.args
-      [Arg.new('path', TypeSig.new(type_val=Type.new('Str')))]
     end
 
     def prepare(import_call)

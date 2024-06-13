@@ -6,9 +6,8 @@ module StoutLang
   module Ast
     class Lib < AstNode
       include Scope
-      setup :name, :block
+      setup :name, :body
       attr_accessor :ir
-
 
       def prepare
         # Add the lib to the parent scope
@@ -16,15 +15,15 @@ module StoutLang
           parent_scope.register_identifier(name, self)
         end
 
-        block.prepare
+        body.prepare
       end
 
       def run
-        block.run
+        body.run
       end
 
       def codegen(compile_jit, mod, func, bb)
-        block.codegen(compile_jit, mod, func, bb, true)
+        body.codegen(compile_jit, mod, func, bb)
       end
     end
   end

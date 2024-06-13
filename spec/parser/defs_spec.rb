@@ -5,7 +5,7 @@ describe StoutLangParser do
     it 'should assign arguments to the scope' do
       ast = Parser.new.parse("struct Test {\n def say_hi(name: Str) {  } \n }")
 
-      def_node = ast.block.expressions[0].block.expressions[0]
+      def_node = ast.body.expressions[0].body.expressions[0]
 
       def_node.prepare
     end
@@ -15,23 +15,23 @@ describe StoutLangParser do
 
       expect(ast).to eq(
         StoutLang::Ast::Struct.new(
-          name=Type.new("Root"),
-          block=Block.new(
-            expressions=[
+          name=Type.new(name="Root", args=nil),
+          body=Exps.new(
+            [
               StoutLang::Ast::Struct.new(
-                name=Type.new(name="Int"),
-                block=Block.new(
-                  expressions=[
+                name=Type.new(name="Int", args=nil),
+                body=Exps.new(
+                  [
                     Def.new(
                       name="+",
                       args=[
                         Arg.new(
                           name=Identifier.new(name="other"),
-                          type_sig=TypeSig.new(type_val=Type.new(name="Int"))
+                          type_sig=TypeSig.new(type_val=Type.new(name="Int", args=nil))
                         )
                       ],
                       return_type=nil,
-                      block=Block.new(expressions=[])
+                      body=Exps.new([])
                     )
                   ]
                 )
@@ -39,6 +39,8 @@ describe StoutLangParser do
             ]
           )
         )
+
+
       )
     end
 
@@ -47,19 +49,19 @@ describe StoutLangParser do
 
       expect(ast).to eq(
         StoutLang::Ast::Struct.new(
-          name=Type.new("Root"),
-          block=Block.new(
-            expressions=[
+          name=Type.new(name="Root", args=nil),
+          body=Exps.new(
+            [
               Def.new(
                 name="say_hi",
                 args=[
                   Arg.new(
                     name=Identifier.new(name="name"),
-                    type_sig=TypeSig.new(type_val=Type.new(name="Str"))
+                    type_sig=TypeSig.new(type_val=Type.new(name="Str", args=nil))
                   )
                 ],
-                return_type=Type.new(name="Int"),
-                block=Block.new(expressions=[IntegerLiteral.new(value=5)])
+                return_type=Type.new(name="Int", args=nil),
+                body=Exps.new([IntegerLiteral.new(value=5)])
               )
             ]
           )
@@ -95,7 +97,7 @@ describe StoutLangParser do
     it 'should provide a mangled name' do
       ast = Parser.new.parse("def add_one(val: Int) -> Int { 1 }")
 
-      def_node = ast.block.expressions[0]
+      def_node = ast.body.expressions[0]
 
       expect(def_node.mangled_name).to eq("sl1.add_one(Int)->Int")
     end

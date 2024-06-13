@@ -177,7 +177,7 @@ class Visitor
     )
     import_func_call.parent = ast
 
-    @ast.block.expressions.unshift(
+    @ast.body.expressions.unshift(
       import_func_call
     )
   end

@@ -1,20 +1,29 @@
 grammar Blocks
-  rule block
-    '|' space? args:block_args? space? '|' space? '{' program '}' {
+  rule exps
+    '{' program '}' {
       def to_ast
-        block = program.to_ast
-        if args.respond_to?(:to_ast)
-          # Assign the args if this block take arguments
-          # We're doing this here so we can use the program rule without args
-          # in other places. 
-          block.args = args.to_ast
-        end
-        block
+        program.to_ast
       end
     } / 
     '{' program '}' {
       def to_ast
         program.to_ast
+      end
+    }
+  end
+
+  rule block
+    block_args_opt:('|' space? args:block_args? space? '|')? space? exps {
+      def to_ast
+        block = exps.to_ast
+        args = nil
+        if block_args_opt && block_args_opt.respond_to?(:args) && block_args_opt.args.respond_to?(:to_ast)
+          # Assign the args if this block take arguments
+          # We're doing this here so we can use the exps rule without args
+          # in other places. 
+          args = block_args_opt.args.to_ast
+        end
+        Block.new(args, block, self)
       end
     }
   end

@@ -1,8 +1,8 @@
 grammar CFuncs
   rule lib
-    'lib ' name:type space? block {
+    'lib ' name:type space? exps {
       def to_ast
-        StoutLang::Ast::Lib.new(name.to_ast, block.to_ast, self)
+        StoutLang::Ast::Lib.new(name.to_ast, exps.to_ast, self)
       end
     }
   end

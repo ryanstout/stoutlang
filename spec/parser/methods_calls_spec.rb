@@ -12,14 +12,7 @@ describe StoutLangParser do
 
     it 'should parse method arguments' do
       ast = Parser.new.parse('awesome.ok', wrap_root: false)
-
-      match_ast = Block.new(
-        expressions=[
-          FunctionCall.new(name="ok", args=[
-            Identifier.new(name="awesome")
-          ]
-        )]
-      )
+      match_ast = Exps.new([FunctionCall.new(name="ok", args=[Identifier.new(name="awesome")])])
 
       expect(ast).to eq(match_ast)
     end
@@ -58,8 +51,8 @@ describe StoutLangParser do
       ast = Parser.new.parse(code.strip, wrap_root: false)
 
       expect(ast).to eq(
-        Block.new(
-          expressions=[
+        Exps.new(
+          [
             Def.new(
               name="some_method",
               args=[
@@ -67,7 +60,7 @@ describe StoutLangParser do
                 Arg.new(name=Identifier.new(name="arg2"), type_sig=nil)
               ],
               return_type=nil,
-              block=Block.new(expressions=[FunctionCall.new(name="print", args=[])])
+              body=Exps.new([FunctionCall.new(name="print", args=[])])
             )
           ]
         )
@@ -79,8 +72,8 @@ describe StoutLangParser do
       ast = Parser.new.parse(code.strip, wrap_root: false)
 
       expect(ast).to eq(
-        Block.new(
-          expressions=[
+        Exps.new(
+          [
             Def.new(
               name="some_method",
               args=[
@@ -88,7 +81,7 @@ describe StoutLangParser do
                 Arg.new(name=Identifier.new(name="arg2"), type_sig=nil)
               ],
               return_type=nil,
-              block=Block.new(expressions=[FunctionCall.new(name="print", args=[])])
+              body=Exps.new([FunctionCall.new(name="print", args=[])])
             )
           ]
         )
@@ -100,8 +93,8 @@ describe StoutLangParser do
       arg1 = def_node.args.first
       expect(arg1.parent).to eq(def_node)
 
-      func_call = def_node.block.expressions.first
-      expect(func_call.parent).to eq(def_node.block)
+      func_call = def_node.body.expressions.first
+      expect(func_call.parent).to eq(def_node.body)
 
     end
 
@@ -109,22 +102,22 @@ describe StoutLangParser do
       ast = Parser.new.parse('def some_method(arg1: Int, arg2: Str) { 5 }', wrap_root: false)
 
       expect(ast).to eq(
-        Block.new(
-          expressions=[
+        Exps.new(
+          [
             Def.new(
               name="some_method",
               args=[
                 Arg.new(
                   name=Identifier.new(name="arg1"),
-                  type_sig=TypeSig.new(type_val=Type.new(name="Int"))
+                  type_sig=TypeSig.new(type_val=Type.new(name="Int", args=nil))
                 ),
                 Arg.new(
                   name=Identifier.new(name="arg2"),
-                  type_sig=TypeSig.new(type_val=Type.new(name="Str"))
+                  type_sig=TypeSig.new(type_val=Type.new(name="Str", args=nil))
                 )
               ],
               return_type=nil,
-              block=Block.new(expressions=[IntegerLiteral.new(value=5)])
+              body=Exps.new([IntegerLiteral.new(value=5)])
             )
           ]
         )
@@ -142,9 +135,10 @@ describe StoutLangParser do
       # When we have a method call with zero args, we have to parse it as an identifier, then
       # during codegen we can look up the identifier and see if it's a function call or a local
       ast = Parser.new.parse("c = zero_args ; 5", wrap_root: false)
+
       expect(ast).to eq(
-        Block.new(
-          expressions=[
+        Exps.new(
+          [
             Assignment.new(
               identifier=Identifier.new(name="c"),
               expression=Identifier.new(name="zero_args"),
@@ -210,7 +204,7 @@ describe StoutLangParser do
           name="add_one",
           args=[
             IntegerLiteral.new(value=1),
-            Block.new(expressions=[IntegerLiteral.new(value=5)])
+            Block.new(args=nil, body=Exps.new([IntegerLiteral.new(value=5)]))
           ]
         )
       )
@@ -220,19 +214,20 @@ describe StoutLangParser do
 
       expect(ast).to eq(
         StoutLang::Ast::Struct.new(
-          name=Type.new(name="Root"),
-          block=Block.new(
-            expressions=[
+          name=Type.new(name="Root", args=nil),
+          body=Exps.new(
+            [
               FunctionCall.new(
                 name="add_one",
                 args=[
                   IntegerLiteral.new(value=1),
-                  Block.new(expressions=[IntegerLiteral.new(value=5)])
+                  Block.new(args=nil, body=Exps.new([IntegerLiteral.new(value=5)]))
                 ]
               )
             ]
           )
         )
+
       )
 
       code = '5.add { 20 }'
@@ -240,19 +235,20 @@ describe StoutLangParser do
 
       expect(ast).to eq(
         StoutLang::Ast::Struct.new(
-          name=Type.new(name="Root"),
-          block=Block.new(
-            expressions=[
+          name=Type.new(name="Root", args=nil),
+          body=Exps.new(
+            [
               FunctionCall.new(
                 name="add",
                 args=[
                   IntegerLiteral.new(value=5),
-                  Block.new(expressions=[IntegerLiteral.new(value=20)])
+                  Block.new(args=nil, body=Exps.new([IntegerLiteral.new(value=20)]))
                 ]
               )
             ]
           )
         )
+
       )
     end
   end

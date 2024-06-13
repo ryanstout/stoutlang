@@ -116,9 +116,7 @@ module StoutLang
 
         # map_over = is_array ? obj : obj.instance_variables.reject {|iv| [:@parse_node, :@parent, :@scope].include?(iv) }
         map_over = is_array ? obj : obj.instance_variables.select do |iv|
-          # Treat @args special, don't include it if its nil
-          # Keep everything cleaner, especially for small types.
-          # TODO: Probably want to get rid of this at some point, but nice for now.
+          # TODO: Can't treat @args special because {arg_name}= does not do anything in ruby.
           obj.class.ast_props.include?(iv)# && (iv != :@args || !obj.instance_variable_get(:@args).nil?)
         end
         char_overflow = false
@@ -128,6 +126,9 @@ module StoutLang
           cur_indent = (index == 0 && !indent_first_line) ? 0 : indent
           if is_array
             str = (" " * cur_indent) + dump_ast(var_name, cur_indent, max_width=max_width)
+          elsif var_name == :@expressions
+            # Exps are really common, so clean it up and don't show the 'expressions=' part.
+            str = (" " * cur_indent) + "#{dump_ast(obj.instance_variable_get(var_name), cur_indent, max_width=max_width)}"
           else
             str = (" " * cur_indent) + "#{var_name[1..-1]}=#{dump_ast(obj.instance_variable_get(var_name), cur_indent, max_width=max_width)}"
           end

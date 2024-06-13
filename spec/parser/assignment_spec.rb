@@ -5,7 +5,7 @@ describe StoutLangParser do
   describe "assignment" do
     it 'should parse assignments' do
       ast = Parser.new.parse('a = 10', {wrap_root: false})
-      match_ast = Block.new(
+      match_ast = Exps.new(
         expressions=[
           Assignment.new(
             identifier=Identifier.new(name="a"),
@@ -20,7 +20,7 @@ describe StoutLangParser do
 
     it 'should parse assignments with a type definition' do
       ast = Parser.new.parse('a: Int = 10', {wrap_root: false})
-      match_ast = Block.new(
+      match_ast = Exps.new(
         expressions=[
           Assignment.new(
             identifier=Identifier.new(name="a"),
@@ -37,7 +37,7 @@ describe StoutLangParser do
       expect(ast).to eq(
         StoutLang::Ast::Struct.new(
           name=Type.new(name="Root"),
-          block=Block.new(
+          block=Exps.new(
             expressions=[
               Def.new(
                 name="add",
@@ -52,7 +52,7 @@ describe StoutLangParser do
                   )
                 ],
                 return_type=Type.new(name="Int"),
-                block=Block.new(
+                block=Exps.new(
                   expressions=[
                     FunctionCall.new(
                       name="+",

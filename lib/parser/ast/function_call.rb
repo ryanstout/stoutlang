@@ -14,14 +14,23 @@ module StoutLang
 
       def prepare
         # Don't call prepare from function calls, it's handled in the Def
+        args.each(&:prepare)
         @args = args.map(&:resolve)
 
         method_call = lookup_function(name, arg_types)
 
-        if method_call
-          args = []
-          args << self if method_call.is_a?(Import)
-          method_call.prepare(*args)
+        if method_call && method_call.is_a?(Class) && method_call < Construct
+          @construct_call = method_call.new(args)
+          # args = []
+          # args << self if method_call.is_a?(Import) || method_call.is_a?(Yield)
+          # puts "CALL PREPARE WITH #{args.inspect} -- #{self}"
+          # method_call.prepare(*args)
+          @construct_call.parent = self
+          if method_call == Import
+            @construct_call.prepare(self)
+          end
+        elsif method_call
+          # method_call.prepare
         end
       end
 
@@ -63,6 +72,8 @@ module StoutLang
 
       # What does this function give you when it's evaluated
       def type
+        return @construct_call.return_type if @construct_call
+
         function = lookup_function(name, arg_types)
         unless function
           raise "Unable to find function #{name}(#{arg_types.inspect}) in scope for #{self.inspect}"
@@ -72,17 +83,22 @@ module StoutLang
       end
 
       def codegen(compile_jit, mod, func, bb)
+        if @construct_call
+          return @construct_call.codegen(compile_jit, mod, func, bb, self)
+        end
         # inspect_scope
         method_call = lookup_function(name, arg_types)
 
          # check if method call (which may be a construct Class) inherits from Construct
-        if method_call.is_a?(Construct)
-          # TEMP: Special handler for imports and return to call into ruby to do imports
-          method_call.parent = self
-          return method_call.codegen(compile_jit, mod, func, bb, self)
-        end
+        # if method_call.is_a?(Construct)
+        #   # TEMP: Special handler for imports and return to call into ruby to do imports
+        #   method_call = method_call.new(args)
+        #   method_call.parent = self
+        #   return method_call.codegen(compile_jit, mod, func, bb, self)
+        # end
 
         unless method_call
+          binding.pry
           raise "Unable to find function #{name} in scope for #{self.inspect}"
         end
 

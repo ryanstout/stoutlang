@@ -6,51 +6,53 @@ describe StoutLangParser do
     it 'should handle methods with block arguments' do
       ast = Parser.new.parse('awesome.dude() { cool }', wrap_root: false)
 
-      match_ast = Block.new(
-          expressions=[
-            FunctionCall.new(
-              name="dude",
-              args=[
-                Identifier.new(name="awesome"),
-                Block.new(expressions=[Identifier.new(name="cool")])
-              ]
-            )
-          ]
-        )
+      match_ast = Exps.new(
+        [
+          FunctionCall.new(
+            name="dude",
+            args=[
+              Identifier.new(name="awesome"),
+              Block.new(args=nil, body=Exps.new([Identifier.new(name="cool")]))
+            ]
+          )
+        ]
+      )
       expect(ast).to eq(match_ast)
     end
 
     it 'should let you call a function with 0 or 1 arg without parens and a block argument' do
       ast = Parser.new.parse('awesome.dude { cool }', wrap_root: false)
 
-      match_ast = Block.new(
-          expressions=[
-            FunctionCall.new(
-              name="dude",
-              args=[
-                Identifier.new(name="awesome"),
-                Block.new(expressions=[Identifier.new(name="cool")])
-              ]
-            )
-          ]
-        )
+      match_ast = Exps.new(
+        [
+          FunctionCall.new(
+            name="dude",
+            args=[
+              Identifier.new(name="awesome"),
+              Block.new(args=nil, body=Exps.new([Identifier.new(name="cool")]))
+            ]
+          )
+        ]
+      )
+
       expect(ast).to eq(match_ast)
 
       # TODO: Kind of feels like this should require parens?
       ast = Parser.new.parse('awesome.dude 1 { cool }', wrap_root: false)
 
-      match_ast = Block.new(
-        expressions=[
+      match_ast = Exps.new(
+        [
           FunctionCall.new(
             name="dude",
             args=[
               Identifier.new(name="awesome"),
               IntegerLiteral.new(value=1),
-              Block.new(expressions=[Identifier.new(name="cool")])
+              Block.new(args=nil, body=Exps.new([Identifier.new(name="cool")]))
             ]
           )
         ]
       )
+
     end
 
     it 'should replace identifiers that point to a function call with a FunctionCall' do
@@ -65,17 +67,16 @@ describe StoutLangParser do
       expect(ast).to eq(
         StoutLang::Ast::Struct.new(
           name=Type.new(name="Root"),
-          block=Block.new(
-            expressions=[
+          body=Exps.new(
+            [
               Def.new(
                 name="one",
                 args=[],
                 return_type=nil,
-                block=Block.new(expressions=[IntegerLiteral.new(value=1)], args=nil)
+                body=Exps.new([IntegerLiteral.new(value=1)])
               ),
               FunctionCall.new(name="one", args=[])
-            ],
-            args=nil
+            ]
           )
         )
       )
@@ -95,23 +96,22 @@ describe StoutLangParser do
       expect(ast).to eq(
          StoutLang::Ast::Struct.new(
           name=Type.new(name="Root"),
-          block=Block.new(
-            expressions=[
+          body=Exps.new(
+            [
               Def.new(
                 name="one",
                 args=[],
                 return_type=nil,
-                block=Block.new(expressions=[IntegerLiteral.new(value=1)], args=nil)
+                body=Exps.new([IntegerLiteral.new(value=1)])
               ),
               Def.new(
                 name="two",
                 args=[],
                 return_type=nil,
-                block=Block.new(expressions=[IntegerLiteral.new(value=2)], args=nil)
+                body=Exps.new([IntegerLiteral.new(value=2)])
               ),
               FunctionCall.new(name="one", args=[FunctionCall.new(name="two", args=[])])
-            ],
-            args=nil
+            ]
           )
         )
       )
@@ -161,12 +161,9 @@ describe StoutLangParser do
       ast = Parser.new.parse(code, root: 'type_expression', wrap_root: false)
 
       expect(ast).to eq(
-        FunctionCall.new(
-          name="->",
-          args=[
-            [Type.new(name="Str"), Type.new(name="Str")],
-            [Type.new(name="Int"), Type.new(name="Int")]
-          ]
+        BlockType.new(
+         arg_types=[Type.new(name="Str"), Type.new(name="Str")],
+          return_type=[Type.new(name="Int"), Type.new(name="Int")]
         )
       )
 
@@ -174,12 +171,9 @@ describe StoutLangParser do
       ast = Parser.new.parse(code, root: 'type_expression', wrap_root: false)
 
       expect(ast).to eq(
-        FunctionCall.new(
-          name="->",
-          args=[
-            [Type.new(name="Str"), Type.new(name="Str")],
-            [Type.new(name="Int"), Type.new(name="Int")]
-          ]
+        BlockType.new(
+         arg_types=[Type.new(name="Str"), Type.new(name="Str")],
+         return_type=[Type.new(name="Int"), Type.new(name="Int")]
         )
       )
     end
@@ -215,30 +209,33 @@ describe StoutLangParser do
       ast = Parser.new.parse(code)
       # ast.prepare
 
+
       expect(ast).to eq(
         StoutLang::Ast::Struct.new(
           name=Type.new(name="Root", args=nil),
-          block=Block.new(
-            expressions=[
+          body=Exps.new(
+            [
               FunctionCall.new(
                 name="call_block",
                 args=[
                   IntegerLiteral.new(value=1),
                   Block.new(
-                    expressions=[
-                      FunctionCall.new(name="%>", args=[StringLiteral.new(value=["hey"])])
-                    ],
                     args=[
                       Arg.new(name=Identifier.new(name="arg1"), type_sig=nil),
                       Arg.new(name=Identifier.new(name="arg2"), type_sig=nil)
-                    ]
+                    ],
+                    body=Exps.new(
+                      [
+                        FunctionCall.new(name="%>", args=[StringLiteral.new(value=["hey"])])
+                      ]
+                    )
                   )
                 ]
               )
-            ],
-            args=nil
+            ]
           )
         )
+
       )
     end
 
@@ -251,27 +248,30 @@ describe StoutLangParser do
       ast = Parser.new.parse(code)
       # ast.prepare
 
+
+
       expect(ast).to eq(
         StoutLang::Ast::Struct.new(
           name=Type.new(name="Root", args=nil),
-          block=Block.new(
-            expressions=[
+          body=Exps.new(
+            [
               FunctionCall.new(
                 name="call_block",
                 args=[
                   Block.new(
-                    expressions=[
-                      FunctionCall.new(name="%>", args=[StringLiteral.new(value=["hey"])])
-                    ],
                     args=[
                       Arg.new(name=Identifier.new(name="arg1"), type_sig=nil),
                       Arg.new(name=Identifier.new(name="arg2"), type_sig=nil)
-                    ]
+                    ],
+                    body=Exps.new(
+                      [
+                        FunctionCall.new(name="%>", args=[StringLiteral.new(value=["hey"])])
+                      ]
+                    )
                   )
                 ]
               )
-            ],
-            args=nil
+            ]
           )
         )
       )
@@ -289,28 +289,118 @@ describe StoutLangParser do
       expect(ast).to eq(
         StoutLang::Ast::Struct.new(
           name=Type.new(name="Root", args=nil),
-          block=Block.new(
-            expressions=[
+          body=Exps.new(
+            [
               FunctionCall.new(
                 name="call_block",
                 args=[
                   Block.new(
-                    expressions=[
-                      FunctionCall.new(name="%>", args=[StringLiteral.new(value=["hey"])])
-                    ],
                     args=[
                       Arg.new(name=Identifier.new(name="arg1"), type_sig=nil),
                       Arg.new(name=Identifier.new(name="arg2"), type_sig=nil)
-                    ]
+                    ],
+                    body=Exps.new(
+                      [
+                        FunctionCall.new(name="%>", args=[StringLiteral.new(value=["hey"])])
+                      ]
+                    )
                   )
                 ]
               )
-            ],
-            args=nil
+            ]
+          )
+        )
+
+      )
+    end
+
+    it 'should call the block when yield is called from the function' do
+      code = <<-END
+        def call_block(block: Int -> Int) {
+          yield
+        }
+
+        call_block {
+          %> "block called"
+        }
+      END
+
+      ast = Parser.new.parse(code)
+      # ast.prepare
+
+      expect(ast).to eq(
+        StoutLang::Ast::Struct.new(
+          name=Type.new(name="Root", args=nil),
+          body=Exps.new(
+            [
+              Def.new(
+                name="call_block",
+                args=[
+                  Arg.new(
+                    name=Identifier.new(name="block"),
+                    type_sig=TypeSig.new(
+                      type_val=BlockType.new(
+                        arg_types=[Type.new(name="Int", args=nil)],
+                        return_type=Type.new(name="Int", args=nil)
+                      )
+                    )
+                  )
+                ],
+                return_type=nil,
+                body=Exps.new([Identifier.new(name="yield")])
+              ),
+              FunctionCall.new(
+                name="call_block",
+                args=[
+                  Block.new(
+                    args=nil,
+                    body=Exps.new(
+                      [
+                        FunctionCall.new(
+                          name="%>",
+                          args=[StringLiteral.new(value=["block called"])]
+                        )
+                      ]
+                    )
+                  )
+                ]
+              )
+            ]
           )
         )
       )
     end
+
+    it 'should be able to pass a block to any argument of a function' do
+      code = <<-END
+        def some_func(block: Int -> Int, arg2: Int) {
+        }
+
+        some_func(|block_arg1: Int| { block_arg1 }, 2)
+      END
+
+      ast = Parser.new.parse(code)
+      puts ast.inspect
+    end
+
+    # it 'should be able to call a block and get the return argument from yield' do
+    #   code = <<-END
+    #     def call_block(block: Int -> Int) {
+    #       yield
+    #     }
+
+    #     call_block {
+    #       2
+    #     }
+    #   END
+
+    #   # Run the code
+    #   ast = Parser.new.parse(code)
+    #   visitor = Visitor.new(ast)
+
+    #   ret_val = visitor.run
+
+    # end
 
   end
 end

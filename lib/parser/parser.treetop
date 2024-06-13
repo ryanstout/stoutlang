@@ -26,7 +26,7 @@ grammar StoutLang
 
         exprs += program.elements.map {|e| e.assign.to_ast }
 
-        Block.new(exprs, nil, self)
+        Exps.new(exprs, self)
       end
     }
 

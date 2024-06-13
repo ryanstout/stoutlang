@@ -41,7 +41,7 @@ module AstScope
       ids = scope[identifier]
 
       ids.reverse.each do |id|
-        if id.is_a?(CPrototype) || id.is_a?(StoutLang::Construct)
+        if id.is_a?(CPrototype) || (id.is_a?(Class) && id < StoutLang::Construct)
           # CPrototypes and Constructs only match on name not arguments (atm)
           return id
         else

@@ -11,6 +11,10 @@ module StoutLang
         type_sig.type_val
       end
 
+      def return_type
+        type_sig.type_val.return_type
+      end
+
       def codegen(compile_jit, mod, func, bb)
         self.ir
       end

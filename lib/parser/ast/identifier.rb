@@ -47,6 +47,7 @@ module StoutLang
         identified = lookup_ivar_or_identifier(name)
 
         unless identified
+          binding.pry
           raise "Identifier #{name} not found"
         end
 
@@ -56,7 +57,7 @@ module StoutLang
           ivar = InstanceVar.new(name)
           ivar.parent = self
           ivar
-        elsif identified.is_a?(StoutLang::Ast::Def) || identified.is_a?(StoutLang::Construct)
+        elsif identified.is_a?(StoutLang::Ast::Def) || (identified.is_a?(Class) && identified < StoutLang::Construct)
           # Constructs still get treated like function calls and the FunctionCall does the lookup.
 
           # Create a FunctionCall and assign it to self

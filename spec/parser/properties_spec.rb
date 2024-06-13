@@ -14,21 +14,23 @@ describe StoutLangParser do
     it 'should let you define properties inside of a struct' do
       ast = Parser.new.parse("struct Person {\n@name: Str\n@age: Int\n}", root: 'struct', wrap_root: false)
 
-      expect(ast).to eq(StoutLang::Ast::Struct.new(
-        name=Type.new(name="Person"),
-        block=Block.new(
-          expressions=[
-            Property.new(
-              name=Identifier.new(name="name"),
-              type_sig=TypeSig.new(type_val=Type.new(name="Str"))
-            ),
-            Property.new(
-              name=Identifier.new(name="age"),
-              type_sig=TypeSig.new(type_val=Type.new(name="Int"))
-            )
-          ]
+      expect(ast).to eq(
+        StoutLang::Ast::Struct.new(
+          name=Type.new(name="Person", args=nil),
+          body=Exps.new(
+            [
+              Property.new(
+                name=Identifier.new(name="name"),
+                type_sig=TypeSig.new(type_val=Type.new(name="Str", args=nil))
+              ),
+              Property.new(
+                name=Identifier.new(name="age"),
+                type_sig=TypeSig.new(type_val=Type.new(name="Int", args=nil))
+              )
+            ]
+          )
         )
-      ))
+      )
     end
   end
 end

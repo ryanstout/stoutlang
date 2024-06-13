@@ -1,10 +1,9 @@
+require 'parser/ast/callable_type'
 module StoutLang
   module Ast
-    class BlockType < AstNode
-      setup :block_args, :block_return_type
-
-      def codegen(compile_jit, mod, func, bb)
-        raise "Not implemented"
+    class BlockType < CallableType
+      def mangled_name
+        "sl1.block_#{self.arg_types.map(&:mangled_name).join('_')}_#{return_type.mangled_name}_type"
       end
     end
   end
