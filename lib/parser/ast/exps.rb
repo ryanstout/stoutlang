@@ -12,7 +12,11 @@ module StoutLang
 
       def type
         # The type of an Exps is the type of the last expression.
-        expressions.last.type
+        if expressions.empty?
+          NilType.new.assign_parent!(self)
+        else
+          expressions.last.type
+        end
       end
 
       def run
@@ -45,8 +49,6 @@ module StoutLang
 
         return last_expr
       end
-
-
     end
   end
 end
