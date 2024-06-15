@@ -110,7 +110,7 @@ grammar StoutLang
   end
 
   rule primary
-    comment / struct / lib / if_expression / list / boolean_literal / function_call_with_args / function_call_with_no_args_and_block / property / identifier / type / float / integer / string / parens
+    comment / struct / lib / if_expression / list / boolean_literal / function_call_with_args / function_call_with_no_args_and_block / property / identifier / type / float / integer / string / block / parens
   end
 
 

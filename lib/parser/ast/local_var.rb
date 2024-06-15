@@ -1,4 +1,4 @@
-require 'parser/ast/ast_node'
+require "parser/ast/ast_node"
 
 module StoutLang
   module Ast
@@ -11,7 +11,6 @@ module StoutLang
         unless ir
           # This would mean we reached codegen before the assignment ran, it shouldn't ever
           # happen.
-          # binding.pry
           raise "Local variable not yet evaluated"
         end
 

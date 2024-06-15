@@ -1,3 +1,5 @@
+require "binding_of_caller"
+
 module StoutLang
   module Ast
     class ShellStringLiteral < AstNode
@@ -33,7 +35,7 @@ module StoutLang
       end
 
       def codegen(compile_jit, mod, func, bb)
-        if language == 'r'
+        if language == "r"
           # ruby -- used for the compiler for now
 
           # We want to run the string in ruby now

@@ -44,6 +44,10 @@ module StoutLang
         name
       end
 
+      def inspect_small
+        name
+      end
+
       def codegen(compile_jit, mod, func, bb)
         resolved = self.resolve
 

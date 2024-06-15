@@ -36,6 +36,11 @@ module StoutLang
       def codegen(compile_jit, mod, func, bb)
         super
       end
+
+      def inspect_small
+        arg_types = args.map { |arg| arg.type_sig.type_val.inspect_small }
+        "#{name}(#{arg_types.join(", ")}) -> #{return_type.inspect_small}"
+      end
     end
   end
 end

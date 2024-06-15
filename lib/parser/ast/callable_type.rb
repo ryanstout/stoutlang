@@ -27,7 +27,10 @@ module StoutLang
       end
 
       def mangled_name
-        "sl1.block_#{self.arg_types.map(&:mangled_name).join('_')}_#{return_type.mangled_name}_type"
+        mangled_args = self.arg_types.map do |arg_type|
+          arg_type.mangled_name
+        end.join(',')
+        "(#{mangled_args})->#{self.return_type.mangled_name}"
       end
     end
   end
