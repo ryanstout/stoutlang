@@ -64,6 +64,8 @@ describe StoutLangParser do
       ret = visitor.run_function('check', [], 'Str')
 
       expect(ret.to_value_ptr.read_string).to eq("Int")
+
+      visitor.dispose
     end
 
     it 'should handle resolution of function calls with mutliple args' do
@@ -104,6 +106,8 @@ describe StoutLangParser do
 
       ret = visitor.run_function('check3', [], 'Int')
       expect(ret.to_i).to eq(3)
+
+      visitor.dispose
     end
   end
 end

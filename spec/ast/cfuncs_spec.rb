@@ -12,5 +12,6 @@ describe CFunc do
     visitor = Visitor.new(ast)
 
     expect(visitor.root_mod.functions.named('sleep').to_s).to eq("declare i32 @sleep(i32)\n")
+    visitor.dispose
   end
 end
