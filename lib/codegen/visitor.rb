@@ -1,16 +1,16 @@
-require 'llvm'
-require 'llvm/core'
-require 'llvm/execution_engine'
-require 'dibuilder/dibuilder'
-require 'benchmark'
-require 'pry'
-require 'llvm/linker'
-require 'codegen/mcjit'
-require 'codegen/llvm/module'
-require 'parser/parser'
-require 'codegen/name_mangle'
-require 'codegen/llvm/llvm_string'
-require 'codegen/pass_manager'
+require "llvm"
+require "llvm/core"
+require "llvm/execution_engine"
+require "dibuilder/dibuilder"
+require "benchmark"
+require "pry"
+require "llvm/linker"
+require "codegen/mcjit"
+require "codegen/llvm/module"
+require "parser/parser"
+require "codegen/name_mangle"
+require "codegen/llvm/llvm_string"
+require "codegen/pass_manager"
 
 def bm(name)
   start_time = Time.now
@@ -24,11 +24,11 @@ end
 class Visitor
   attr_reader :root_mod, :main
 
-  def initialize(ast, file_path=nil, options={})
+  def initialize(ast, file_path = nil, options = {})
     @options = options
 
     # Init Jit for compiler's jit
-    @root_mod = LLVM::Module.new('root')
+    @root_mod = LLVM::Module.new("root")
 
     setup_compile_jit(@root_mod)
 
@@ -56,12 +56,13 @@ class Visitor
     # TODO: Not adding debug info atm because of version warning
     # @dibuilder.create_compile_unit(file_path)
     # @dibuilder.finalize
+    #
 
     if options[:lib]
       @ast.codegen(@compile_jit, @root_mod, nil, nil)
     else
-      @main = @root_mod.functions.add('main', [], LLVM::Int32) do |function|
-        function.basic_blocks.append('entry').build do |b|
+      @main = @root_mod.functions.add("main", [], LLVM::Int32) do |function|
+        function.basic_blocks.append("entry").build do |b|
           # Codegen in place in the main ast
           @ast.codegen(@compile_jit, @root_mod, function, b)
 
@@ -72,12 +73,10 @@ class Visitor
             zero = LLVM.Int(0) # a LLVM Constant value
             b.ret zero
           end
-
         end
       end
 
       PassManager.new(options).run(@root_mod, @compile_jit)
-
 
       if options[:ir]
         puts "----------------"
@@ -87,11 +86,6 @@ class Visitor
       end
 
       @root_mod.verify
-      # puts "----------------"
-
-      # PassManager.new.run(@root_mod)
-
-      @compile_jit.run_function(@main)
     end
   end
 
@@ -105,7 +99,7 @@ class Visitor
     mangled_name = NameMangle.mangle_name(name, arg_types, return_type)
     func = @root_mod.functions.named(mangled_name)
 
-    raise "Unable to find function #{mangled_name}" if func.nil?
+    raise "Unable to find function in llvm module #{mangled_name}" if func.nil?
     mcjit_result = @compile_jit.run_function(func, *call_args)
 
     return mcjit_result
@@ -116,28 +110,22 @@ class Visitor
   end
 
   def dispose
-    # @compile_jit.dispose
-    # GC.start
+    @compile_jit.dispose
+    GC.start
   end
 
-  def generate(output_file_path, wasm=false)
-
-
-    # return
+  def generate(output_file_path, wasm = false)
     if !@options[:aot]
+      # Run in the JIT
+      run
 
       return
-
-      # engine = LLVM::MCJITCompiler.new(@root_mod)
-      # engine.run_function(@main)
-      # engine.dispose
     else
 
       # Get the current machine's triple
       # triple = LLVM::C.get_default_target_triple
 
-
-      bm('write llir') do
+      bm("write llir") do
         @root_mod.write_ir!("#{output_file_path}.ll")
         @root_mod.write_bitcode("#{output_file_path}.bc")
       end
@@ -147,22 +135,22 @@ class Visitor
         system("wat2wasm #{output_file_path}.wat -o #{output_file_path}.wasm")
       end
 
-      opt_level = ' -flto'
+      opt_level = " -flto"
       # opt_level = ' -03 -flto'
 
       # Compile LLVM IR to machine code
-      bm('llc') do
+      bm("llc") do
         system("llc #{output_file_path}.bc -o #{output_file_path}.s")
       end
 
       if @options[:lib]
         # Build an object
-        bm('clang') do
+        bm("clang") do
           system("clang -c #{output_file_path}.s #{opt_level} -o #{output_file_path}.o")
         end
       else
         # Link machine code to create an executable
-        bm('clang') do
+        bm("clang") do
           #  -nostdlib (enable once we get musl)
           system("clang #{output_file_path}.s #{opt_level} -o #{output_file_path}")
         end
@@ -172,8 +160,8 @@ class Visitor
 
   def add_core_import(ast)
     import_func_call = FunctionCall.new(
-      'import',
-      [StringLiteral.new(['core/core'])],
+      "import",
+      [StringLiteral.new(["core/core"])],
     )
     import_func_call.parent = ast
 
