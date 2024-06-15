@@ -1,11 +1,14 @@
-require 'llvm'
-require 'llvm/core'
-
+require "llvm"
+require "llvm/core"
+require "llvm/lljit"
 
 class MCJit
   attr_reader :engine, :modules
-  def initialize(main_mod, opt_level=0)
+
+  def initialize(main_mod, opt_level = 0)
     LLVM.init_jit(true)
+
+    # @engine = LLVM::LLJit.new#(main_mod, :opt_level => opt_level)
     @engine = LLVM::MCJITCompiler.new(main_mod, :opt_level => opt_level)
     @modules = []
   end

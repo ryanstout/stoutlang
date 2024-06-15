@@ -1,9 +1,9 @@
 # A Callable is a base class for Def and Block. It handles registering arguments, type, and return types.
 
-require 'parser/ast/utils/scope'
-require 'codegen/metadata'
-require 'base64'
-require 'codegen/name_mangle'
+require "parser/ast/utils/scope"
+require "codegen/metadata"
+require "base64"
+require "codegen/name_mangle"
 
 module StoutLang
   module Ast
@@ -34,7 +34,6 @@ module StoutLang
           register_in_scope(arg.name.name, arg)
         end
         body.prepare
-
       end
 
       def effects
@@ -71,17 +70,17 @@ module StoutLang
             # Set the variable name
             function.params[i].name = arg.name.name
 
-
             arg.ir = function.params[i]
-
           end
 
           # Create a body to do the codegen inside of
-          function.basic_blocks.append('entry').build do |bb|
+          function.basic_blocks.append("entry").build do |bb|
             last_expr = body.codegen(compile_jit, mod, function, bb)
 
             # Return the value of the last expression
-            unless last_expr.is_a?(Return)
+            last_block = function.basic_blocks.last
+            last_instruct = last_block.instructions.last
+            if !last_expr.is_a?(Return) && (!last_instruct || last_instruct.opcode != :ret)
               bb.ret(last_expr)
             end
           end
