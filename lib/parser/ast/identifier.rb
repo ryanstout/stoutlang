@@ -19,7 +19,7 @@ module StoutLang
 
       def is_ivar?
         # if the value is just '@', that's the self value, which is a local, not an ivar.
-        name[0] == '@' && name.size > 1
+        name[0] == "@" && name.size > 1
       end
 
       def type
@@ -30,7 +30,7 @@ module StoutLang
       # Instance variables need to be looked up on self
       def lookup_ivar_or_identifier(name)
         if is_ivar?
-          _self = lookup_identifier('@').type.resolve
+          _self = lookup_identifier("@").type.resolve
         else
           _self = self
         end
@@ -47,10 +47,8 @@ module StoutLang
         identified = lookup_ivar_or_identifier(name)
 
         unless identified
-          binding.pry
           raise "Identifier #{name} not found"
         end
-
 
         if is_ivar?
           # Working with an instance variable, get the pointer

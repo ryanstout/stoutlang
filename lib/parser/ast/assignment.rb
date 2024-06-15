@@ -3,7 +3,7 @@ module StoutLang
     class Assignment < AstNode
       setup :identifier, :expression, :type_sig
 
-      def inspect_internal(indent=0)
+      def inspect_internal(indent = 0)
         "#{@identifier.name} = #{@expression.inspect(indent)}"
       end
 
@@ -15,8 +15,8 @@ module StoutLang
         expression.prepare
 
         if identifier.is_a?(InstanceVar)
-          self_local = lookup_identifier('@')
-          self.type_sig = TypeSig.new(type_val=self_local.type)
+          self_local = lookup_identifier("@")
+          self.type_sig = TypeSig.new(type_val = self_local.type)
         end
 
         self.type_sig.prepare if self.type_sig
@@ -24,9 +24,9 @@ module StoutLang
         @var = LocalVar.new(@identifier.name, self.expression.type)
         make_children!(@var)
 
-        self.expression = self.expression.resolve
-
         register_in_scope(identifier.name, @var)
+
+        self.expression = self.expression.resolve
       end
 
       def run
@@ -39,16 +39,16 @@ module StoutLang
         # variable
 
         var_ir = expression.codegen(compile_jit, mod, func, bb)
+
         if identifier.is_ivar?
           # Lookup self, should be a struct
-          self_local = lookup_identifier('@')
+          self_local = lookup_identifier("@")
           struct_type = self_local.type.resolve
 
           property_pointer = identifier.resolve.codegen_get_pointer(compile_jit, mod, func, bb)
 
           bb.store(var_ir, property_pointer)
         else
-
           @var.ir = var_ir
 
           var_ir
