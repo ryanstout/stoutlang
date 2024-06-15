@@ -62,7 +62,7 @@ module StoutLang
           function.add_attribute :willreturn
           function.add_attribute :mustprogress
           # function.add_attribute :alwaysinline
-          # function.linkage = :external
+          function.linkage = :link_once_odr
 
           self.args.each_with_index do |arg, i|
             # Register the argument in the scope

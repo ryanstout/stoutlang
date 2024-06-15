@@ -89,6 +89,7 @@ module StoutLang
           function.type.return_type.dup,
           # function.type.vararg? # Preserve var_arg status
         )
+        func.linkage = :external
 
         prototype.ir = extern_function
       end

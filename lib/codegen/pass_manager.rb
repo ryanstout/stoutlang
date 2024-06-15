@@ -5,8 +5,16 @@ class PassManager
     @pass_builder = LLVM::PassBuilder.new
 
     @pass_builder.o!(options[:o]) if options[:o]
-    @pass_builder.gdce! if options[:o] == '3'
-    @pass_builder.adce! if options[:o] == '3'
+    if options[:o] == "3"
+      @pass_builder.dce!
+      @pass_builder.dse!
+      @pass_builder.gdce!
+      @pass_builder.adce!
+      @pass_builder.bdce!
+      @pass_builder.mem2reg!
+      @pass_builder.strip!
+      @pass_builder.strip_dead_prototypes!
+    end
   end
 
   def run(mod, compile_jit)

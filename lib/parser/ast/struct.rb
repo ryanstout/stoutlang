@@ -1,6 +1,5 @@
-require 'parser/ast/utils/scope'
-require 'codegen/visitor'
-
+require "parser/ast/utils/scope"
+require "codegen/visitor"
 
 module StoutLang
   module Ast
@@ -11,7 +10,6 @@ module StoutLang
       attr_reader :properties_hash
 
       SIZE_METHOD_NAME = "i32_size"
-
 
       def add_expression(expression)
         body.add_expression(expression)
@@ -51,7 +49,6 @@ module StoutLang
         end
       end
 
-
       # We create a default constructor, which may be overridden later.
       def create_new_constructor
         # Create a default new constructor and insert it into the top of the AST for the Struct
@@ -64,7 +61,7 @@ module StoutLang
         end
 
         code = <<-END
-          def new(#{args_str.join(', ')}) -> #{name.name} {
+          def new(#{args_str.join(", ")}) -> #{name.name} {
             #{assignments.join("\n")}
             return @
           }
@@ -74,7 +71,6 @@ module StoutLang
         new_constructor_def = new_constructor.expressions[0]
         make_children!(new_constructor_def)
         body.expressions.unshift(new_constructor_def)
-
       end
 
       def prepare
@@ -89,7 +85,7 @@ module StoutLang
 
         if name.name != "Root"
           # Create a method to look up the size of the struct (.i32_size)
-          extern = DefPrototype.new(SIZE_METHOD_NAME, [Arg.new('@', TypeSig.new(Type.new(name.name)))], Type.new("Int"))
+          extern = DefPrototype.new(SIZE_METHOD_NAME, [Arg.new("@", TypeSig.new(Type.new(name.name)))], Type.new("Int"))
           make_children!(extern)
           parent_scope.register_identifier(SIZE_METHOD_NAME, extern)
           extern.prepare
@@ -133,7 +129,6 @@ module StoutLang
           return self.ir.pointer
         end
 
-
         # Create the LLVM::Type in LLVM
 
         # Unions
@@ -169,6 +164,7 @@ module StoutLang
               builder.ret struct_size_const
             end
           end
+          size_method.linkage = :link_once_odr
         end
 
         # Build the IR for the body

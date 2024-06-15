@@ -127,7 +127,9 @@ class Visitor
 
       bm("write llir") do
         @root_mod.write_ir!("#{output_file_path}.ll")
-        @root_mod.write_bitcode("#{output_file_path}.bc")
+        unless @options[:lto]
+          @root_mod.write_bitcode("#{output_file_path}.bc")
+        end
       end
 
       if wasm
@@ -139,20 +141,33 @@ class Visitor
       # opt_level = ' -03 -flto'
 
       # Compile LLVM IR to machine code
-      bm("llc") do
-        system("llc #{output_file_path}.bc -o #{output_file_path}.s")
+      unless @options[:lto]
+        bm("llc") do
+          system("llc #{output_file_path}.bc -o #{output_file_path}.s")
+        end
       end
 
       if @options[:lib]
         # Build an object
-        bm("clang") do
-          system("clang -c #{output_file_path}.s #{opt_level} -o #{output_file_path}.o")
+        unless @options[:lto]
+          bm("clang") do
+            system("clang -c #{output_file_path}.s -o #{output_file_path}.o")
+          end
         end
       else
         # Link machine code to create an executable
         bm("clang") do
-          #  -nostdlib (enable once we get musl)
-          system("clang #{output_file_path}.s #{opt_level} -o #{output_file_path}")
+          if @options[:lto]
+            # Output an LTO'ed ll ir file
+            system("clang -flto -O3 -S -emit-llvm -o #{output_file_path}_lto.ll #{output_file_path}.ll")
+
+            # And do the full build
+            system("clang -flto #{opt_level} #{output_file_path}.ll -o #{output_file_path}")
+          else
+
+            #  -nostdlib (enable once we get musl)
+            system("clang #{opt_level} #{output_file_path}.s -o #{output_file_path}")
+          end
         end
       end
     end

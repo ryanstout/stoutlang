@@ -1,35 +1,39 @@
 # Make sure this files directory is on the $LOAD_PATH
-lib_path = File.expand_path(File.dirname(__FILE__)+"../..")
+lib_path = File.expand_path(File.dirname(__FILE__) + "../..")
 unless $LOAD_PATH.include?(lib_path)
   $LOAD_PATH << lib_path
 end
 
-require 'stoutlang'
-require 'codegen/visitor'
-require 'optparse'
+require "stoutlang"
+require "codegen/visitor"
+require "optparse"
 
 options = {}
 OptionParser.new do |opts|
   opts.banner = "Usage: example.rb [options]"
 
-  opts.on('--ir', 'Dump the LLVM IR') do |v|
+  opts.on("--ir", "Dump the LLVM IR") do |v|
     options[:ir] = v
   end
 
-  opts.on('--ast', 'Print the AST') do |v|
+  opts.on("--ast", "Print the AST") do |v|
     options[:ast] = v
   end
 
-  opts.on('--lib', 'Create a library instead of an app') do |v|
+  opts.on("--lib", "Create a library instead of an app") do |v|
     options[:lib] = v
   end
 
-  opts.on('--aot', 'Ahead of time compile the code') do |v|
+  opts.on("--aot", "Ahead of time compile the code") do |v|
     options[:aot] = v
   end
 
-  opts.on('-O', '--optimization LEVEL', 'Set optimization level') do |v|
+  opts.on("-O", "--optimization LEVEL", "Set optimization level") do |v|
     options[:o] = v
+  end
+
+  opts.on("-lto", "--link-time-optimization", "Enable link time optimization. (Only reduces size with external libraries)") do |v|
+    options[:lto] = v
   end
 end.parse!
 

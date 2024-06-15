@@ -1,9 +1,9 @@
-require 'parser/ast/def'
+require "parser/ast/def"
 
 module StoutLang
   module Ast
     class CFunc < Def
-       # doesn't take a block like Def does
+      # doesn't take a block like Def does
       setup :name, :args, :varargs_enabled, :return_type
       attr_accessor :ir
 
@@ -21,7 +21,6 @@ module StoutLang
           raise "CFunc must be defined within a Lib: #{self.inspect}"
         end
 
-
         parent_lib.parent_scope.register_in_scope(name, self)
       end
 
@@ -30,8 +29,6 @@ module StoutLang
       end
 
       def codegen(compile_jit, mod, func, bb)
-        # sprintf = mod.functions.add('sprintf', [LLVM::Pointer(LLVM::Int8), LLVM::Pointer(LLVM::Int8)], LLVM::Int, varargs: true)
-
         # TODO: right now we're just adding them to the global namespace, we should scope them to the Lib
 
         arg_types = args.map do |arg|
@@ -42,6 +39,7 @@ module StoutLang
 
         # Create the function
         func = mod.functions.add(name, arg_types, return_type, varargs: @varargs_enabled)
+        func.linkage = :available_externally
         # func.linkage = :private
 
         self.ir = func
