@@ -15,37 +15,6 @@ def %>(str: Str) -> Int {
   0
 }
 
-
-# def times(num: Int, block: Int) -> Int {
-#   r```
-
-#   # Create a new basic block for the loop
-#   loop_block = func.basic_blocks.append('loop')
-#   after_block = func.basic_blocks.append('after')
-
-#   # Create an incrementer variable
-#   i = bb.alloca(LLVM::Int32, "__incrementer")
-
-#   bb.br(loop_block)
-#   loop_block.build do |b|
-#     # Load the incrementer
-#     inc = b.load(i, 'inc')
-
-#     # Compare the incrementer to the number
-#     cmp = b.icmp(:slt, inc, func.params[0], 'cmp')
-
-#     # Codegen the block
-#     block.codegen(compile_jit, mod, func, b)
-
-#     # Create a conditional branch
-#     b.cond(cmp, loop_block, after_block)
-#   end
-
-#   bb.position_at_end(after_block)
-
-#   ```
-# }
-
 def +(a: Int, b: Int) -> Int {
   r```
   temp = bb.add(func.params[0], func.params[1], 'add')
@@ -61,12 +30,81 @@ def -(a: Int, b: Int) -> Int {
   ```
 }
 
+def *(a: Int, b: Int) -> Int {
+  r```
+  temp = bb.mul(func.params[0], func.params[1], 'mul')
+  return temp
+  ```
+}
+
+def /(a: Int, b: Int) -> Int {
+  r```
+  temp = bb.sdiv(func.params[0], func.params[1], 'div')
+  return temp
+  ```
+}
+
 def ==(a: Int, b: Int) -> Bool {
   r```
   temp = bb.icmp(:eq, func.params[0], func.params[1], 'eq')
   return temp
   ```
 }
+
+# Run the block `num` times
+def times(num: Int, block: Int -> Int) -> Int {
+  # The following is in SSA style, this produces more optimzed machine
+  # code than the non-SSA version (using alloca).
+
+  i = 0
+
+  r```
+  yield_call = Parser.new.parse('yield(i)', wrap_root: false)
+  yield_call = yield_call.expressions[0]
+  
+  yield_call.assign_parent!(self).make_children!(yield_call.args)
+  yield_call.prepare
+  
+  entry = func.basic_blocks.first
+  loop_block = func.basic_blocks.append("loop")
+  body = func.basic_blocks.append("body")
+  end_block = func.basic_blocks.append("end")
+
+  bb.br(loop_block)
+
+  i = nil
+  loop_block.build do |b|
+    # the value of i depends on the basic block we are coming from.
+    i = b.phi(LLVM::Int, {entry => LLVM::Int(0)}, 'i')
+
+    # Use the phi instruction as i and not the LocalVar above (use the LocalVar
+    # to register it)
+    lookup_identifier('i').ir = i
+    num = lookup_identifier('num').ir
+    cond = b.icmp(:slt, i, num)
+    b.cond(cond, body, end_block)
+  end
+
+
+  body.build do |b|
+    # Yield to the block
+    yield_call.codegen(compile_jit, mod, func, b)
+
+    # Increment i
+    i_next = b.add(i, LLVM::Int(1), 'i.next')
+
+    # Add another branch to the phi node
+    i.add_incoming({body => i_next})
+
+    b.br(loop_block)
+  end
+
+  end_block.build do |b|
+    b.ret(LLVM::Int(0))
+  end
+  ```
+}
+
 
 def to_s(a: Int) -> Str {
   r```

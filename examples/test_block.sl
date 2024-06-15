@@ -5,7 +5,9 @@ def call_block(block: Int -> Int) -> Int{
   %> "yield returned: "
   %> c.to_s
 
-  # yield(5)
+  d = yield(5)
+  %> "d = "
+  %> d.to_s
 
   # d = yield(5)
   # %> "yield returned: "
@@ -16,7 +18,5 @@ def call_block(block: Int -> Int) -> Int{
 call_block |x: Int| {
   %> "passed block called with: "
   %> x.to_s
-  x
-  # return x
-  # 2
+  x * 2
 }
