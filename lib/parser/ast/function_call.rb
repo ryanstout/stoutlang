@@ -1,11 +1,10 @@
-require 'codegen/constructs/import'
-require 'codegen/constructs/construct'
+require "codegen/constructs/import"
+require "codegen/constructs/construct"
 
 module StoutLang
   module Ast
     class FunctionCall < AstNode
-
-      OPERATORS = ['+', '-', '*', '/', '||', '&&', '|', '&']
+      OPERATORS = ["+", "-", "*", "/", "||", "&&", "|", "&"]
       setup :name, :args
 
       def inspect_always_wrap?
@@ -43,7 +42,7 @@ module StoutLang
       end
 
       def effects
-        if name == 'emit'
+        if name == "emit"
           # Emit gets handled directly for now
 
           # The first argument is the effect
@@ -74,10 +73,7 @@ module StoutLang
       def type
         return @construct_call.return_type if @construct_call
 
-        function = lookup_function(name, arg_types)
-        unless function
-          raise "Unable to find function #{name}(#{arg_types.inspect}) in scope for #{self.inspect}"
-        end
+        function = lookup_function!(name, arg_types)
 
         return function.return_type
       end
@@ -87,20 +83,15 @@ module StoutLang
           return @construct_call.codegen(compile_jit, mod, func, bb, self)
         end
         # inspect_scope
-        method_call = lookup_function(name, arg_types)
+        method_call = lookup_function!(name, arg_types)
 
-         # check if method call (which may be a construct Class) inherits from Construct
+        # check if method call (which may be a construct Class) inherits from Construct
         # if method_call.is_a?(Construct)
         #   # TEMP: Special handler for imports and return to call into ruby to do imports
         #   method_call = method_call.new(args)
         #   method_call.parent = self
         #   return method_call.codegen(compile_jit, mod, func, bb, self)
         # end
-
-        unless method_call
-          binding.pry
-          raise "Unable to find function #{name} in scope for #{self.inspect}"
-        end
 
         args = self.args.map do |arg|
           arg.codegen(compile_jit, mod, func, bb)
@@ -115,7 +106,7 @@ module StoutLang
           raise "Could not find function #{name}"
         end
 
-        if name == 'new'
+        if name == "new"
           # If we're calling new, allocate the memory for a struct of the first arguments type.
           # Then pass that in as the first argument.
           #
@@ -128,7 +119,7 @@ module StoutLang
           size = struct_type.bytesize(compile_jit)
 
           # Allocate the memory for the struct
-          malloc = lookup_identifier('malloc').ir
+          malloc = lookup_identifier("malloc").ir
           struct_ptr = bb.call(malloc, LLVM::Int32.from_i(size), assignment_name || "struct_malloc")
 
           # Pass the struct pointer as the first argument, replace the first
@@ -136,7 +127,7 @@ module StoutLang
           args = [struct_ptr] + args[1..-1]
         end
 
-        return bb.call(method_call_ir, *args, assignment_name || 'temp')
+        return bb.call(method_call_ir, *args, assignment_name || "temp")
       end
     end
   end

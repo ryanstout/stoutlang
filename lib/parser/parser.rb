@@ -1,33 +1,31 @@
 # require 'parser/parse_nodes/parse_nodes'
-require 'parser/ast/ast_node'
-Dir["#{File.dirname(__FILE__)}/ast/*.rb"].each {|file| require file }
-Dir["#{File.dirname(__FILE__)}/../types/*.rb"].each {|file| require file }
+require "parser/ast/ast_node"
+Dir["#{File.dirname(__FILE__)}/ast/*.rb"].each { |file| require file }
+Dir["#{File.dirname(__FILE__)}/../types/*.rb"].each { |file| require file }
 
-require 'treetop'
-require 'parser/parser'
-require 'itree'
+require "treetop"
+require "parser/parser"
+require "itree"
 
 # Import constructs
-require 'codegen/constructs/import'
-require 'codegen/constructs/return'
-require 'codegen/constructs/yield'
-
+require "codegen/constructs/import"
+require "codegen/constructs/return"
+require "codegen/constructs/yield"
 
 # Treetop doesn't follow load path right sometimes
-Treetop.load(File.expand_path(File.dirname(__FILE__)) + '/grammar/infix')
-Treetop.load(File.expand_path(File.dirname(__FILE__)) + '/grammar/defs')
-Treetop.load(File.expand_path(File.dirname(__FILE__)) + '/grammar/cfuncs')
-Treetop.load(File.expand_path(File.dirname(__FILE__)) + '/grammar/methods')
-Treetop.load(File.expand_path(File.dirname(__FILE__)) + '/grammar/functions')
-Treetop.load(File.expand_path(File.dirname(__FILE__)) + '/grammar/types')
-Treetop.load(File.expand_path(File.dirname(__FILE__)) + '/grammar/strings')
-Treetop.load(File.expand_path(File.dirname(__FILE__)) + '/grammar/ifs')
-Treetop.load(File.expand_path(File.dirname(__FILE__)) + '/grammar/blocks')
-Treetop.load(File.expand_path(File.dirname(__FILE__)) + '/grammar/lists')
-Treetop.load(File.expand_path(File.dirname(__FILE__)) + '/grammar/structs')
-Treetop.load(File.expand_path(File.dirname(__FILE__)) + '/grammar/instance_vars')
-Treetop.load(File.expand_path(File.dirname(__FILE__)) + '/parser')
-
+Treetop.load(File.expand_path(File.dirname(__FILE__)) + "/grammar/infix")
+Treetop.load(File.expand_path(File.dirname(__FILE__)) + "/grammar/defs")
+Treetop.load(File.expand_path(File.dirname(__FILE__)) + "/grammar/cfuncs")
+Treetop.load(File.expand_path(File.dirname(__FILE__)) + "/grammar/methods")
+Treetop.load(File.expand_path(File.dirname(__FILE__)) + "/grammar/functions")
+Treetop.load(File.expand_path(File.dirname(__FILE__)) + "/grammar/types")
+Treetop.load(File.expand_path(File.dirname(__FILE__)) + "/grammar/strings")
+Treetop.load(File.expand_path(File.dirname(__FILE__)) + "/grammar/ifs")
+Treetop.load(File.expand_path(File.dirname(__FILE__)) + "/grammar/blocks")
+Treetop.load(File.expand_path(File.dirname(__FILE__)) + "/grammar/lists")
+Treetop.load(File.expand_path(File.dirname(__FILE__)) + "/grammar/structs")
+Treetop.load(File.expand_path(File.dirname(__FILE__)) + "/grammar/instance_vars")
+Treetop.load(File.expand_path(File.dirname(__FILE__)) + "/parser")
 
 # Ast nodes need to be in the namespace for treetop
 include StoutLang::Ast
@@ -39,13 +37,14 @@ module StoutLang
   # include ParseNodes
   class Parser
     attr_reader :ast
+
     def initialize
       @parser = StoutLangParser.new
 
       @range_tree = Intervals::Tree.new
     end
 
-    def parse(code, options={})
+    def parse(code, options = {})
       ast = @parser.parse(code, options)
 
       if ast.nil?
@@ -67,13 +66,14 @@ module StoutLang
         root_ast.register_identifier("Int64", StoutLang::Int64.new)
         root_ast.register_identifier("Str", StoutLang::Str.new)
         root_ast.register_identifier("Bool", StoutLang::Bool.new)
-        root_ast.register_identifier('Type', StoutLang::TypeType.new)
+        root_ast.register_identifier("Type", StoutLang::TypeType.new)
+        root_ast.register_identifier("Nil", StoutLang::NilType.new)
         # root_ast.register_identifier('->', StoutLang::BlockType.new)
 
         # Register constructs that get parsed/treated like function calls
-        root_ast.register_identifier('return', StoutLang::Return)
-        root_ast.register_identifier('import', StoutLang::Import)
-        root_ast.register_identifier('yield', StoutLang::Yield)
+        root_ast.register_identifier("return", StoutLang::Return)
+        root_ast.register_identifier("import", StoutLang::Import)
+        root_ast.register_identifier("yield", StoutLang::Yield)
         # root_ast.register_identifier('(,)', StoutLang::Tuple.new) # The tuple constructor
 
       end

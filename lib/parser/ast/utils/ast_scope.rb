@@ -1,7 +1,6 @@
 # require 'codegen/constructs/construct'
 
 module AstScope
-
   def scope
     nil
   end
@@ -32,11 +31,24 @@ module AstScope
     nil
   end
 
+  def lookup_all_identifiers(identifier)
+    ids = []
+    if scope && scope.key?(identifier)
+      ids = scope[identifier]
+    end
+
+    if parent
+      ids += parent.lookup_all_identifiers(identifier)
+    end
+
+    ids
+  end
+
   # Similar to lookup_identifier, but walks up the parent scopes until it finds a matching function
   # Matches based on the arguments also.
   #
   # NOTE: C functions are always matched (ignoring arguments)
-  def lookup_function(identifier, arg_types=nil)
+  def lookup_function(identifier, arg_types = nil)
     if scope && scope.key?(identifier)
       ids = scope[identifier]
 
@@ -47,7 +59,7 @@ module AstScope
         else
           if id.is_a?(Def)
             # Only match a Def/DefPrototype if the arguments match
-            id_arg_types = id.args.map {|i| i.type_sig.type_val }
+            id_arg_types = id.args.map { |i| i.type_sig.type_val }
             # puts "Compare: #{identifier} - #{id_arg_types.inspect} == #{arg_types.inspect}"
             if id_arg_types == arg_types
               return id
@@ -70,6 +82,35 @@ module AstScope
     return nil
   end
 
+  # Log that we couldn't find the function and show the possible matches for the name
+  def unable_to_find_function_error(name, arg_types)
+    possible_matches = lookup_all_identifiers(name)
+
+    possible_matches = possible_matches.map do |id|
+      id.inspect_small
+    end
+
+    error_msg = <<-END
+      Function #{name}(#{arg_types.map(&:inspect_small)}) not found in scope.
+
+      Functions named #{name} in scope:
+      #{possible_matches.join("\n")}
+      END
+
+    raise error_msg
+  end
+
+  # Like lookup function, but will raise an exception with details on functions with the same name
+  def lookup_function!(identifier, arg_types = nil)
+    func = lookup_function(identifier, arg_types)
+
+    unless func
+      unable_to_find_function_error(identifier, arg_types)
+    end
+
+    return func
+  end
+
   def parent_scope
     # Walks up the parent chain until it finds a scope
     cur = parent
@@ -81,7 +122,7 @@ module AstScope
     nil
   end
 
-  def inspect_scope(first=true)
+  def inspect_scope(first = true)
     if first
       puts "--- Scope ---"
     end
@@ -96,5 +137,4 @@ module AstScope
       parent.inspect_scope(false)
     end
   end
-
 end

@@ -1,18 +1,17 @@
-require 'parser/ast/callable'
-require 'parser/ast/utils/scope'
-require 'codegen/metadata'
-require 'base64'
-require 'codegen/name_mangle'
+require "parser/ast/callable"
+require "parser/ast/utils/scope"
+require "codegen/metadata"
+require "base64"
+require "codegen/name_mangle"
 
 module StoutLang
   module Ast
     class Def < Callable
-
       def type
         # The type of a block is a BlockType, which should match the BlockType
         # on the function being called
-        args = self.args.map {|arg| arg.resolve.type }
-        return_type = super
+        args = self.args.map { |arg| arg.resolve.type }
+        return_type = self.return_type
 
         return DefType.new(args, return_type).assign_parent!(self)
       end

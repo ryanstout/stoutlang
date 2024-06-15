@@ -1,7 +1,7 @@
 # A def prototype represents a def we imported from another file. It only codegens the prototype.
 
-require 'parser/ast/utils/scope'
-require 'parser/ast/def'
+require "parser/ast/utils/scope"
+require "parser/ast/def"
 
 module StoutLang
   module Ast
@@ -10,7 +10,6 @@ module StoutLang
 
       def prepare
         self.args = args.map(&:resolve)
-        self.return_type = return_type if return_type
       end
 
       def effects
