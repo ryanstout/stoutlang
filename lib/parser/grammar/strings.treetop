@@ -110,7 +110,7 @@ grammar Strings
   end
 
   rule shell_string
-    language:[a-z]* '`' str:(shell_string_content / escape_sequence / interpolation)* '`' {
+    language:[a-z]* '`' str:(escape_sequence / interpolation / shell_string_content / single_dollar)* '`' {
       def to_ast
         lang = language.text_value
         lang = nil if lang.empty?
@@ -131,6 +131,14 @@ grammar Strings
 
   rule shell_string_content
     (!'`' [^$\\])+ {
+      def to_ast
+        text_value
+      end
+    }
+  end
+
+  rule single_dollar
+    '$' {
       def to_ast
         text_value
       end
@@ -161,7 +169,7 @@ grammar Strings
   end
 
   rule shell_heredoc_content
-    (shell_heredoc_string_content / escape_sequence / interpolation)* {
+    (escape_sequence / interpolation / shell_heredoc_string_content / single_dollar)* {
       def to_ast
         elements.map(&:to_ast)
       end
