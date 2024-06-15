@@ -1,0 +1,77 @@
+grammar NameMangleDecoder
+  rule mangled_name
+    'sl' sl_version:nm_version func_name:nm_identifier '(' args:nm_args ')->' return_type:nm_type {
+      def to_ast
+        {
+          sl_version: sl_version.to_ast,
+          func_name: func_name.to_ast,
+          arg_types: args.to_ast.map {|arg| Arg.new('_', TypeSig.new(arg)) },
+          return_type: return_type.to_ast
+        }
+      end
+    }
+  end
+
+  rule nm_args
+    first_arg:nm_arg? rest:(',' nm_arg)* {
+      def to_ast
+        if first_arg
+          [first_arg.to_ast] + rest.elements.map {|arg| arg.nm_arg.to_ast }
+        else
+          []
+        end
+      end
+    }
+  end
+
+  rule nm_arg
+    arg:(nm_block_type / nm_type) {
+      def to_ast
+        arg.to_ast
+      end
+    }
+  end
+
+  rule nm_block_type
+    '(' args:nm_args ')->' return_type:nm_type {
+      def to_ast
+        BlockType.new(
+          args.to_ast,
+          return_type.to_ast
+        )
+      end
+    }
+  end
+
+  rule nm_version
+    [0-9\.]+ {
+      def to_ast
+        text_value.gsub(/[.]$/, '')
+      end
+    }
+  end
+
+  rule nm_type
+    [A-Z] [a-zA-Z0-9_]* {
+      def to_ast
+        Type.new(text_value)
+      end
+    }
+  end
+
+  rule nm_identifier
+    nm_any_operator {
+      def to_ast
+        text_value
+      end
+    } / [a-z] [a-zA-Z0-9_]* {
+      def to_ast
+        text_value
+      end
+    }
+  end
+
+  rule nm_any_operator
+    '>>=' / '<<=' / '!=' / '==' / '+=' / '-=' / '*=' / '/=' / '%=' / '&&=' / '||=' / '&=' / '|=' / '^=' / '<<' / '>>' / '&&' / '||' / '..' / '...' / '%>' / '^' / '*' / '/' / '%' / '+' / '-' / '&' / '|' / '^' / '=' / '?'
+  end
+end

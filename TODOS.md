@@ -93,3 +93,14 @@ Saturday:
 
   - We need an Exp's ("list of expressions") type that Block and Def both include (or inherit from?)
     - if's need Exps (or argument-less blocks)
+
+
+  Maybe funcs/def's should look like (use block syntax), that way | and | is always to create a callable, and ( and ) are always to call it. (Makes more sense, but less conventional):
+
+  ```
+  combine = |a: Int, b: Int, block: Int -> Int| -> Int {
+
+  }
+
+
+  ## Need to add a triple target even when not cross compiling, LLVM won't enable more specific optimizations without it. https://llvm.org/docs/Frontend/PerformanceTips.html

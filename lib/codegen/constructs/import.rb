@@ -1,7 +1,7 @@
-require 'codegen/compiler'
-require 'xxhash'
-require 'codegen/name_mangle'
-require 'codegen/constructs/construct'
+require "codegen/compiler"
+require "xxhash"
+require "codegen/name_mangle"
+require "codegen/constructs/construct"
 
 module StoutLang
   class Import < Construct
@@ -25,14 +25,14 @@ module StoutLang
 
       cache_path += "_#{hash}"
 
-      if !File.exist?(cache_path+".bc")
+      if !File.exist?(cache_path + ".bc")
         # Remove any previously cached files for this path
         Dir.glob("builds/cache/#{@path}_*").each do |file|
           File.delete(file)
         end
 
         # Compile the file
-        Compiler.compile(@path + ".sl", cache_path, {lib: true, aot: true})
+        Compiler.compile(@path + ".sl", cache_path, { lib: true, aot: true })
       end
 
       @original_module = LLVM::Module.parse_bitcode(cache_path + ".bc")
@@ -40,20 +40,16 @@ module StoutLang
       @imported_functions = []
       # Iterate over each function in the original module and create externs
       @original_module.functions.each do |function|
-        func_name, args, return_type = self.unmangle(function.name)
+        func = self.unmangle(function.name)
+        func_name = func[:func_name]
+        args = func[:arg_types]
+        return_type = func[:return_type]
 
         # extern_function.linkage = :private
         # extern_function = nil
 
         # Add the function to the scope
         if args
-          # Conver the args into Arg's
-          args = args.map do |arg|
-            Arg.new('_', TypeSig.new(Type.new(arg)))
-          end
-
-          return_type = Type.new(return_type)
-
           # We have a stoutlang Def, not a C func
 
           raise "Return type not available when importing" if return_type.nil?
@@ -65,7 +61,6 @@ module StoutLang
         end
         @imported_functions << [function, func_name, args, return_type, prototype]
 
-
         import_call.register_in_scope(func_name, prototype)
       end
     end
@@ -73,7 +68,6 @@ module StoutLang
     # Import types and functions from a compile bitcode module. Compile it first
     # if it's not already compiled
     def codegen(compile_jit, mod, func, bb, import_call)
-
       @imported_functions.each do |function, func_name, args, return_type, prototype|
         function = @original_module.functions.named(function.name)
 
@@ -99,7 +93,6 @@ module StoutLang
         prototype.ir = extern_function
       end
 
-
       # Don't link if we've already imported
       #  TODO: Expose imports somehow inside of stoutlang
       @@imports ||= {}
@@ -115,7 +108,6 @@ module StoutLang
       # Cleanup
       @original_module = nil
       @imported_functions = nil
-
     end
   end
 end

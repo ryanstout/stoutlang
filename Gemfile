@@ -24,3 +24,5 @@ gem "ruby-llvm", git: "https://github.com/ruby-llvm/ruby-llvm.git", ref: "bbd71d
 gem "xxhash", "~> 0.5.0"
 
 gem "ffi-clang", "~> 0.9.0"
+
+gem "binding_of_caller", "~> 1.0"

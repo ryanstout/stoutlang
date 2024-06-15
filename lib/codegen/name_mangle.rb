@@ -1,3 +1,7 @@
+require "treetop"
+
+Treetop.load(File.expand_path(File.dirname(__FILE__)) + "/../parser/grammar/name_mangle_decoder")
+
 module StoutLang
   module NameMangle
 
@@ -11,11 +15,11 @@ module StoutLang
     def c_safe_mangled_name(obj)
       # Get the mangled name of the function
       @c_mangled_name ||= begin
-        mangled_args = obj.args.map do |arg|
-          arg.type_sig.mangled_name
-        end.join('_')
-        "sl1_#{obj.name}__#{mangled_args}__#{obj.return_type.mangled_name}"
-      end
+          mangled_args = obj.args.map do |arg|
+            arg.type_sig.mangled_name
+          end.join("_")
+          "sl1_#{obj.name}__#{mangled_args}__#{obj.return_type.mangled_name}"
+        end
     end
 
     # To make life easier, we use the stoutlang function signature (the full signature) as the mangled name.
@@ -24,29 +28,40 @@ module StoutLang
     # NOTE: self should be a Def
     def mangled_name
       @mangled_name ||= begin
-        mangled_args = self.args.map do |arg|
-          arg.type_sig.mangled_name
-        end.join(',')
-        "sl1.#{self.name}(#{mangled_args})->#{self.return_type.mangled_name}"
-      end
+          mangled_args = self.args.map do |arg|
+            arg.type_sig.mangled_name
+          end.join(",")
+          "sl1.#{self.name}(#{mangled_args})->#{self.return_type.mangled_name}"
+        end
     end
 
     # Lets you look up a function by string args and return type
     def self.mangle_name(name, args, return_type)
-      "sl1.#{name}(#{args.join(',')})->#{return_type}"
+      "sl1.#{name}(#{args.join(",")})->#{return_type}"
     end
 
     # Takes a mangled function call name and extracts
     def unmangle(mangled_name)
-      if mangled_name[0..3] != 'sl1.'
+      if mangled_name[0..3] != "sl1."
         # Looks like a C export, just return the name
-        return mangled_name, nil, nil
+        return {
+                 sl_version: "1",
+                 func_name: mangled_name.gsub(/^sl1[.]/, ""),
+                 arg_types: nil,
+                 return_type: nil,
+               }
       else
-        match = mangled_name.match(/sl1\.(.*)\((.*)\)->(.*)/)
-        name = match[1]
-        args = match[2].split(',')
-        return_type = match[3]
-        return name, args, return_type
+        # Use treetop to unmangle to the right types
+        parser = NameMangleDecoderParser.new
+
+        result = parser.parse(mangled_name, root: "mangled_name")
+        unless result
+          raise "Unable to parse mangled name: #{mangled_name}"
+        end
+
+        result = result.to_ast
+
+        return result
       end
     end
   end
