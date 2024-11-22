@@ -4,7 +4,7 @@
 
 ## Update Nov 2024
 
-StoutLang was an experimental language to build a language with a practical and easy to use (mostly hidden) effect type system. The goal was to be AOT compiled to LLVM, TypeScript looking syntax, Statically linked, and automatically parallelized.
+StoutLang was an experiment to build a language with a practical and easy to use (mostly hidden) effect type system. The goal was to be AOT compiled to LLVM, TypeScript looking syntax, Statically linked, and automatically parallelized.
 
 I made some good headways, but decided to pivot to some more immediate opportunities. Hopefully I can revisit some day.
 
