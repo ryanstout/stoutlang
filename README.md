@@ -2,6 +2,13 @@
 
 "If I had asked people what they wanted, they would have said a faster Python" - Me, at some point
 
+## Update Nov 2024
+
+StoutLang was an experimental language to build a language with a practical and easy to use (mostly hidden) effect type system. The goal was to be AOT compiled to LLVM, TypeScript looking syntax, Statically linked, and automatically parallelized.
+
+I made some good headways, but decided to pivot to some more immediate opportunities. Hopefully I can revisit some day.
+
+
 ## Learn
 
 New to StoutLang? [Start Here](https://github.com/ryanstout/stoutlang/blob/master/docs/overview.md)
@@ -40,3 +47,7 @@ sudo ln -s $(brew --prefix llvm@18)/lib /opt/local/lib
 ## Debugging
 
 lldb -- lli ./builds/test5.ll
+
+## Tips
+
+Run with --ir -O0 to see the LLVM IR with deadcode eliminated

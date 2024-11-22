@@ -14,6 +14,10 @@ class PassManager
       @pass_builder.mem2reg!
       @pass_builder.strip!
       @pass_builder.strip_dead_prototypes!
+    elsif options[:o] == "0"
+      @pass_builder.dce!
+      @pass_builder.globaldce!
+      @pass_builder.adce!
     end
   end
 

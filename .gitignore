@@ -3,3 +3,4 @@
 lsp/vscode/sl/node_modules
 builds/*
 docs/internal
+.vendor

@@ -104,3 +104,5 @@ Saturday:
 
 
   ## Need to add a triple target even when not cross compiling, LLVM won't enable more specific optimizations without it. https://llvm.org/docs/Frontend/PerformanceTips.html
+
+  - layouts idea from Virgil, you can apply a layout to change how a structure is stored in memory. Can also make i1’s binary flags or pack smaller ints: https://github.com/titzer/virgil/blob/master/doc/tutorial/Layouts.md
